@@ -1,13 +1,29 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@import 'antd/dist/reset.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+ /* fix Tailwind CSS border styles,form Tailwind CSS's preflight */
+*,
+::before,
+::after {
+  box-sizing: border-box; 
+  border-width: 0; 
+  border-style: solid; 
+  border-color: theme('borderColor.DEFAULT', currentColor); 
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+::before,
+::after {
+  --tw-content: '';
+}
+
+.logo {
+  width: 100px;
+  height: 70px;
+  background-color: white;
+  background-image:  url(assets/images.png);
+  background-size: cover;
+  margin: auto;
+  padding: auto;
 }

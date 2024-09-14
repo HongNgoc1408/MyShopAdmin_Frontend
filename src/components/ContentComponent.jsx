@@ -1,7 +1,7 @@
 import { theme } from "antd";
 import { Content } from "antd/es/layout/layout";
 import React from "react";
-import BreadcrumbComponent from "./BreadcrumbComponent";
+// import BreadcrumbComponent from "./BreadcrumbComponent";
 
 const ContentComponent = () => {
   const {
@@ -13,7 +13,7 @@ const ContentComponent = () => {
         margin: "0 16px",
       }}
     >
-      <BreadcrumbComponent />
+      {/* <BreadcrumbComponent /> */}
       <div
         style={{
           padding: 24,
@@ -22,7 +22,7 @@ const ContentComponent = () => {
           borderRadius: borderRadiusLG,
         }}
       >
-        Bill is a cat.
+        Content
       </div>
     </Content>
   );

@@ -3,7 +3,6 @@
 @tailwind components;
 @tailwind utilities;
 
- /* fix Tailwind CSS border styles,form Tailwind CSS's preflight */
 *,
 ::before,
 ::after {
@@ -19,10 +18,9 @@
 }
 
 .logo {
-  width: 100px;
-  height: 70px;
-  background-color: white;
-  background-image:  url(assets/images.png);
+  width: 65px;
+  height: 65px;
+  background-image:url(assets/logoMS.png);
   background-size: cover;
   margin: auto;
   padding: auto;

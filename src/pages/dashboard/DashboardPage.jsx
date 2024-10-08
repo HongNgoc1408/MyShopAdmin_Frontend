@@ -1,13 +1,16 @@
 import React from "react";
-import { Layout } from "antd";
-import FooterComponent from "../../components/FooterComponent";
-import HeaderComponent from "../../components/HeaderComponent";
-import ContentComponent from "../../components/ContentComponent";
-import SiderComponent from "../../components/SiderComponent";
+import { Layout, theme } from "antd";
+import { Content } from "antd/es/layout/layout";
+import SiderComponent from "../../components/other/SiderComponent";
+import HeaderComponent from "../../components/other/HeaderComponent";
+import FooterComponent from "../../components/other/FooterComponent";
 
 const DashboardPage = () => {
+  const {
+    token: { colorBgContainer, borderRadiusLG },
+  } = theme.useToken();
   return (
-    <div>
+    <>
       <Layout
         style={{
           minHeight: "100vh",
@@ -16,11 +19,27 @@ const DashboardPage = () => {
         <SiderComponent />
         <Layout>
           <HeaderComponent />
-          <ContentComponent />
+          <Content
+            style={{
+              margin: "16px",
+            }}
+          >
+            {/* <BreadcrumbComponent /> */}
+            <div
+              style={{
+                padding: 24,
+                minHeight: 360,
+                background: colorBgContainer,
+                borderRadius: borderRadiusLG,
+              }}
+            >
+              DashboardPage
+            </div>
+          </Content>
           <FooterComponent />
         </Layout>
       </Layout>
-    </div>
+    </>
   );
 };
 export default DashboardPage;

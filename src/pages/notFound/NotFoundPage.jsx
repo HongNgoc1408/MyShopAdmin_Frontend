@@ -1,15 +1,10 @@
 import React from "react";
-
+import notFound from "../../assets/notFound.jpg";
 const notFoundPage = () => {
   return (
-    <div>
-      <h1>notFound</h1>
-      <img
-        src="/src/assets/notFound.jpg"
-        alt=""
-        className="w-2/3 mt-28 mx-auto"
-      />
-    </div>
+    <>
+      <img src={notFound} alt="" className="w-2/3 mt-28 mx-auto" />
+    </>
   );
 };
 

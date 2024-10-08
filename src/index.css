@@ -2,7 +2,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
 *,
 ::before,
 ::after {
@@ -17,11 +16,6 @@
   --tw-content: '';
 }
 
-.logo {
-  width: 65px;
-  height: 65px;
-  background-image:url(assets/logoMS.png);
-  background-size: cover;
-  margin: auto;
-  padding: auto;
-}
+
+
+

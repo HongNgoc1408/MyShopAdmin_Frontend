@@ -1,38 +1,72 @@
-.App {
-  text-align: center;
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap");
+/* @import url("https://fonts.googleapis.com/css?family=Karla:400,700&display=swap"); */
+
+body {
+  font-family: "Roboto", sans-serif;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* .font-family-karla {
+  font-family: karla;
+} */
+
+.logo {
+  width: 65px;
+  height: 65px;
+  background-image:url(assets/logo.png);
+  background-size: cover;
+  margin: auto;
+  padding: auto;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.ant-table-thead .ant-table-cell {
+  background-color: #1d4ed8 !important;
+  text-decoration: white!important;
+  color: white!important;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.account-link:hover {
+  background: #1d4ed8;
 }
 
-.App-link {
-  color: #61dafb;
+.title {
+  @apply text-xl font-semibold capitalize text-black cursor-pointer;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
+/* .bg-sidebar {
+  background: #1d4ed8;
+} */
+
+/* .cta-btn {
+  color: #1d4ed8;
+} */
+
+/* .upgrade-btn {
+  background: #1d4ed8;
+} */
+
+/* .upgrade-btn:hover {
+  background: #1d4ed8;
+} */
+
+/* .active-nav-link {
+  background: #1d4ed8;
+} */
+
+/* .nav-item:hover {
+  background: #1d4ed8;
+} */
+
+/* .title_cols {
+  @apply flex items-center text-white opacity-75 hover:opacity-100 py-4 pl-6 nav-item;
+} */
+
+
+
+/* .bg-dark-button {
+  @apply bg-black text-white  hover:bg-orange-500 px-6 py-2 font-semibold rounded-md;
+} */
+
+
+/* .bg-light-button {
+  @apply px-6 py-2 bg-white text-Black hover:bg-orange-500 rounded-md font-semibold;
+} */

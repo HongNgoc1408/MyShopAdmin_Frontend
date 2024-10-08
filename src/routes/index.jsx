@@ -1,5 +1,6 @@
 import LoginPage from "../pages/auth/LoginPage";
 import BrandPage from "../pages/brand/BrandPage";
+import Brands from "../pages/brand/Brands";
 import CategoryPage from "../pages/category/CategoryPage";
 import DashboardPage from "../pages/dashboard/DashboardPage";
 import NotFoundPage from "../pages/notFound/NotFoundPage";
@@ -19,7 +20,7 @@ const routes = [
   {
     path: "/brand",
     name: "brand",
-    page: BrandPage,
+    page: Brands,
   },
   {
     path: "/category",

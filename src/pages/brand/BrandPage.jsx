@@ -6,7 +6,6 @@ import FormAddBrandComponent from "../../components/brand/FormAddBrandComponent"
 import HeaderComponent from "../../components/other/HeaderComponent";
 import SiderComponent from "../../components/other/SiderComponent";
 import FooterComponent from "../../components/other/FooterComponent";
-import FormEditBrandComponent from "../../components/brand/FormEditBrandComponent";
 
 const BrandPage = () => {
   return (

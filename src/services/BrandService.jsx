@@ -1,5 +1,5 @@
 import axios from "axios";
-import { authHeader, authImageHeader } from "./AuthHeader";
+import { authHeader, authImageHeader } from "./authHeader";
 
 const API_URL = process.env.REACT_APP_API_URL + "/api/brands";
 

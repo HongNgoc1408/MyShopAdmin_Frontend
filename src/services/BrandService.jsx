@@ -1,37 +1,27 @@
 import axios from "axios";
+import { authHeader, authImageHeader } from "./AuthHeader";
 
-// Thiết lập base URL
-const API_URL = process.env.REACT_API_URL + "api/brand";
+const API_URL = process.env.REACT_APP_API_URL + "/api/brands";
 
-// export const getAllBrand = async () => {
-//   const res = await axios.get(`/brand/getAllBrand`);
-//   return res.data;
-// };
+const getBrands = async () =>
+  await axios.get(API_URL, { headers: authHeader() });
 
-// export const getByIdBrand = async (id) => {
-//   const res = await axios.get(`/brand/get/${id}`);
-//   return res.data;
-// };
+const addBrand = async (data) =>
+  await axios.post(API_URL + "/create", data, { headers: authImageHeader() });
 
-// export const addBrand = async (data) => {
-//   const res = await axios.post(`/brand/add`, data);
-//   return res.data;
-// };
+const updateBrand = async (id, data) =>
+  await axios.put(API_URL + `/update/${id}`, data, {
+    headers: authImageHeader(),
+  });
 
-// export const updateBrand = async (id, access_token, data) => {
-//   const res = await axios.put(`/brand/update/${id}`, data, {
-//     headers: {
-//       token: `Bearer ${access_token}`,
-//     },
-//   });
-//   return res.data;
-// };
+const deleteBrand = async (id) =>
+  await axios.delete(API_URL + `/delete/${id}`, { headers: authHeader() });
 
-// export const deleteBrand = async (id, access_token) => {
-//   const res = await axios.delete(`/brand/delete/${id}`, {
-//     headers: {
-//       token: `Bearer ${access_token}`,
-//     },
-//   });
-//   return res.data;
-// };
+const BrandService = {
+  getBrands,
+  addBrand,
+  deleteBrand,
+  updateBrand,
+};
+
+export default BrandService;

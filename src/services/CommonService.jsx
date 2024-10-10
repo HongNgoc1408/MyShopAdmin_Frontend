@@ -43,3 +43,31 @@ export const formatVND = (value) => {
 };
 
 export const formatDateTime = (date) => new Date(date).toLocaleString("vi-VN");
+
+export const toTextLabel = (data) => {
+  return data.map((item) => ({
+    ...item,
+    value: item.id,
+    label: item.name,
+  }));
+};
+
+export const toTextValue = (data) => {
+  return data.map((value) => ({
+    value: value,
+    text: value,
+  }));
+};
+
+export const isEmptyObject = (obj) => {
+  return JSON.stringify(obj) === "{}";
+};
+// export const sizes = [
+//   { value: "XS", label: "XS" },
+//   { value: "S", label: "S" },
+//   { value: "M", label: "M" },
+//   { value: "L", label: "L" },
+//   { value: "XL", label: "XL" },
+//   { value: "XXL", label: "XXL" },
+//   { value: "XXXL", label: "XXXL" },
+// ];

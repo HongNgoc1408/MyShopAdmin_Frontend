@@ -1,4 +1,5 @@
-import authService from "./AuthService";
+import authService from "./authService";
+
 
 const user = authService.getCurrentUser();
 

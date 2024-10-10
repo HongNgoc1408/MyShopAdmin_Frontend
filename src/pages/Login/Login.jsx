@@ -1,11 +1,12 @@
 import { Button, Form, Input, notification, Spin } from "antd";
 import React, { useState } from "react";
 import { LockOutlined, MailOutlined } from "@ant-design/icons";
-import { showError } from "../../services/CommonService";
-import authService from "../../services/AuthService";
 import { useNavigate } from "react-router-dom";
-import authActions from "../../services/AuthAction";
 import { useAuth } from "../../App";
+import authService from "../../services/authService";
+import { showError } from "../../services/commonService";
+import authAction from "../../services/AuthAction";
+
 
 const Login = () => {
   const [form] = Form.useForm();
@@ -19,7 +20,7 @@ const Login = () => {
       const data = form.getFieldsValue();
       const res = await authService.login(data);
       if (res.data?.roles?.includes("Admin")) {
-        dispatch(authActions.LOGIN(res.data?.roles));
+        dispatch(authAction.LOGIN(res.data?.roles));
         notification.success({ message: "Đăng nhập thành công." });
         navigate("/home");
       } else {

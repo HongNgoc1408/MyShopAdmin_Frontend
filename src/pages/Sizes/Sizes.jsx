@@ -81,7 +81,7 @@ const Sizes = () => {
       setIsLoading(true);
       try {
         const res = await SizeService.getAll();
-        // console.log(res.data)
+        console.log(res.data);
         setData(res.data);
       } catch (error) {
         showError(error);
@@ -96,7 +96,7 @@ const Sizes = () => {
     setLoadingAdd(true);
     try {
       const values = await form.validateFields();
-      SizeService.add(values);
+      SizeService.create(values);
       notification.success({
         message: "Thêm size thành công",
       });
@@ -190,7 +190,7 @@ const Sizes = () => {
                 },
               ]}
             >
-              <Input />
+              <Input  />
             </Form.Item>
             <div className="col-span-3 grid grid-cols-1 lg:grid-cols-5 gap-2 pb-4">
               <Button

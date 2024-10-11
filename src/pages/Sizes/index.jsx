@@ -1,1 +1,1 @@
-export { default } from "./Size";
+export { default } from "./Sizes";

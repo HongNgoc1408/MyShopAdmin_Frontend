@@ -2,8 +2,8 @@ import React, { createContext, useContext, useReducer } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./App.css";
 import { generatePrivateRoutes, generatePublicRoutes } from "./routes";
-import NotFound from "./components/NotFound/NotFound";
 import { initialState, reducer } from "./services/AuthReducer";
+import NotFound from "./pages/NotFound/NotFound";
 
 const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);

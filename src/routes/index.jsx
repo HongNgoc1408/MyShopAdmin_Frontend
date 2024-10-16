@@ -14,6 +14,9 @@ import { SiBrandfolder } from "react-icons/si";
 import { TbCategoryPlus } from "react-icons/tb";
 import { AiFillProduct } from "react-icons/ai";
 import Sizes from "../pages/Sizes/Sizes";
+import Orders from "../pages/Orders/Orders";
+import { CiReceipt } from "react-icons/ci";
+import OrderDetail from "../pages/Orders/OrderDetail";
 
 export const navigateItems = [
   { key: "/home", icon: <PieChartOutlined />, label: "Thống kê" },
@@ -22,7 +25,7 @@ export const navigateItems = [
   { key: "/categories", icon: <TbCategoryPlus />, label: "Danh mục" },
   { key: "/sizes", icon: <TbCategoryPlus />, label: "Kích thước" },
   { key: "/products", icon: <AiFillProduct />, label: "Sản phẩm" },
-  { key: "/orders", icon: <UserOutlined />, label: "Đơn đặt hàng" },
+  { key: "/orders", icon: <CiReceipt />, label: "Đơn đặt hàng" },
   { key: "/staffs", icon: <UserOutlined />, label: "Nhân viên" },
   { key: "/comments", icon: <UserOutlined />, label: "Bình luận" },
 ];
@@ -37,7 +40,8 @@ export const privateRoutes = [
   { path: "/brands", component: Brands },
   { path: "/categories", component: Category },
   { path: "/sizes", component: Sizes },
-  { path: "/orders", component: Users },
+  { path: "/orders", component: Orders },
+  { path: "/order-detail/:id", component: OrderDetail },
   { path: "/staffs", component: Users },
   { path: "/comments", component: Users },
 ];

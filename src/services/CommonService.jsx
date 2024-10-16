@@ -71,3 +71,18 @@ export const isEmptyObject = (obj) => {
 //   { value: "XXL", label: "XXL" },
 //   { value: "XXXL", label: "XXXL" },
 // ];
+
+export const paymentMethod = [
+  { value: "COD", label: "Thanh toán khi nhận hàng" },
+  { value: "VNPay", label: "Thanh toán ví VNPay" },
+];
+
+export const statusOrders = [
+  { value: "Processing", label: "Đang xử lý" },
+  { value: "Confirmed", label: "Đã duyệt" },
+  { value: "AwaitingPickup", label: "Đang chờ lấy hàng" },
+  { value: "Shipping", label: "Đang vận chuyển" },
+  { value: "BeingDelivered", label: "Đang giao hàng" },
+  { value: "Received", label: "Đã nhận" },
+  { value: "Canceled", label: "Đã hủy" },
+];

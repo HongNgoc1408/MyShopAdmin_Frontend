@@ -17,7 +17,6 @@ const Sidebar = () => {
 
   const handleMenuClick = ({ key }) => navigate(key);
 
-  //Cuộn về đầu trang sau khi render
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);

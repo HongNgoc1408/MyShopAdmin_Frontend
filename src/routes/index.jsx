@@ -42,6 +42,7 @@ export const privateRoutes = [
   { path: "/sizes", component: Sizes },
   { path: "/orders", component: Orders },
   { path: "/order-detail/:id", component: OrderDetail },
+  { path: "/shipping", component: Orders },
   { path: "/staffs", component: Users },
   { path: "/comments", component: Users },
 ];

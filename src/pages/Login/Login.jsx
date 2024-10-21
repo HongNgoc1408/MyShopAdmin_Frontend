@@ -7,7 +7,6 @@ import authService from "../../services/authService";
 import { showError } from "../../services/commonService";
 import authAction from "../../services/AuthAction";
 
-
 const Login = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
@@ -42,7 +41,6 @@ const Login = () => {
           </h2>
           <Form form={form} disabled={loading} onFinish={handleSubmit}>
             <Form.Item
-              // label="Email"
               name="username"
               rules={[
                 {
@@ -59,7 +57,6 @@ const Login = () => {
               />
             </Form.Item>
             <Form.Item
-              // label="Password"
               name="password"
               rules={[
                 {

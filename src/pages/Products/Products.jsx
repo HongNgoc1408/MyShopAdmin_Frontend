@@ -58,7 +58,6 @@ const Products = () => {
       sorter: (a, b) => a.id - b.id,
       render: (value) => <span className="font-semibold">{value}</span>,
     },
-
     {
       title: "Hình ảnh",
       dataIndex: "imageUrl",
@@ -87,10 +86,10 @@ const Products = () => {
       title: "Giảm giá",
       dataIndex: "discount",
     },
-    {
-      title: "Số lượng",
-      dataIndex: "quantity",
-    },
+    // {
+    //   title: "Số lượng",
+    //   dataIndex: "quantity",
+    // },
     {
       title: "Đã bán",
       dataIndex: "sold",

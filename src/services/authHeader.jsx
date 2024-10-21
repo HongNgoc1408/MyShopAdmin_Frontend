@@ -18,3 +18,4 @@ export const authImageHeader = () => {
     };
   } else return {};
 };
+

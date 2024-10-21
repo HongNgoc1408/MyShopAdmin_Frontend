@@ -2,34 +2,38 @@ import React, { useEffect, useState } from "react";
 import {
   Button,
   Flex,
-  Image,
+  Form,
   Input,
+  InputNumber,
+  Modal,
   notification,
   Pagination,
   Popconfirm,
-  Switch,
+  Select,
   Table,
-  Tag,
 } from "antd";
 import {
   formatDateTime,
   formatVND,
   showError,
-  toImageLink,
-  toTextValue,
+  statusOrders,
 } from "../../services/commonService";
 import { Link, useSearchParams } from "react-router-dom";
-import {
-  CheckOutlined,
-  CloseOutlined,
-  DeleteTwoTone,
-  EyeTwoTone,
-  HomeTwoTone,
-} from "@ant-design/icons";
+import { DeleteTwoTone, EyeTwoTone, HomeTwoTone } from "@ant-design/icons";
 import BreadcrumbLink from "../../components/BreadcrumbLink";
 import OrderService from "../../services/OrderService";
 
+const breadcrumb = [
+  {
+    path: "/",
+    title: <HomeTwoTone />,
+  },
+  {
+    title: "Đơn hàng",
+  },
+];
 const Orders = () => {
+  const [form] = Form.useForm();
   const [searchParams, setSearchParams] = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState([]);
@@ -39,16 +43,87 @@ const Orders = () => {
   const [currentPage, setCurrentPage] = useState(searchParams.get("page") ?? 1);
   const [currentPageSize, setCurrentPageSize] = useState(5);
   const [search, setSearch] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
 
-  const breadcrumb = [
-    {
-      path: "/",
-      title: <HomeTwoTone />,
-    },
-    {
-      title: "Đơn hàng",
-    },
-  ];
+  const showModal = (id) => {
+    setSelectedOrderId(id);
+    setIsModalOpen(true);
+  };
+
+  const handleOk = async () => {
+    try {
+      if (selectedOrderId) {
+        const value = await form.validateFields();
+        const res = await OrderService.shipping(selectedOrderId, value);
+        // console.log(res);
+        setData(res);
+        
+        notification.success({ message: "Cập nhật thành công." });
+      }
+      setIsModalOpen(false);
+    } catch (error) {
+      console.log("error", error);
+      showError(error);
+    }
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+    form.resetFields();
+  };
+
+  const handleSearch = (key) => key && key !== search && setSearch(key);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        search ? setSearchLoading(true) : setIsLoading(true);
+        const res = await OrderService.getAll(
+          currentPage,
+          currentPageSize,
+          search
+        );
+
+        setData(res.data?.items);
+        setTotalItems(res.data?.totalItems);
+      } catch (error) {
+        setSearch("");
+      } finally {
+        setIsLoading(false);
+        setSearchLoading(false);
+      }
+    };
+    fetchData();
+  }, [currentPage, currentPageSize, search]);
+
+  const handleDelete = async (id) => {
+    setLoadingDelete(true);
+    try {
+      await OrderService.remove(id);
+      const newData = data.filter((item) => !(item.id === id));
+      console.log(newData);
+      setData(newData);
+      notification.success({
+        message: "Xóa thành công",
+      });
+    } catch (error) {
+      showError(error);
+    } finally {
+      setLoadingDelete(false);
+    }
+  };
+
+  const handleUpdate = async (id, data) => {
+    try {
+      await OrderService.updateStatus(id, { orderStatus: data });
+      notification.success({
+        message: "Cập nhật trạng thái thành công",
+      });
+    } catch (error) {
+      showError(error);
+    }
+  };
 
   const columns = [
     {
@@ -74,37 +149,31 @@ const Orders = () => {
       render: (value) => formatVND(value),
     },
     {
-      title: "Đã thanh toán",
+      title: "Tiền thanh toán",
       dataIndex: "amountPaid",
       render: (value) => formatVND(value),
     },
     {
       title: "Phương thức thanh toán",
       dataIndex: "paymentMethod",
+      align: "center",
       render: (value) => <span>{value}</span>,
     },
     {
-      title: "orderStatus",
+      title: "Trạng thái thanh toán",
       dataIndex: "orderStatus",
       key: "orderStatus",
-      render: (orderStatus) => (
+      render: (value, record) => (
         <>
-          <Tag
-            color={
-              orderStatus === 0
-                ? "geekblue"
-                : orderStatus === 1
-                ? "green"
-                : "red"
-            }
-            key={orderStatus}
-          >
-            {orderStatus === 0
-              ? "Đang chờ"
-              : orderStatus === 1
-              ? "Đã thanh toán"
-              : "Đã hủy"}
-          </Tag>
+          <Select
+            style={{ width: 200 }}
+            defaultValue={value}
+            onChange={(newValue) => handleUpdate(record.id, newValue)}
+            options={statusOrders.map((item) => ({
+              value: item.value,
+              label: item.label,
+            }))}
+          />
         </>
       ),
     },
@@ -113,6 +182,130 @@ const Orders = () => {
       align: "center",
       render: (_, record) => (
         <Flex justify="center" align="center" className="space-x-1">
+          <Button onClick={() => showModal(record.id)}>Vận chuyển</Button>
+          <Modal
+            title="Thông tin đơn hàng vận chuyển"
+            open={isModalOpen}
+            onOk={() => handleOk()}
+            onCancel={handleCancel}
+          >
+            <Form
+              form={form}
+              name="validateOnly"
+              layout="vertical"
+              autoComplete="off"
+            >
+              <div className="flex space-x-2">
+                <div className="w-1/2">
+                  <Form.Item
+                    name="weight"
+                    label="Cân nặng"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng nhập cân nặng",
+                      },
+                    ]}
+                  >
+                    <InputNumber
+                      formatter={(value) => `${value}gram`}
+                      parser={(value) => value?.replace("gram", "")}
+                      className="w-full"
+                      placeholder="Weight (gram)"
+                    />
+                  </Form.Item>
+                </div>
+                <div className="w-1/2">
+                  <Form.Item
+                    name="length"
+                    label="Chiều dài"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng nhập chiều dài",
+                      },
+                    ]}
+                  >
+                    <InputNumber
+                      formatter={(value) => `${value}cm`}
+                      parser={(value) => value?.replace("cm", "")}
+                      className="w-full"
+                      placeholder="Length (cm)"
+                    />
+                  </Form.Item>
+                </div>
+              </div>
+              <div className="flex space-x-2">
+                <div className="w-1/2">
+                  <Form.Item
+                    name="width"
+                    label="Chiều rộng"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng nhập chiều rộng",
+                      },
+                    ]}
+                  >
+                    <InputNumber
+                      formatter={(value) => `${value}cm`}
+                      parser={(value) => value?.replace("cm", "")}
+                      className="w-full"
+                      placeholder="Width (cm)"
+                    />
+                  </Form.Item>
+                </div>
+                <div className="w-1/2">
+                  <Form.Item
+                    name="height"
+                    label="Chiều cao"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng nhập chiều cao",
+                      },
+                    ]}
+                  >
+                    <InputNumber
+                      formatter={(value) => `${value}cm`}
+                      parser={(value) => value?.replace("cm", "")}
+                      className="w-full"
+                      placeholder="Height (cm)"
+                    />
+                  </Form.Item>
+                </div>
+              </div>
+
+              <Form.Item
+                name="requiredNote"
+                label="Ghi chú"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng chọn ghi chú",
+                  },
+                ]}
+              >
+                <Select
+                  placeholder="Ghi chú"
+                  options={[
+                    {
+                      value: 0,
+                      label: "Cho thử hàng",
+                    },
+                    {
+                      value: 1,
+                      label: "Cho xem hàng không cho thử",
+                    },
+                    {
+                      value: 2,
+                      label: "Không cho xem hàng",
+                    },
+                  ]}
+                />
+              </Form.Item>
+            </Form>
+          </Modal>
           <Link to={`/order-detail/${record.id}`}>
             <Button>
               <EyeTwoTone />
@@ -131,59 +324,6 @@ const Orders = () => {
       ),
     },
   ];
-
-  const handleSearch = (key) => key && key !== search && setSearch(key);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        search ? setSearchLoading(true) : setIsLoading(true);
-        const res = await OrderService.getAll(
-          currentPage,
-          currentPageSize,
-          search
-        );
-
-        console.log(res.data?.items);
-
-        setData(res.data?.items);
-        setTotalItems(res.data?.totalItems);
-      } catch (error) {
-        setSearch("");
-      } finally {
-        setIsLoading(false);
-        setSearchLoading(false);
-      }
-    };
-    fetchData();
-  }, [currentPage, currentPageSize, search]);
-
-  const handleChangeEnable = async (id, value) => {
-    try {
-      const data = { enable: value };
-      await OrderService.updateEnable(id, data);
-      notification.success({ message: "cập nhật thành công." });
-    } catch (error) {
-      showError(error);
-    }
-  };
-
-  const handleDelete = async (id) => {
-    setLoadingDelete(true);
-    try {
-      await OrderService.remove(id);
-      const newData = data.filter((item) => !(item.id === id));
-      console.log(newData);
-      setData(newData);
-      notification.success({
-        message: "Xóa thành công",
-      });
-    } catch (error) {
-      showError(error);
-    } finally {
-      setLoadingDelete(false);
-    }
-  };
 
   return (
     <div className="space-y-4">

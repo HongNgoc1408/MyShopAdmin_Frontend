@@ -1,6 +1,5 @@
 import authService from "./authService";
 
-
 const user = authService.getCurrentUser();
 
 export const initialState = {

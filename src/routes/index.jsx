@@ -15,18 +15,21 @@ import { TbCategoryPlus } from "react-icons/tb";
 import { AiFillProduct } from "react-icons/ai";
 import Sizes from "../pages/Sizes/Sizes";
 import Orders from "../pages/Orders/Orders";
-import { CiReceipt } from "react-icons/ci";
+import { CiReceipt, CiSaveDown1 } from "react-icons/ci";
 import OrderDetail from "../pages/Orders/OrderDetail";
+import Imports from "../pages/Imports";
+import ImportAdd from "../pages/Imports/ImportAdd";
 
 export const navigateItems = [
   { key: "/home", icon: <PieChartOutlined />, label: "Thống kê" },
   { key: "/users", icon: <UserOutlined />, label: "Người dùng" },
+  { key: "/staffs", icon: <UserOutlined />, label: "Nhân viên" },
   { key: "/brands", icon: <SiBrandfolder />, label: "Thương hiệu" },
   { key: "/categories", icon: <TbCategoryPlus />, label: "Danh mục" },
   { key: "/sizes", icon: <TbCategoryPlus />, label: "Kích thước" },
   { key: "/products", icon: <AiFillProduct />, label: "Sản phẩm" },
   { key: "/orders", icon: <CiReceipt />, label: "Đơn đặt hàng" },
-  { key: "/staffs", icon: <UserOutlined />, label: "Nhân viên" },
+  { key: "/imports", icon: <CiSaveDown1 />, label: "Phiếu nhập hàng" },
   { key: "/comments", icon: <UserOutlined />, label: "Bình luận" },
 ];
 export const publicRoutes = [{ path: "/", component: Login, Layout: null }];
@@ -34,6 +37,7 @@ export const publicRoutes = [{ path: "/", component: Login, Layout: null }];
 export const privateRoutes = [
   { path: "/home", component: Home },
   { path: "/users", component: Users },
+  { path: "/staffs", component: Users },
   { path: "/products", component: Products },
   { path: "/add-products", component: ProductAdd },
   { path: "/product-detail/:id", component: ProductDetail },
@@ -42,8 +46,8 @@ export const privateRoutes = [
   { path: "/sizes", component: Sizes },
   { path: "/orders", component: Orders },
   { path: "/order-detail/:id", component: OrderDetail },
-  { path: "/shipping", component: Orders },
-  { path: "/staffs", component: Users },
+  { path: "/imports", component: Imports },
+  { path: "/add-imports", component: ImportAdd },
   { path: "/comments", component: Users },
 ];
 

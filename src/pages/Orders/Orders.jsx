@@ -29,9 +29,10 @@ const breadcrumb = [
     title: <HomeTwoTone />,
   },
   {
-    title: "Đơn hàng",
+    title: "Đơn dặt hàng",
   },
 ];
+
 const Orders = () => {
   const [form] = Form.useForm();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -58,7 +59,7 @@ const Orders = () => {
         const res = await OrderService.shipping(selectedOrderId, value);
         // console.log(res);
         setData(res);
-        
+
         notification.success({ message: "Cập nhật thành công." });
       }
       setIsModalOpen(false);
@@ -84,7 +85,7 @@ const Orders = () => {
           currentPageSize,
           search
         );
-
+        console.log(res.data?.items);
         setData(res.data?.items);
         setTotalItems(res.data?.totalItems);
       } catch (error) {
@@ -139,6 +140,18 @@ const Orders = () => {
       render: (value) => formatDateTime(value),
     },
     {
+      title: "Ngày dự kiến",
+      dataIndex: "expected_delivery_time",
+      render: (value) =>
+        formatDateTime(value) === "null" ? "" : formatDateTime(value),
+    },
+    {
+      title: "Ngày nhận hàng",
+      dataIndex: "receivedDate",
+      render: (value) =>
+        formatDateTime(value) === "null" ? "" : formatDateTime(value),
+    },
+    {
       title: "Phí vận chuyển",
       dataIndex: "shippingCost",
       render: (value) => formatVND(value),
@@ -155,10 +168,16 @@ const Orders = () => {
     },
     {
       title: "Phương thức thanh toán",
-      dataIndex: "paymentMethod",
+      dataIndex: "paymentMethodName",
       align: "center",
       render: (value) => <span>{value}</span>,
     },
+    {
+      title: "Trạng thái đánh giá",
+      dataIndex: "reviewed",
+      align: "center",
+    },
+
     {
       title: "Trạng thái thanh toán",
       dataIndex: "orderStatus",

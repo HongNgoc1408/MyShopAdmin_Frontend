@@ -15,8 +15,7 @@ const getAll = async (page, pageSize, keySearch) =>
     },
   });
 
-const getById = async (id, data) =>
-  await axios.get(API_URL + `/${id}`, data);
+const getById = async (id, data) => await axios.get(API_URL + `/${id}`, data);
 
 const add = async (data) =>
   await axios.post(API_URL + "/create", data, { headers: authImageHeader() });
@@ -57,8 +56,20 @@ const fetchProductAttributes = async () => {
   }
 };
 
+const getName = async () =>
+  await axios.get(API_URL + "/name", { headers: authHeader() });
+
+const getColorById = async (id) =>
+  await axios.get(API_URL + `/color/${id}`, { headers: authHeader() });
+
+const getSizeById = async (id) =>
+  await axios.get(API_URL + `/size/${id}`, { headers: authHeader() });
+
 const ProductService = {
   getAll,
+  getName,
+  getColorById,
+  getSizeById,
   add,
   getById,
   update,

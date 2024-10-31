@@ -7,8 +7,8 @@ import {
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../App";
-import authService from "../../../services/authService";
 import authAction from "../../../services/AuthAction";
+import authService from "../../../services/authService";
 
 const Header = () => {
   const { state, dispatch } = useAuth();

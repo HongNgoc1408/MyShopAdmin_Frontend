@@ -22,7 +22,6 @@ import {
 } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import React, { useEffect, useState } from "react";
-
 import ProductService from "../../services/ProductService";
 import { Link, useParams } from "react-router-dom";
 import BreadcrumbLink from "../../components/BreadcrumbLink";

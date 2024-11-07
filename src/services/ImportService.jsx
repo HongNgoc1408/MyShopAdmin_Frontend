@@ -19,9 +19,13 @@ const getDetail = async (id) =>
 const add = async (data) =>
   await axios.post(API_URL, data, { headers: authHeader() });
 
+const update = async (id, data) =>
+  await axios.put(API_URL + `/${id}`, data, { headers: authHeader() });
+
 const ImportService = {
   getAll,
   getDetail,
   add,
+  update,
 };
 export default ImportService;

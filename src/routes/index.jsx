@@ -19,6 +19,7 @@ import { CiReceipt, CiSaveDown1 } from "react-icons/ci";
 import OrderDetail from "../pages/Orders/OrderDetail";
 import Imports from "../pages/Imports";
 import ImportAdd from "../pages/Imports/ImportAdd";
+import ImportDetail from "../pages/Imports/ImportDetail";
 
 export const navigateItems = [
   { key: "/home", icon: <PieChartOutlined />, label: "Thống kê" },
@@ -30,7 +31,7 @@ export const navigateItems = [
   { key: "/products", icon: <AiFillProduct />, label: "Sản phẩm" },
   { key: "/orders", icon: <CiReceipt />, label: "Đơn đặt hàng" },
   { key: "/imports", icon: <CiSaveDown1 />, label: "Phiếu nhập hàng" },
-  { key: "/comments", icon: <UserOutlined />, label: "Bình luận" },
+  // { key: "/comments", icon: <UserOutlined />, label: "Bình luận" },
 ];
 export const publicRoutes = [{ path: "/", component: Login, Layout: null }];
 
@@ -48,6 +49,7 @@ export const privateRoutes = [
   { path: "/order-detail/:id", component: OrderDetail },
   { path: "/imports", component: Imports },
   { path: "/add-imports", component: ImportAdd },
+  { path: "/import-detail/:id", component: ImportDetail },
   { path: "/comments", component: Users },
 ];
 

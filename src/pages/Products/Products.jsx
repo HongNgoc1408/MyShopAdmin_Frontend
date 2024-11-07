@@ -86,18 +86,14 @@ const Products = () => {
       title: "Giảm giá",
       dataIndex: "discount",
     },
-    // {
-    //   title: "Số lượng",
-    //   dataIndex: "quantity",
-    // },
     {
       title: "Đã bán",
       dataIndex: "sold",
     },
-    // {
-    //   title: "Đánh giá ",
-    //   dataIndex: "rating",
-    // },
+    {
+      title: "Đánh giá ",
+      dataIndex: "rating",
+    },
     {
       title: "Thương hiệu",
       dataIndex: "brandName",

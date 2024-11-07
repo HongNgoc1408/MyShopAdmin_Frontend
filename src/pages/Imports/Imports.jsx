@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Button, Divider, Input, Modal, Pagination, Table } from "antd";
+import {
+  Button,
+  Card,
+  Flex,
+  Form,
+  Input,
+  Modal,
+  Pagination,
+  Table,
+} from "antd";
 import {
   formatDateTime,
   formatVND,
@@ -9,8 +18,10 @@ import { Link } from "react-router-dom";
 import { EyeTwoTone, HomeTwoTone, PlusOutlined } from "@ant-design/icons";
 import BreadcrumbLink from "../../components/BreadcrumbLink";
 import ImportService from "../../services/ImportService";
+import TextArea from "antd/es/input/TextArea";
 
 const Imports = () => {
+  // const form = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
@@ -18,8 +29,10 @@ const Imports = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [currentPageSize, setCurrentPageSize] = useState(10);
   const [search, setSearch] = useState("");
-  const [stockDetails, setStockDetails] = useState();
+  const [importDetails, setImportDetails] = useState([]);
+  const [detail, setDetail] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   const breadcrumb = [
     {
       path: "/",
@@ -49,12 +62,6 @@ const Imports = () => {
       render: (value) => formatDateTime(value),
     },
     {
-      title: "Ngày tạo phiếu",
-      dataIndex: "createAt",
-      sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
-      render: (value) => formatDateTime(value),
-    },
-    {
       title: "Ghi chú",
       dataIndex: "note",
     },
@@ -68,9 +75,11 @@ const Imports = () => {
       title: "Thực hiện",
       dataIndex: "id",
       render: (value, record) => (
-        <Button onClick={() => openStockDetail(value)}>
-          <EyeTwoTone />
-        </Button>
+        <Flex justify="center" align="center" className="space-x-1">
+          <Button onClick={() => openStockDetail(value)}>
+            <EyeTwoTone />
+          </Button>
+        </Flex>
       ),
     },
   ];
@@ -101,55 +110,34 @@ const Imports = () => {
     fetchData();
   }, [currentPage, currentPageSize, search]);
 
-  const openStockDetail = async (id) => {
-    setIsModalOpen(true);
+  const openImportDetail = async (id) => {
+    
     try {
-      //   setOrderLoading(true)
       const res = await ImportService.getDetail(id);
 
-      console.log("std", res.data);
-      setStockDetails(res.data);
+      const detail = data.find((item) => item.id === id);
+
+      console.log(detail);
+      setDetail(detail);
+      setImportDetails(res.data);
+      
+      setIsModalOpen(true);
     } catch (error) {
       showError(error);
-    } finally {
-      //   setOrderLoading(false)
     }
   };
+
   const handleOk = () => {
     setIsModalOpen(false);
-  };
-  const handleCancel = () => {
-    setIsModalOpen(false);
+    setDetail(null);
+    setImportDetails([]);
   };
 
-  const columnDetails = [
-    {
-      title: "Mã SP",
-      dataIndex: "productId",
-      width: "10%",
-      // ...getColumnSearchProps("name"),
-    },
-    {
-      title: "Tên sản phẩm",
-      dataIndex: "productName",
-    },
-    {
-      title: "colorName",
-      dataIndex: "colorName",
-    },
-    {
-      title: "sizeName",
-      dataIndex: "sizeName",
-    },
-    {
-      title: "quantity",
-      dataIndex: "quantity",
-    },
-    {
-      title: "price",
-      dataIndex: "price",
-    },
-  ];
+  const handleCancel = () => {
+    setIsModalOpen(false);
+    setDetail(null);
+    setImportDetails([]);
+  };
 
   return (
     <>
@@ -160,28 +148,105 @@ const Imports = () => {
         onCancel={handleCancel}
         className="p-10"
         width={900}
-        footer={(_, { OkBtn }) => (
+        footer={(_, { OkBtn, CancelBtn }) => (
           <>
+            <Button>Cập nhật</Button>
+            <CancelBtn />
             <OkBtn />
           </>
         )}
       >
-        <Divider />
-        <Table
-          itemLayout="vertical"
-          columns={columnDetails}
-          dataSource={stockDetails}
-        />
+        <Card className="drop-shadow h-fit">
+          <Form layout="vertical">
+            <div className="flex justify-between space-x-4">
+              <div className="w-1/2">
+                {detail ? (
+                  <>
+                    <Form.Item
+                      label="Ngày nhập"
+                      name="entryDate"
+                      initialValue={formatDateTime(detail.entryDate)}
+                    >
+                      <Input value={formatDateTime(detail.entryDate)} />
+                    </Form.Item>
+                    <Form.Item
+                      label="Tổng giá trị"
+                      name="total"
+                      initialValue={formatVND(detail.total)}
+                    >
+                      <Input value={formatVND(detail.total)} disabled />
+                    </Form.Item>
+                    <Form.Item
+                      label="Ghi chú"
+                      name="note"
+                      initialValue={detail.note}
+                    >
+                      <TextArea
+                        value={data.note}
+                        showCount
+                        maxLength={200}
+                        style={{ height: 70, resize: "none" }}
+                      />
+                    </Form.Item>
+                  </>
+                ) : (
+                  <></>
+                )}
+              </div>
 
-        <Divider />
-        {/* <div className="text-right text-lg">
-          Tổng giá trị phiếu nhập:
-          <span className="font-serif text-3xl text-red-700 px-4">
-            {formatVND(
-              stockDetails.reduce((acc, item) => acc + item.quantity * item.originPrice, 0),
-            )}
-          </span>
-        </div> */}
+              <div className="w-1/2">
+                {importDetails.map((item, index) => (
+                  <Card
+                    key={index}
+                    size="small"
+                    title={`Nhập sản phẩm ${index + 1}`}
+                    className="bg-gray-50 drop-shadow-md"
+                  >
+                    <Form.Item
+                      label="Tên sản phẩm"
+                      name={`items[${index}].productName`}
+                      initialValue={item.productName}
+                    >
+                      <Input value={item.productName} disabled />
+                    </Form.Item>
+                    <div className="flex gap-5">
+                      <Form.Item
+                        label="Màu sắc"
+                        name={`items[${index}].colorName`}
+                        initialValue={item.colorName}
+                      >
+                        <Input value={item.colorName} disabled />
+                      </Form.Item>
+                      <Form.Item
+                        label="Kích cỡ"
+                        name={`items[${index}].sizeName`}
+                        initialValue={item.sizeName}
+                      >
+                        <Input value={item.sizeName} disabled />
+                      </Form.Item>
+                    </div>
+                    <div className="flex gap-5">
+                      <Form.Item
+                        label="Số lượng"
+                        name={`items[${index}].quantity`}
+                        initialValue={item.quantity}
+                      >
+                        <Input value={item.quantity} />
+                      </Form.Item>
+                      <Form.Item
+                        label="Giá"
+                        name={`items[${index}].price`}
+                        initialValue={item.price}
+                      >
+                        <Input value={item.price} />
+                      </Form.Item>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </Form>
+        </Card>
       </Modal>
       <div className="space-y-4">
         <BreadcrumbLink breadcrumb={breadcrumb} />
@@ -206,7 +271,7 @@ const Imports = () => {
             pagination={false}
             showSorterTooltip={false}
             loading={isLoading}
-            columns={columns(openStockDetail)}
+            columns={columns(openImportDetail)}
             dataSource={data}
             rowKey={(record) => record.id}
             className="overflow-x-auto"

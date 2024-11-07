@@ -32,7 +32,7 @@ const Sidebar = () => {
         className="h-screen top-0"
         collapsible
         breakpoint="md"
-        onBreakpoint={() => setCollapsed(false)}
+        onBreakpoint={() => setCollapsed(true)}
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
         style={{ position: "sticky" }}

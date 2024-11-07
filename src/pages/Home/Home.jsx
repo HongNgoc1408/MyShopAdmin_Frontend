@@ -344,7 +344,7 @@ const Home = () => {
         title={
           selectValue === 0
             ? `Biểu đồ chi phí và doanh thu của ${
-                selectedMonth != null ? `tháng ${selectedMonth}` : "năm"
+                selectedMonth != null ? `tháng ${selectedMonth} năm` : "năm"
               } ${selectedYear}`
             : `Biểu đồ chi phí và doanh thu từ ngày ${
                 dates[0] ? dates[0].format("DD-MM-YYYY") : ""

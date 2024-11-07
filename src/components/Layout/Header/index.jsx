@@ -1,7 +1,6 @@
 import { Avatar, Badge, Flex, Popconfirm, Typography } from "antd";
 import React, { useEffect, useState } from "react";
 import {
-  LogoutOutlined,
   MessageOutlined,
   NotificationOutlined,
 } from "@ant-design/icons";
@@ -46,9 +45,8 @@ const Header = () => {
             onConfirm={handleLogout}
           >
             <Avatar
-              icon={<LogoutOutlined />}
-              style={{ backgroundColor: "#87d068" }}
-              className="cursor-pointer"
+              src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+              className="h-10 w-10 hover:ring-4 user cursor-pointer relative ring-orange-600/30 rounded-full bg-cover bg-center"
             />
           </Popconfirm>
         </Flex>

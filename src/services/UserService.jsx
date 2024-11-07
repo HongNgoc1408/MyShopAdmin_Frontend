@@ -5,7 +5,6 @@ const API_URL = process.env.REACT_APP_API_URL + "/api/user";
 
 const getAllUser = async (page, pageSize, search) => {
   const headers = authHeader();
-  console.log("Authorization header:", headers);
 
   return await axios.get(API_URL, {
     headers: headers,

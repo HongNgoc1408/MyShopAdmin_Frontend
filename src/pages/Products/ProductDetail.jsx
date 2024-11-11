@@ -88,7 +88,9 @@ const ProductDetail = () => {
         setProductAttributes(pAttr);
 
         const { data } = await ProductService.getById(id);
-        console.log("getById", data);
+        
+        // console.log("getById", data);
+
         form.setFieldsValue(data);
 
         const sizeIds = data.colorSizes[0].sizeInStocks?.map(
@@ -253,10 +255,10 @@ const ProductDetail = () => {
 
       try {
         await ProductService.update(id, formData);
-        notification.success({ message: "Thành công." });
+        notification.success({ message: "Thành công.", placement: "top" });
         setUpdate(false);
       } catch (error) {
-        notification.error({ message: showError(error) });
+        notification.error({ message: showError(error), placement: "top" });
       } finally {
         setUpdateLoading(false);
       }

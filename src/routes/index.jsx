@@ -20,6 +20,7 @@ import OrderDetail from "../pages/Orders/OrderDetail";
 import Imports from "../pages/Imports";
 import ImportAdd from "../pages/Imports/ImportAdd";
 import ImportDetail from "../pages/Imports/ImportDetail";
+import { FaTape } from "react-icons/fa6";
 
 export const navigateItems = [
   { key: "/home", icon: <PieChartOutlined />, label: "Thống kê" },
@@ -27,7 +28,7 @@ export const navigateItems = [
   { key: "/staffs", icon: <UserOutlined />, label: "Nhân viên" },
   { key: "/brands", icon: <SiBrandfolder />, label: "Thương hiệu" },
   { key: "/categories", icon: <TbCategoryPlus />, label: "Danh mục" },
-  { key: "/sizes", icon: <TbCategoryPlus />, label: "Kích thước" },
+  { key: "/sizes", icon: <FaTape />, label: "Kích thước" },
   { key: "/products", icon: <AiFillProduct />, label: "Sản phẩm" },
   { key: "/orders", icon: <CiReceipt />, label: "Đơn đặt hàng" },
   { key: "/imports", icon: <CiSaveDown1 />, label: "Phiếu nhập hàng" },

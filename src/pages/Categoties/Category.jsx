@@ -99,6 +99,7 @@ const Category = () => {
       CategoryService.add(values);
       notification.success({
         message: "Thêm danh mục thành công",
+        placement: "top",
       });
       setUpdate(!update);
       setIsUpdate(false);
@@ -124,6 +125,7 @@ const Category = () => {
       await CategoryService.update(updateID, values);
       notification.success({
         message: `Cập nhật ${values.name} thành công.`,
+        placement: "top",
       });
       setUpdate(!update);
       setIsUpdate(false);
@@ -143,6 +145,7 @@ const Category = () => {
       setData(newData);
       notification.success({
         message: "Xóa thành công",
+        placement: "top",
       });
     } catch (error) {
       showError(error);

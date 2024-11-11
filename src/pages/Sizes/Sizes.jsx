@@ -99,6 +99,7 @@ const Sizes = () => {
       SizeService.create(values);
       notification.success({
         message: "Thêm size thành công",
+        placement: "top",
       });
       setUpdate(!update);
       setIsUpdate(false);
@@ -124,6 +125,7 @@ const Sizes = () => {
       await SizeService.update(updateID, values);
       notification.success({
         message: `Cập nhật thành công.`,
+        placement: "top",
       });
       setUpdate(!update);
       setIsUpdate(false);
@@ -190,7 +192,7 @@ const Sizes = () => {
                 },
               ]}
             >
-              <Input  />
+              <Input />
             </Form.Item>
             <div className="col-span-3 grid grid-cols-1 lg:grid-cols-5 gap-2 pb-4">
               <Button

@@ -2,10 +2,13 @@ import React, { useEffect, useState } from "react";
 import {
   Button,
   Card,
+  DatePicker,
   Flex,
   Form,
   Input,
+  InputNumber,
   Modal,
+  notification,
   Pagination,
   Table,
 } from "antd";
@@ -19,9 +22,10 @@ import { EyeTwoTone, HomeTwoTone, PlusOutlined } from "@ant-design/icons";
 import BreadcrumbLink from "../../components/BreadcrumbLink";
 import ImportService from "../../services/ImportService";
 import TextArea from "antd/es/input/TextArea";
+import dayjs from "dayjs";
 
 const Imports = () => {
-  // const form = Form.useForm();
+  const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
@@ -32,6 +36,8 @@ const Imports = () => {
   const [importDetails, setImportDetails] = useState([]);
   const [detail, setDetail] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isOpenUpdate, setIsOpenUpdate] = useState(false);
+  const [total, setTotal] = useState(0);
 
   const breadcrumb = [
     {
@@ -111,32 +117,81 @@ const Imports = () => {
   }, [currentPage, currentPageSize, search]);
 
   const openImportDetail = async (id) => {
-    
     try {
       const res = await ImportService.getDetail(id);
-
-      const detail = data.find((item) => item.id === id);
-
-      console.log(detail);
-      setDetail(detail);
+      const item = data.find((item) => item.id === id);
+      // console.log(item);
+      setDetail(item);
       setImportDetails(res.data);
-      
+      form.setFieldsValue({
+        ...item,
+        total: formatVND(item.total),
+        entryDate: dayjs(item.entryDate),
+      });
       setIsModalOpen(true);
     } catch (error) {
       showError(error);
     }
   };
 
-  const handleOk = () => {
+  const handleOk = (id) => {
+    handleSubmit(id);
+    setIsOpenUpdate(false);
     setIsModalOpen(false);
     setDetail(null);
     setImportDetails([]);
   };
 
   const handleCancel = () => {
+    setIsOpenUpdate(false);
     setIsModalOpen(false);
     setDetail(null);
     setImportDetails([]);
+  };
+
+  const handleSubmit = async (id) => {
+    const totalAmount = importDetails.reduce(
+      (acc, item) => acc + item.quantity * item.price,
+      0
+    );
+
+    setTotal(totalAmount);
+
+    const updateRequest = {
+      ImportProducts: importDetails.map((detail) => ({
+        ProductId: detail.productId,
+        ColorId: detail.colorId,
+        SizeId: detail.sizeId,
+        Quantity: detail.quantity,
+        Price: detail.price,
+      })),
+      Note: form.getFieldValue("note"),
+      Total: totalAmount,
+      EntryDate: form.getFieldValue("entryDate").format(),
+    };
+
+    try {
+      await ImportService.update(id, updateRequest);
+
+      const updatedData = data.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              note: form.getFieldValue("note"),
+              total: totalAmount,
+            }
+          : item
+      );
+      setData(updatedData);
+
+      notification.success({ message: "Thành công." });
+
+      setIsModalOpen(false);
+    } catch (error) {
+      showError(error);
+      setDetail(null);
+      setImportDetails([]);
+    }
   };
 
   return (
@@ -144,20 +199,26 @@ const Imports = () => {
       <Modal
         title="Chi tiết phiếu nhập"
         open={isModalOpen}
-        onOk={handleOk}
+        onOk={() => handleOk(detail.id)}
         onCancel={handleCancel}
         className="p-10"
         width={900}
+        centered
         footer={(_, { OkBtn, CancelBtn }) => (
           <>
-            <Button>Cập nhật</Button>
-            <CancelBtn />
-            <OkBtn />
+            {!isOpenUpdate ? (
+              <Button onClick={() => setIsOpenUpdate(true)}>Cập nhật</Button>
+            ) : (
+              <>
+                <CancelBtn />
+                <OkBtn />
+              </>
+            )}
           </>
         )}
       >
         <Card className="drop-shadow h-fit">
-          <Form layout="vertical">
+          <Form layout="vertical" form={form}>
             <div className="flex justify-between space-x-4">
               <div className="w-1/2">
                 {detail ? (
@@ -165,23 +226,22 @@ const Imports = () => {
                     <Form.Item
                       label="Ngày nhập"
                       name="entryDate"
-                      initialValue={formatDateTime(detail.entryDate)}
+                      getValueProps={(value) => ({
+                        value: value && dayjs(Number(value)),
+                      })}
+                      normalize={(value) =>
+                        value && `${dayjs(value).valueOf()}`
+                      }
                     >
-                      <Input value={formatDateTime(detail.entryDate)} />
+                      <DatePicker disabled={!isOpenUpdate} />
                     </Form.Item>
-                    <Form.Item
-                      label="Tổng giá trị"
-                      name="total"
-                      initialValue={formatVND(detail.total)}
-                    >
+
+                    <Form.Item label="Tổng giá trị" name="total">
                       <Input value={formatVND(detail.total)} disabled />
                     </Form.Item>
-                    <Form.Item
-                      label="Ghi chú"
-                      name="note"
-                      initialValue={detail.note}
-                    >
+                    <Form.Item label="Ghi chú" name="note">
                       <TextArea
+                        disabled={!isOpenUpdate}
                         value={data.note}
                         showCount
                         maxLength={200}
@@ -226,20 +286,57 @@ const Imports = () => {
                       </Form.Item>
                     </div>
                     <div className="flex gap-5">
-                      <Form.Item
-                        label="Số lượng"
-                        name={`items[${index}].quantity`}
-                        initialValue={item.quantity}
-                      >
-                        <Input value={item.quantity} />
-                      </Form.Item>
-                      <Form.Item
-                        label="Giá"
-                        name={`items[${index}].price`}
-                        initialValue={item.price}
-                      >
-                        <Input value={item.price} />
-                      </Form.Item>
+                      <>
+                        <Form.Item
+                          label="Số lượng"
+                          name={`items[${index}].quantity`}
+                          initialValue={item.quantity}
+                        >
+                          <InputNumber
+                            min={1}
+                            value={item.quantity}
+                            onChange={(value) => {
+                              const updatedDetails = [...importDetails];
+                              updatedDetails[index].quantity = value;
+                              setImportDetails(updatedDetails);
+
+                              const newTotal = updatedDetails.reduce(
+                                (acc, item) => acc + item.quantity * item.price,
+                                0
+                              );
+                              form.setFieldValue("total", formatVND(newTotal));
+                              setTotal(newTotal);
+                            }}
+                            disabled={!isOpenUpdate}
+                          />
+                        </Form.Item>
+
+                        <Form.Item
+                          label="Giá"
+                          name={`price-${index}`}
+                          initialValue={item.price}
+                        >
+                          <InputNumber
+                            min={1}
+                            value={item.price}
+                            onChange={(value) => {
+                              const updatedDetails = [...importDetails];
+                              updatedDetails[index].price = value;
+                              setImportDetails(updatedDetails);
+
+                              const newTotal = updatedDetails.reduce(
+                                (acc, item) => acc + item.quantity * item.price,
+                                0
+                              );
+
+                              form.setFieldValue("total", formatVND(newTotal));
+
+                              setTotal(newTotal);
+                            }}
+                            disabled={!isOpenUpdate}
+                          />
+                        </Form.Item>
+                      </>
                     </div>
                   </Card>
                 ))}

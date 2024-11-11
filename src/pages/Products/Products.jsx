@@ -95,6 +95,10 @@ const Products = () => {
       dataIndex: "rating",
     },
     {
+      title: "Lượt đánh giá ",
+      dataIndex: "ratingCount",
+    },
+    {
       title: "Thương hiệu",
       dataIndex: "brandName",
       filters: brandNames,
@@ -165,6 +169,8 @@ const Products = () => {
           ...new Set(res.data?.items?.map((order) => order.categoryName)),
         ]);
 
+        // console.log(res.data?.items);
+        
         setBrandNames(newBrandNames);
         setCategoryNames(newcategoryNames);
         setData(res.data?.items);
@@ -183,7 +189,10 @@ const Products = () => {
     try {
       const data = { enable: value };
       await ProductService.updateEnable(id, data);
-      notification.success({ message: "cập nhật thành công." });
+      notification.success({
+        message: "Cập nhật thành công.",
+        placement: "top",
+      });
     } catch (error) {
       showError(error);
     }
@@ -197,6 +206,7 @@ const Products = () => {
       setData(newData);
       notification.success({
         message: "Xóa thành công",
+        placement: "top",
       });
     } catch (error) {
       showError(error);

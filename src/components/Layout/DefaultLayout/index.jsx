@@ -11,7 +11,7 @@ const DefaultLayout = ({ children }) => {
     <ConfigProvider locale={viVN}>
       <App notification={{ duration: 3, showProgress: true }}>
         <Layout>
-          <Sidebar/>
+          <Sidebar />
           <Layout>
             <Header />
             <Content className="p-4">{children}</Content>

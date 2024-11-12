@@ -65,6 +65,16 @@ const getColorById = async (id) =>
 const getSizeById = async (id) =>
   await axios.get(API_URL + `/size/${id}`, { headers: authHeader() });
 
+const getReview = async (id, page, pageSize, key) =>
+  await axios.get(API_URL + `/${id}/reviews`, {
+    params: {
+      page: page,
+      pageSize: pageSize,
+      key: key ?? "",
+    },
+    headers: authHeader(),
+  });
+
 const ProductService = {
   getAll,
   getName,
@@ -76,6 +86,7 @@ const ProductService = {
   remove,
   updateEnable,
   fetchProductAttributes,
+  getReview,
 };
 
 export default ProductService;

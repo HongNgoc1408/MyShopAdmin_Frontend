@@ -122,16 +122,16 @@ export default function AddProduct() {
     setSizeListValue(newList);
   };
 
-  const handleSetSizeValue = (obj, index) => {
-    const newList = [...sizeListValue];
-    const sizeInStocks = newList[index].sizeInStocks.find(
-      (e) => e.sizeId === obj.sizeId
-    );
+  // const handleSetSizeValue = (obj, index) => {
+  //   const newList = [...sizeListValue];
+  //   const sizeInStocks = newList[index].sizeInStocks.find(
+  //     (e) => e.sizeId === obj.sizeId
+  //   );
 
-    if (sizeInStocks) sizeInStocks.inStock = obj.inStock;
+  //   if (sizeInStocks) sizeInStocks.inStock = obj.inStock;
 
-    setSizeListValue(newList);
-  };
+  //   setSizeListValue(newList);
+  // };
 
   const onChangeColor = (value, index) => {
     if (sizeList.length > 0) {
@@ -205,10 +205,11 @@ export default function AddProduct() {
             `colorSizes[${index}].sizeInStocks[${sizeIndex}].sizeId`,
             size.sizeId
           );
-          formData.append(
-            `colorSizes[${index}].sizeInStocks[${sizeIndex}].inStock`,
-            size.inStock
-          );
+
+          // formData.append(
+          //   `colorSizes[${index}].sizeInStocks[${sizeIndex}].inStock`,
+          //   size.inStock
+          // );
         });
       });
       delete data.colors;
@@ -499,7 +500,7 @@ export default function AddProduct() {
                           <div className="w-24 truncate border rounded-md px-2 py-1 text-center">
                             {color?.colorName}
                           </div>
-                          <InputNumber
+                          {/* <InputNumber
                             required
                             min={0}
                             className="w-full"
@@ -521,7 +522,7 @@ export default function AddProduct() {
                               )
                             }
                             placeholder="Số lượng kho..."
-                          />
+                          /> */}
                         </Flex>
                       );
                     }

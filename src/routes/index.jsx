@@ -9,18 +9,23 @@ import ProductAdd from "../pages/Products/ProductAdd";
 import ProductDetail from "../pages/Products/ProductDetail";
 import Category from "../pages/Categoties";
 import Brands from "../pages/Brands/Brands";
-import { PieChartOutlined, UserOutlined } from "@ant-design/icons";
+import {
+  PieChartOutlined,
+  StarOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
 import { SiBrandfolder } from "react-icons/si";
 import { TbCategoryPlus } from "react-icons/tb";
 import { AiFillProduct } from "react-icons/ai";
 import Sizes from "../pages/Sizes/Sizes";
 import Orders from "../pages/Orders/Orders";
-import { CiReceipt, CiSaveDown1 } from "react-icons/ci";
+import { CiReceipt, CiSaveDown1, CiSaveDown2 } from "react-icons/ci";
 import OrderDetail from "../pages/Orders/OrderDetail";
 import Imports from "../pages/Imports";
 import ImportAdd from "../pages/Imports/ImportAdd";
-import ImportDetail from "../pages/Imports/ImportDetail";
 import { FaTape } from "react-icons/fa6";
+import Loges from "../pages/Loges";
+import Review from "../pages/Reviews/Review";
 
 export const navigateItems = [
   { key: "/home", icon: <PieChartOutlined />, label: "Thống kê" },
@@ -31,8 +36,9 @@ export const navigateItems = [
   { key: "/sizes", icon: <FaTape />, label: "Kích thước" },
   { key: "/products", icon: <AiFillProduct />, label: "Sản phẩm" },
   { key: "/orders", icon: <CiReceipt />, label: "Đơn đặt hàng" },
+  { key: "/reviews", icon: <StarOutlined />, label: "Đánh giá" },
   { key: "/imports", icon: <CiSaveDown1 />, label: "Phiếu nhập hàng" },
-  // { key: "/comments", icon: <UserOutlined />, label: "Bình luận" },
+  { key: "/loges", icon: <CiSaveDown2 />, label: "Lịch sử" },
 ];
 export const publicRoutes = [{ path: "/", component: Login, Layout: null }];
 
@@ -50,8 +56,8 @@ export const privateRoutes = [
   { path: "/order-detail/:id", component: OrderDetail },
   { path: "/imports", component: Imports },
   { path: "/add-imports", component: ImportAdd },
-  { path: "/import-detail/:id", component: ImportDetail },
-  { path: "/comments", component: Users },
+  { path: "/loges", component: Loges },
+  { path: "/reviews", component: Review },
 ];
 
 export const generatePublicRoutes = (isAuthenticated) => {

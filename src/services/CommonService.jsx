@@ -13,6 +13,7 @@ export const showError = (error) => {
   notification.error({
     message: "Error",
     description: errorMessage,
+    placement: "top",
   });
 };
 
@@ -82,7 +83,6 @@ export const statusOrders = [
   { value: 1, label: "Đã duyệt" },
   { value: 2, label: "Đang chờ lấy hàng" },
   { value: 3, label: "Đang vận chuyển" },
-  { value: 4, label: "Đang giao hàng" },
-  { value: 5, label: "Đã nhận" },
-  { value: 6, label: "Đã hủy" },
+  { value: 4, label: "Đã nhận" },
+  { value: 5, label: "Đã hủy" },
 ];

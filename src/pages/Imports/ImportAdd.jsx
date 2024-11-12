@@ -80,7 +80,7 @@ const ImportAdd = () => {
       //   console.log(importData);
       await ImportService.add(importData);
       form.resetFields();
-      notification.success({ message: "Thành công." });
+      notification.success({ message: "Thành công.", placement: "top" });
     } catch (error) {
       showError(error);
     }

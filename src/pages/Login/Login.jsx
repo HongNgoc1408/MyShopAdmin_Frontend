@@ -20,10 +20,10 @@ const Login = () => {
       const res = await authService.login(data);
       if (res.data?.roles?.includes("Admin")) {
         dispatch(authAction.LOGIN(res.data?.roles));
-        notification.success({ message: "Đăng nhập thành công." });
+        notification.success({ message: "Đăng nhập thành công." , placement: "top"});
         navigate("/home");
       } else {
-        notification.error({ message: "Không có quyền truy cập" });
+        notification.error({ message: "Không có quyền truy cập", placement: "top" });
       }
     } catch (error) {
       showError(error);

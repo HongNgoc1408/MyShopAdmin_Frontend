@@ -11,6 +11,7 @@ import {
   Popconfirm,
   Select,
   Table,
+  Tabs,
 } from "antd";
 import {
   formatDateTime,
@@ -46,6 +47,8 @@ const Orders = () => {
   const [search, setSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const [selectedTab, setSelectedTab] = useState(6);
+  const [paymentMethod, setPaymentMethod] = useState("");
 
   const showModal = (id) => {
     setSelectedOrderId(id);
@@ -60,7 +63,10 @@ const Orders = () => {
         // console.log(res);
         setData(res);
 
-        notification.success({ message: "Cập nhật thành công." });
+        notification.success({
+          message: "Cập nhật thành công.",
+          placement: "top",
+        });
       }
       setIsModalOpen(false);
     } catch (error) {
@@ -76,6 +82,8 @@ const Orders = () => {
 
   const handleSearch = (key) => key && key !== search && setSearch(key);
 
+  console.log(search);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -85,7 +93,9 @@ const Orders = () => {
           currentPageSize,
           search
         );
-        console.log(res.data?.items);
+
+        // console.log(res.data?.items);
+
         setData(res.data?.items);
         setTotalItems(res.data?.totalItems);
       } catch (error) {
@@ -103,10 +113,12 @@ const Orders = () => {
     try {
       await OrderService.remove(id);
       const newData = data.filter((item) => !(item.id === id));
-      console.log(newData);
+      // console.log(newData);
+
       setData(newData);
       notification.success({
         message: "Xóa thành công",
+        placement: "top",
       });
     } catch (error) {
       showError(error);
@@ -120,6 +132,7 @@ const Orders = () => {
       await OrderService.updateStatus(id, { orderStatus: data });
       notification.success({
         message: "Cập nhật trạng thái thành công",
+        placement: "top",
       });
     } catch (error) {
       showError(error);
@@ -343,12 +356,41 @@ const Orders = () => {
       ),
     },
   ];
+  const items = [
+    { key: 6, label: "Tất cả" },
+    { key: 0, label: "Đang xử lý" },
+    { key: 1, label: "Đã duyệt" },
+    { key: 2, label: "Đang chờ lấy hàng" },
+    { key: 3, label: "Đang vận chuyển" },
+    { key: 4, label: "Đã nhận" },
+    { key: 5, label: "Đã hủy" },
+  ];
+
+  const filteredOrders = Array.isArray(data)
+    ? data.filter((order) => {
+        const matchesStatus =
+          selectedTab === 6 || order.orderStatus === parseInt(selectedTab);
+        const matchesPayment =
+          !paymentMethod || order.paymentMethodName === paymentMethod;
+        const matchesSearch = search
+          ? order.id.toString().includes(search)
+          : true;
+        return matchesStatus && matchesPayment && matchesSearch;
+      })
+    : [];
+
+  const onChange = (key) => {
+    setSelectedTab(key);
+  };
+  const handlePaymentMethodChange = (value) => {
+    setPaymentMethod(value);
+  };
 
   return (
     <div className="space-y-4">
       <BreadcrumbLink breadcrumb={breadcrumb} />
       <div className="p-4 drop-shadow rounded-lg bg-white space-y-2">
-        <div className="w-full flex justify-between items-center">
+        <div className="w-full flex justify-between items-center gap-4">
           <Input.Search
             loading={searchLoading}
             className="w-1/2"
@@ -356,15 +398,30 @@ const Orders = () => {
             allowClear
             onSearch={(key) => handleSearch(key)}
             onChange={(e) => e.target.value === "" && setSearch("")}
-            placeholder="Tìm kiếm"
+            placeholder="Nhập mã đơn hàng"
           />
+          <Select
+            value={paymentMethod}
+            onChange={handlePaymentMethodChange}
+            defaultValue=""
+            style={{ width: 120 }}
+            allowClear
+            size="large"
+            options={[
+              { value: "VNPay", label: "VNPay" },
+              { value: "COD", label: "COD" },
+            ]}
+            placeholder="Chọn"
+          />
+          <Tabs defaultActiveKey="6" items={items} onChange={onChange} />
         </div>
+
         <Table
           pagination={false}
           showSorterTooltip={false}
           loading={isLoading}
           columns={columns}
-          dataSource={data}
+          dataSource={filteredOrders}
           rowKey={(record) => record.id}
           className="overflow-x-auto"
         />

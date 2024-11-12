@@ -184,7 +184,7 @@ const Imports = () => {
       );
       setData(updatedData);
 
-      notification.success({ message: "Thành công." });
+      notification.success({ message: "Thành công.", placement: "top"});
 
       setIsModalOpen(false);
     } catch (error) {
@@ -356,7 +356,7 @@ const Imports = () => {
               allowClear
               onSearch={(key) => handleSearch(key)}
               onChange={(e) => e.target.value === "" && setSearch("")}
-              placeholder="Tìm kiếm"
+              placeholder="Nhập mã phiếu nhập cần tìm"
             />
             <Link to="/add-imports">
               <Button size="large" type="primary">

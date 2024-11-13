@@ -61,16 +61,17 @@ const Orders = () => {
         const value = await form.validateFields();
         const res = await OrderService.shipping(selectedOrderId, value);
         // console.log(res);
-        setData(res);
-
+        setData(res.data);
+        window.location.reload();
         notification.success({
           message: "Cập nhật thành công.",
           placement: "top",
         });
       }
+
       setIsModalOpen(false);
     } catch (error) {
-      console.log("error", error);
+      // console.log("error", error);
       showError(error);
     }
   };
@@ -82,7 +83,7 @@ const Orders = () => {
 
   const handleSearch = (key) => key && key !== search && setSearch(key);
 
-  console.log(search);
+  // console.log(search);
 
   useEffect(() => {
     const fetchData = async () => {

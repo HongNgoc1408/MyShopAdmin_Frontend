@@ -1,22 +1,8 @@
 import React, { useEffect, useState } from "react";
-import {
-  Button,
-  Flex,
-  Image,
-  notification,
-  Pagination,
-  Popconfirm,
-  Rate,
-  Select,
-  Table,
-} from "antd";
-import {
-  formatDateTime,
-  showError,
-  toImageLink,
-} from "../../services/commonService";
+import { Image, Pagination, Rate, Select, Table } from "antd";
+import { formatDateTime, toImageLink } from "../../services/commonService";
 import { useSearchParams } from "react-router-dom";
-import { DeleteTwoTone, HomeTwoTone } from "@ant-design/icons";
+import { HomeTwoTone } from "@ant-design/icons";
 import BreadcrumbLink from "../../components/BreadcrumbLink";
 import ProductService from "../../services/ProductService";
 const breadcrumb = [
@@ -34,7 +20,7 @@ const Reviews = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState([]);
   const [review, setReview] = useState([]);
-  const [loadingDelete, setLoadingDelete] = useState(false);
+  // const [loadingDelete, setLoadingDelete] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
   const [totalItems, setTotalItems] = useState(0);
   const [currentPage, setCurrentPage] = useState(searchParams.get("page") ?? 1);
@@ -84,23 +70,23 @@ const Reviews = () => {
       dataIndex: "createdAt",
       render: (createdAt) => formatDateTime(createdAt),
     },
-    {
-      title: "Thực hiện",
-      align: "center",
-      render: (_, record) => (
-        <Flex justify="center" align="center" className="space-x-1">
-          <Popconfirm
-            title={`Xác nhận xóa ${record.name}`}
-            onConfirm={() => handleDelete(record.id)}
-            loading={loadingDelete}
-          >
-            <Button>
-              <DeleteTwoTone />
-            </Button>
-          </Popconfirm>
-        </Flex>
-      ),
-    },
+    // {
+    //   title: "Thực hiện",
+    //   align: "center",
+    //   render: (_, record) => (
+    //     <Flex justify="center" align="center" className="space-x-1">
+    //       <Popconfirm
+    //         title={`Xác nhận xóa ${record.name}`}
+    //         onConfirm={() => handleDelete(record.id)}
+    //         loading={loadingDelete}
+    //       >
+    //         <Button>
+    //           <DeleteTwoTone />
+    //         </Button>
+    //       </Popconfirm>
+    //     </Flex>
+    //   ),
+    // },
   ];
 
   useEffect(() => {
@@ -154,35 +140,35 @@ const Reviews = () => {
     }
   }, [selectedProductId, currentPage, currentPageSize, search]);
 
-  const handleChangeEnable = async (id, value) => {
-    try {
-      const data = { enable: value };
-      await ProductService.updateEnable(id, data);
-      notification.success({
-        message: "Cập nhật thành công.",
-        placement: "top",
-      });
-    } catch (error) {
-      showError(error);
-    }
-  };
+  // const handleChangeEnable = async (id, value) => {
+  //   try {
+  //     const data = { enable: value };
+  //     await ProductService.updateEnable(id, data);
+  //     notification.success({
+  //       message: "Cập nhật thành công.",
+  //       placement: "top",
+  //     });
+  //   } catch (error) {
+  //     showError(error);
+  //   }
+  // };
 
-  const handleDelete = async (id) => {
-    setLoadingDelete(true);
-    try {
-      await ProductService.remove(id);
-      const newData = data.filter((item) => !(item.id === id));
-      setData(newData);
-      notification.success({
-        message: "Xóa thành công",
-        placement: "top",
-      });
-    } catch (error) {
-      showError(error);
-    } finally {
-      setLoadingDelete(false);
-    }
-  };
+  // const handleDelete = async (id) => {
+  //   setLoadingDelete(true);
+  //   try {
+  //     await ProductService.remove(id);
+  //     const newData = data.filter((item) => !(item.id === id));
+  //     setData(newData);
+  //     notification.success({
+  //       message: "Xóa thành công",
+  //       placement: "top",
+  //     });
+  //   } catch (error) {
+  //     showError(error);
+  //   } finally {
+  //     setLoadingDelete(false);
+  //   }
+  // };
 
   const handleChangeId = (value) => {
     setSelectedProductId(value);

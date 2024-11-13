@@ -81,7 +81,7 @@ const Sizes = () => {
       setIsLoading(true);
       try {
         const res = await SizeService.getAll();
-        console.log(res.data);
+        // console.log(res.data);
         setData(res.data);
       } catch (error) {
         showError(error);

@@ -1,21 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Avatar, Input, Pagination, Table } from "antd";
+import { Input, Pagination, Select, Table } from "antd";
 import { HomeTwoTone } from "@ant-design/icons";
 import BreadcrumbLink from "../../components/BreadcrumbLink";
-import { formatDateTime, toImageLink } from "../../services/commonService";
-import { useSearchParams } from "react-router-dom";
+import { formatDateTime } from "../../services/commonService";
 import UserService from "../../services/UserService";
-const breadcrumb = [
-  {
-    path: "/",
-    title: <HomeTwoTone />,
-  },
-  {
-    title: "Người dùng",
-  },
-];
+import { useSearchParams } from "react-router-dom";
 
-const User = () => {
+const Roles = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState([]);
@@ -24,13 +15,19 @@ const User = () => {
   const [currentPage, setCurrentPage] = useState(searchParams.get("page") ?? 1);
   const [currentPageSize, setCurrentPageSize] = useState();
   const [search, setSearch] = useState("");
+  const [role, setRole] = useState();
+
+  const breadcrumb = [
+    {
+      path: "/",
+      title: <HomeTwoTone />,
+    },
+    {
+      title: "Quyền người dùng",
+    },
+  ];
 
   const columns = [
-    {
-      title: "Ảnh",
-      dataIndex: "imageURL",
-      render: (value) => (value ? <Avatar src={toImageLink(value)} /> : ""),
-    },
     {
       title: "Người dùng",
       dataIndex: "fullName",
@@ -44,11 +41,7 @@ const User = () => {
       title: "Số điện thoại",
       dataIndex: "phoneNumber",
     },
-    // {
-    //   title: "Quyền",
-    //   dataIndex: "roles",
-    //   render: (roles) => roles.join(", "),
-    // },
+
     {
       title: "Ngày tạo",
       dataIndex: "createdAt",
@@ -73,9 +66,9 @@ const User = () => {
           currentPage,
           currentPageSize,
           search,
-          "User"
+          role
         );
-        console.log(res);
+
         setData(res.data?.items);
         setTotalItems(res.data?.totalItems);
       } catch (error) {
@@ -86,25 +79,58 @@ const User = () => {
       }
     };
     fetchData();
-  }, [currentPage, currentPageSize, search]);
+  }, [currentPage, currentPageSize, search, role]);
 
   return (
     <div className="space-y-4">
       <BreadcrumbLink breadcrumb={breadcrumb} />
       <div className="p-4 drop-shadow rounded-lg bg-white space-y-2">
-        <Input.Search
-          loading={searchLoading}
-          className="w-1/2"
-          size="large"
-          allowClear
-          onSearch={(key) => handleSearch(key)}
-          onChange={(e) => e.target.value === "" && setSearch("")}
-          placeholder="Nhập từ khóa cần tìm"
-        />
+        <div className="space-x-4">
+          <Input.Search
+            loading={searchLoading}
+            className="w-1/2"
+            size="large"
+            allowClear
+            onSearch={(key) => handleSearch(key)}
+            onChange={(e) => e.target.value === "" && setSearch("")}
+            placeholder="Nhập từ khóa cần tìm"
+          />
+          <Select
+            size="large"
+            showSearch
+            className="w-1/3"
+            placeholder="Search to Select"
+            optionFilterProp="label"
+            defaultValue="Admin"
+            filterSort={(optionA, optionB) =>
+              (optionA?.label ?? "")
+                .toLowerCase()
+                .localeCompare((optionB?.label ?? "").toLowerCase())
+            }
+            onChange={(value) => setRole(value)}
+            options={[
+              {
+                value: "Admin",
+                label: "Admin",
+              },
+              {
+                value: "Inventorier",
+                label: "Inventorier",
+              },
+              {
+                value: "Staff",
+                label: "Staff",
+              },
+              {
+                value: "Manage",
+                label: "Manage",
+              },
+            ]}
+          />
+        </div>
 
         <Table
           pagination={false}
-          showSorterTooltip={false}
           loading={isLoading}
           columns={columns}
           dataSource={data}
@@ -129,4 +155,4 @@ const User = () => {
   );
 };
 
-export default User;
+export default Roles;

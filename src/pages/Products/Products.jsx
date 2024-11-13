@@ -156,6 +156,7 @@ const Products = () => {
           currentPageSize,
           search
         );
+
         var newBrandNames = toTextValue([
           ...new Set(res.data?.items?.map((order) => order.brandName)),
         ]);

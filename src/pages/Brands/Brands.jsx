@@ -110,12 +110,13 @@ const Brands = () => {
     try {
       const values = await form.validateFields();
 
-      console.log(filelist);
+      // console.log(filelist);
+
       try {
         const formData = new FormData();
         setLoadingAdd(true);
         const data = { ...values, image: filelist[0]?.originFileObj };
-        console.log(filelist);
+        // console.log(filelist);
         Object.keys(data).forEach((key) => formData.append(key, data[key]));
         const res = await BrandService.add(formData);
         setBrands([...brands, res.data]);

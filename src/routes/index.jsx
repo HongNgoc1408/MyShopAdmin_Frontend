@@ -12,9 +12,9 @@ import Brands from "../pages/Brands/Brands";
 import {
   PieChartOutlined,
   StarOutlined,
+  TeamOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { SiBrandfolder } from "react-icons/si";
 import { TbCategoryPlus } from "react-icons/tb";
 import { AiFillProduct } from "react-icons/ai";
 import Sizes from "../pages/Sizes/Sizes";
@@ -23,29 +23,51 @@ import { CiReceipt, CiSaveDown1, CiSaveDown2 } from "react-icons/ci";
 import OrderDetail from "../pages/Orders/OrderDetail";
 import Imports from "../pages/Imports";
 import ImportAdd from "../pages/Imports/ImportAdd";
-import { FaTape } from "react-icons/fa6";
+import { FaBagShopping, FaTape } from "react-icons/fa6";
 import Loges from "../pages/Loges";
 import Review from "../pages/Reviews/Review";
+import Roles from "../pages/Roles/Role";
 
 export const navigateItems = [
   { key: "/home", icon: <PieChartOutlined />, label: "Thống kê" },
-  { key: "/users", icon: <UserOutlined />, label: "Người dùng" },
-  { key: "/staffs", icon: <UserOutlined />, label: "Nhân viên" },
-  { key: "/brands", icon: <SiBrandfolder />, label: "Thương hiệu" },
-  { key: "/categories", icon: <TbCategoryPlus />, label: "Danh mục" },
-  { key: "/sizes", icon: <FaTape />, label: "Kích thước" },
-  { key: "/products", icon: <AiFillProduct />, label: "Sản phẩm" },
+  {
+    key: "role",
+    icon: <UserOutlined />,
+    label: "Quyền",
+    children: [
+      { key: "/users", icon: <UserOutlined />, label: "Người dùng" },
+      { key: "/roles", icon: <TeamOutlined />, label: "Chức vụ" },
+    ],
+  },
+  {
+    key: "product",
+    icon: <AiFillProduct />,
+    label: "Phiếu nhập",
+    children: [
+      { key: "/brands", icon: <FaBagShopping />, label: "Thương hiệu" },
+      { key: "/categories", icon: <TbCategoryPlus />, label: "Danh mục" },
+      { key: "/sizes", icon: <FaTape />, label: "Kích thước" },
+      { key: "/products", icon: <AiFillProduct />, label: "Sản phẩm" },
+      { key: "/reviews", icon: <StarOutlined />, label: "Đánh giá" },
+    ],
+  },
   { key: "/orders", icon: <CiReceipt />, label: "Đơn đặt hàng" },
-  { key: "/reviews", icon: <StarOutlined />, label: "Đánh giá" },
-  { key: "/imports", icon: <CiSaveDown1 />, label: "Phiếu nhập hàng" },
-  { key: "/loges", icon: <CiSaveDown2 />, label: "Lịch sử" },
+  {
+    key: "import",
+    icon: <CiSaveDown1 />,
+    label: "Phiếu nhập",
+    children: [
+      { key: "/imports", icon: <CiSaveDown1 />, label: "Phiếu nhập hàng" },
+      { key: "/loges", icon: <CiSaveDown2 />, label: "Lịch sử" },
+    ],
+  },
 ];
 export const publicRoutes = [{ path: "/", component: Login, Layout: null }];
 
 export const privateRoutes = [
   { path: "/home", component: Home },
   { path: "/users", component: Users },
-  { path: "/staffs", component: Users },
+  { path: "/roles", component: Roles },
   { path: "/products", component: Products },
   { path: "/add-products", component: ProductAdd },
   { path: "/product-detail/:id", component: ProductDetail },

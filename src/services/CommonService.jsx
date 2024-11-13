@@ -63,6 +63,7 @@ export const toTextValue = (data) => {
 export const isEmptyObject = (obj) => {
   return JSON.stringify(obj) === "{}";
 };
+
 // export const sizes = [
 //   { value: "XS", label: "XS" },
 //   { value: "S", label: "S" },

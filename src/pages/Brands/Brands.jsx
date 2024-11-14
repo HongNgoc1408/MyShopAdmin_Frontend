@@ -231,11 +231,11 @@ const Brands = () => {
           size="large"
           allowClear
         />
-        <div>
+        {/* <div>
           <Button size="large" type="primary" onClick={() => handleOpenModal()}>
             <PlusOutlined /> Thêm thương hiệu
           </Button>
-        </div>
+        </div> */}
       </div>
       <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
         <div className="h-fit md:col-span-2 bg-white rounded-lg drop-shadow">

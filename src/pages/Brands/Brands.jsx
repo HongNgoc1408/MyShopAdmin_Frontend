@@ -5,7 +5,7 @@ import {
   Form,
   Image,
   Input,
-  notification,
+  message,
   Popconfirm,
   Spin,
   Table,
@@ -22,6 +22,8 @@ import {
   DeleteTwoTone,
   EditTwoTone,
   HomeTwoTone,
+  PlusOutlined,
+  SearchOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
 import { CiEraser } from "react-icons/ci";
@@ -47,8 +49,20 @@ const Brands = () => {
   const [brands, setBrands] = useState([]);
   const [update, setUpdate] = useState(false);
   const [updateID, setUpdateID] = useState("");
-
   const [isUpdate, setIsUpdate] = useState(false);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+  const [totalItems, setTotalItems] = useState(0);
+  const [searchText, setSearchText] = useState("");
+
+  const filteredBrands = brands.filter((brand) =>
+    brand.name.toLowerCase().includes(searchText.toLowerCase())
+  );
+
+  const handleSearch = (e) => {
+    setSearchText(e.target.value);
+  };
 
   const columns = (onUpdate) => [
     {
@@ -91,8 +105,10 @@ const Brands = () => {
       setIsLoading(true);
       try {
         const res = await BrandService.getAll();
-        // console.log(res.data)
+        // console.log(res.data);
+
         setBrands(res.data);
+        setTotalItems(res.data.length);
       } catch (error) {
         showError(error);
       } finally {
@@ -124,10 +140,7 @@ const Brands = () => {
         setIsUpdate(false);
         form.resetFields();
         setFileList([]);
-        notification.success({
-          message: `Thêm thương hiệu thành công.`,
-          placement: "top",
-        });
+        message.success("Thêm thương hiệu thành công.");
       } catch (error) {
         showError(error);
       } finally {
@@ -172,10 +185,8 @@ const Brands = () => {
       const newBrand = brands.filter((item) => item.id !== updateID);
       setBrands([...newBrand, res.data]);
 
-      notification.success({
-        message: `Cập nhật thành công.`,
-        placement: "top",
-      });
+      message.success("Cập nhật thành công.");
+
       setUpdate(!update);
       setIsUpdate(false);
       form.resetFields();
@@ -193,10 +204,8 @@ const Brands = () => {
       await BrandService.remove(id);
       const newData = brands.filter((item) => !(item.id === id));
       setBrands(newData);
-      notification.success({
-        message: "Xóa thành công",
-        placement: "top",
-      });
+      setTotalItems(newData.length);
+      message.success("Xóa thành công");
     } catch (error) {
       showError(error);
     } finally {
@@ -212,12 +221,38 @@ const Brands = () => {
   return (
     <div className="space-y-4">
       <BreadcrumbLink breadcrumb={breadcrumb} />
+      <div className="w-full flex justify-between items-center">
+        <Input.Search
+          className="w-1/2"
+          placeholder="Tìm kiếm tên thương hiệu"
+          value={searchText}
+          onSearch={handleSearch}
+          onChange={(e) => setSearchText(e.target.value)}
+          size="large"
+          allowClear
+        />
+        <div>
+          <Button size="large" type="primary" onClick={() => handleOpenModal()}>
+            <PlusOutlined /> Thêm thương hiệu
+          </Button>
+        </div>
+      </div>
       <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
         <div className="h-fit md:col-span-2 bg-white rounded-lg drop-shadow">
           <Table
+            pagination={{
+              current: currentPage,
+              pageSize: pageSize,
+              total: totalItems,
+              onChange: (page, pageSize) => {
+                setCurrentPage(page);
+                setPageSize(pageSize);
+              },
+            }}
             loading={isLoading}
             columns={columns(onUpdate)}
-            dataSource={brands}
+            // dataSource={brands}
+            dataSource={filteredBrands}
             rowKey={(record) => record.id}
             className="overflow-x-auto"
           />

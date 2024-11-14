@@ -5,6 +5,7 @@ import {
   Flex,
   Form,
   Input,
+  message,
   Popconfirm,
   Spin,
   Table,
@@ -25,9 +26,12 @@ const Category = () => {
   const [loadingUpdate, setLoadingUpdate] = useState(false);
   const [form] = Form.useForm();
   const [updateID, setUpdateID] = useState("");
-
   const [update, setUpdate] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+  const [totalItems, setTotalItems] = useState(0);
 
   const breadcrumb = [
     {
@@ -83,6 +87,7 @@ const Category = () => {
         const res = await CategoryService.getAll();
         // console.log(res.data)
         setData(res.data);
+        setTotalItems(res.data.length);
       } catch (error) {
         showError(error);
       } finally {
@@ -97,10 +102,9 @@ const Category = () => {
     try {
       const values = await form.validateFields();
       CategoryService.add(values);
-      notification.success({
-        message: "Thêm danh mục thành công",
-        placement: "top",
-      });
+
+      message.success("Thêm danh mục thành công");
+
       setUpdate(!update);
       setIsUpdate(false);
       form.resetFields();
@@ -123,10 +127,9 @@ const Category = () => {
       const values = await form.getFieldsValue();
 
       await CategoryService.update(updateID, values);
-      notification.success({
-        message: `Cập nhật ${values.name} thành công.`,
-        placement: "top",
-      });
+
+      message.success(`Cập nhật ${values.name} thành công.`);
+
       setUpdate(!update);
       setIsUpdate(false);
       form.resetFields();
@@ -143,10 +146,8 @@ const Category = () => {
       await CategoryService.remove(id);
       const newData = data.filter((item) => !(item.id === id));
       setData(newData);
-      notification.success({
-        message: "Xóa thành công",
-        placement: "top",
-      });
+      setTotalItems(newData.length);
+      message.success("Xóa thành công");
     } catch (error) {
       showError(error);
     } finally {
@@ -165,6 +166,15 @@ const Category = () => {
       <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
         <div className="h-fit md:col-span-2 bg-white rounded-lg drop-shadow">
           <Table
+            pagination={{
+              current: currentPage,
+              pageSize: pageSize,
+              total: totalItems,
+              onChange: (page, pageSize) => {
+                setCurrentPage(page);
+                setPageSize(pageSize);
+              },
+            }}
             loading={isLoading}
             columns={columns(onUpdate, handleDelete)}
             dataSource={data}

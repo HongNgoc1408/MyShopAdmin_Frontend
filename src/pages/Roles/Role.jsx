@@ -73,19 +73,37 @@ const Roles = () => {
       align: "center",
       render: (_, record) => (
         <Flex justify="center" align="center" className="space-x-1">
-          <Button onClick={() => handleOpenModal(record)}>
-            <EyeTwoTone />
-          </Button>
+          <div>
+            <Button onClick={() => handleOpenModal(record)}>
+              <EyeTwoTone />
+            </Button>
+          </div>
         </Flex>
       ),
     },
   ];
 
-  const handleOpenModal = (record) => {
-    // console.log(record);
-    setEditingUser(record);
-    form.setFieldsValue(record);
-    setOpen(true);
+  const handleOpenModal = async (record) => {
+    setLoading(true);
+    try {
+      if (record) {
+        const response = await UserService.getUser(record.id);
+        setEditingUser(response.data);
+        form.setFieldsValue({
+          email: response.data.email,
+          fullName: response.data.fullName,
+          phoneNumber: response.data.phoneNumber,
+          roles: response.data.roles,
+        });
+      } else {
+        setEditingUser(null);
+      }
+      setOpen(true);
+    } catch (error) {
+      message.error("Thất bại");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCloseModal = () => {
@@ -96,7 +114,8 @@ const Roles = () => {
   const handleAdd = async (values) => {
     setLoading(true);
     try {
-      // console.log("user", values);
+      console.log("user", values);
+      // const user = await form.getFieldsValue();
       const user = {
         email: values.email,
         password: values.password,
@@ -117,19 +136,26 @@ const Roles = () => {
     }
   };
 
-  const handleUpdate = async () => {
+  const handleUpdate = async (id, values) => {
     setLoading(true);
     try {
-      const user = await UserService.update(
-        editingUser.id,
-        form.getFieldsValue()
-      );
-      // console.log("user", user);
+      const user = {
+        email: values.email,
+        password: values.password,
+        fullName: values.fullName,
+        phoneNumber: values.phoneNumber,
+        roles: values.roles,
+      };
+
+      const response = await UserService.update(id, user);
       message.success("User updated successfully!");
 
       setData((prevData) =>
-        prevData.map((item) => (item.id === user.data.id ? user.data : item))
+        prevData.map((user) =>
+          user.id === id ? { ...user, ...response.data } : user
+        )
       );
+
       form.resetFields();
       handleCloseModal();
     } catch (error) {
@@ -176,34 +202,32 @@ const Roles = () => {
           <Button key="cancel" onClick={handleCloseModal}>
             Hủy
           </Button>,
-          <Button
-            key="submit"
-            type="primary"
-            onClick={editingUser ? handleUpdate : () => form.submit()}
-          >
+          <Button key="submit" type="primary" onClick={() => form.submit()}>
             {editingUser ? "Cập nhật" : "Thêm"}
           </Button>,
         ]}
       >
         <Form
           form={form}
-          name="addUser"
-          onFinish={handleAdd}
+          name="updateUser"
+          onFinish={(values) => {
+            if (editingUser) {
+              handleUpdate(editingUser.id, values);
+            } else {
+              handleAdd(values);
+            }
+          }}
           labelCol={{ span: 8 }}
           wrapperCol={{ span: 16 }}
-          initialValues={editingUser}
+          initialValues={
+            editingUser ? editingUser : { email: "@gmail.com", password: "" }
+          }
           autoComplete="off"
         >
           <Form.Item
             label="Email"
             name="email"
-            rules={[
-              {
-                type: "email",
-                required: true,
-                message: "Vui lòng nhập email",
-              },
-            ]}
+            rules={[{ required: true, message: "Vui lòng nhập email" }]}
           >
             <Input />
           </Form.Item>
@@ -254,6 +278,7 @@ const Roles = () => {
           </Form.Item>
         </Form>
       </Modal>
+
       <div className="space-y-4">
         <BreadcrumbLink breadcrumb={breadcrumb} />
         <div className="p-4 drop-shadow rounded-lg bg-white space-y-2">
@@ -304,7 +329,11 @@ const Roles = () => {
               ]}
             />
             <div>
-              <Button size="large" type="primary" onClick={handleOpenModal}>
+              <Button
+                size="large"
+                type="primary"
+                onClick={() => handleOpenModal()}
+              >
                 <PlusOutlined /> Thêm người dùng
               </Button>
             </div>

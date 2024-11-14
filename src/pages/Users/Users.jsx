@@ -92,15 +92,17 @@ const User = () => {
     <div className="space-y-4">
       <BreadcrumbLink breadcrumb={breadcrumb} />
       <div className="p-4 drop-shadow rounded-lg bg-white space-y-2">
-        <Input.Search
-          loading={searchLoading}
-          className="w-1/2"
-          size="large"
-          allowClear
-          onSearch={(key) => handleSearch(key)}
-          onChange={(e) => e.target.value === "" && setSearch("")}
-          placeholder="Nhập từ khóa cần tìm"
-        />
+        <div className="w-full flex justify-between items-center">
+          <Input.Search
+            loading={searchLoading}
+            className="w-1/2"
+            size="large"
+            allowClear
+            onSearch={(key) => handleSearch(key)}
+            onChange={(e) => e.target.value === "" && setSearch("")}
+            placeholder="Nhập từ khóa cần tìm"
+          />
+        </div>
 
         <Table
           pagination={false}

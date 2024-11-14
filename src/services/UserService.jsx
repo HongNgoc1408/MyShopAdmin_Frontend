@@ -14,31 +14,20 @@ const getAll = async (page, pageSize, search, role) =>
     },
   });
 
-const getAllUser = async (page, pageSize, search) =>
-  await axios.get(API_URL + "/users", {
-    headers: authHeader(),
-    params: {
-      page: page,
-      pageSize: pageSize,
-      key: search ?? "",
-    },
-  });
+const getUser = async (userId) =>
+  await axios.get(API_URL + `/${userId}`, { headers: authHeader() });
 
-const getAllStaff = async (page, pageSize, search) => {
-  return await axios.get(API_URL + "/staffs", {
-    headers: authHeader(),
-    params: {
-      page: page,
-      pageSize: pageSize,
-      key: search ?? "",
-    },
-  });
-};
+const create = async (data) =>
+  await axios.post(API_URL, data, { headers: authHeader() });
+
+const update = async (id, data) =>
+  await axios.put(API_URL + `/${id}`, data, { headers: authHeader() });
 
 const UserService = {
+  create,
+  update,
   getAll,
-  getAllUser,
-  getAllStaff,
+  getUser,
 };
 
 export default UserService;

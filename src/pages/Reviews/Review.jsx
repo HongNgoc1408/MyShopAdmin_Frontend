@@ -1,10 +1,32 @@
 import React, { useEffect, useState } from "react";
-import { Image, Pagination, Rate, Select, Table } from "antd";
-import { formatDateTime, toImageLink } from "../../services/commonService";
+import {
+  Button,
+  Flex,
+  Image,
+  message,
+  notification,
+  Pagination,
+  Popconfirm,
+  Rate,
+  Select,
+  Switch,
+  Table,
+} from "antd";
+import {
+  formatDateTime,
+  showError,
+  toImageLink,
+} from "../../services/commonService";
 import { useSearchParams } from "react-router-dom";
-import { HomeTwoTone } from "@ant-design/icons";
+import {
+  CheckOutlined,
+  CloseOutlined,
+  DeleteTwoTone,
+  HomeTwoTone,
+} from "@ant-design/icons";
 import BreadcrumbLink from "../../components/BreadcrumbLink";
 import ProductService from "../../services/ProductService";
+import ReviewService from "../../services/ReviewService";
 const breadcrumb = [
   {
     path: "/",
@@ -18,10 +40,12 @@ const breadcrumb = [
 const Reviews = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingDelete, setLoadingDelete] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
+
   const [data, setData] = useState([]);
   const [review, setReview] = useState([]);
-  // const [loadingDelete, setLoadingDelete] = useState(false);
-  const [searchLoading, setSearchLoading] = useState(false);
+
   const [totalItems, setTotalItems] = useState(0);
   const [currentPage, setCurrentPage] = useState(searchParams.get("page") ?? 1);
   const [currentPageSize, setCurrentPageSize] = useState(5);
@@ -70,23 +94,40 @@ const Reviews = () => {
       dataIndex: "createdAt",
       render: (createdAt) => formatDateTime(createdAt),
     },
-    // {
-    //   title: "Thực hiện",
-    //   align: "center",
-    //   render: (_, record) => (
-    //     <Flex justify="center" align="center" className="space-x-1">
-    //       <Popconfirm
-    //         title={`Xác nhận xóa ${record.name}`}
-    //         onConfirm={() => handleDelete(record.id)}
-    //         loading={loadingDelete}
-    //       >
-    //         <Button>
-    //           <DeleteTwoTone />
-    //         </Button>
-    //       </Popconfirm>
-    //     </Flex>
-    //   ),
-    // },
+    {
+      title: "Trạng thái",
+      dataIndex: "enable",
+      render: (value, record) => (
+        <Switch
+          checkedChildren={<CheckOutlined />}
+          unCheckedChildren={<CloseOutlined />}
+          defaultChecked={value}
+          onChange={(value) => handleChangeEnable(record.id, value)}
+        />
+      ),
+      filters: [
+        { text: "Hiện", value: true },
+        { text: "Ẩn", value: false },
+      ],
+      onFilter: (value, record) => record.enable === value,
+    },
+    {
+      title: "Thực hiện",
+      align: "center",
+      render: (_, record) => (
+        <Flex justify="center" align="center" className="space-x-1">
+          <Popconfirm
+            title={`Xác nhận xóa ${record.name}`}
+            onConfirm={() => handleDelete(record.id)}
+            loading={loadingDelete}
+          >
+            <Button>
+              <DeleteTwoTone />
+            </Button>
+          </Popconfirm>
+        </Flex>
+      ),
+    },
   ];
 
   useEffect(() => {
@@ -140,38 +181,33 @@ const Reviews = () => {
     }
   }, [selectedProductId, currentPage, currentPageSize, search]);
 
-  // const handleChangeEnable = async (id, value) => {
-  //   try {
-  //     const data = { enable: value };
-  //     await ProductService.updateEnable(id, data);
-  //     notification.success({
-  //       message: "Cập nhật thành công.",
-  //       placement: "top",
-  //     });
-  //   } catch (error) {
-  //     showError(error);
-  //   }
-  // };
-
-  // const handleDelete = async (id) => {
-  //   setLoadingDelete(true);
-  //   try {
-  //     await ProductService.remove(id);
-  //     const newData = data.filter((item) => !(item.id === id));
-  //     setData(newData);
-  //     notification.success({
-  //       message: "Xóa thành công",
-  //       placement: "top",
-  //     });
-  //   } catch (error) {
-  //     showError(error);
-  //   } finally {
-  //     setLoadingDelete(false);
-  //   }
-  // };
-
   const handleChangeId = (value) => {
     setSelectedProductId(value);
+  };
+
+  const handleChangeEnable = async (id, value) => {
+    try {
+      const data = { enable: value };
+      await ReviewService.update(id, data);
+      message.success("Cập nhật thành công.");
+    } catch (error) {
+      showError(error);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    setLoadingDelete(true);
+    try {
+      await ReviewService.remove(id);
+      const newData = data.filter((item) => !(item.id === id));
+      message.success("Xóa thành công");
+
+      setData(newData);
+    } catch (error) {
+      showError(error);
+    } finally {
+      setLoadingDelete(false);
+    }
   };
 
   return (
@@ -185,7 +221,7 @@ const Reviews = () => {
             onChange={handleChangeId}
             allowClear
             size="large"
-            placeholder="Chọn sản phẩm"
+            placeholder="Chọn sản phẩm cần xem đánh giá"
           >
             {data.map((item) => (
               <Select.Option key={item.id} value={item.id}>

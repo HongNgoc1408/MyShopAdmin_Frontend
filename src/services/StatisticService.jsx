@@ -50,6 +50,28 @@ const getTotalRevenue = async (dateFrom, dateTo) => {
   });
 };
 
+const getRevenueProductYear = async (productId, year, month) => {
+  return await axios.get(API_URL + "/totalRevenueProductYear", {
+    headers: authHeader(),
+    params: {
+      productId,
+      year,
+      month,
+    },
+  });
+};
+
+const getRevenueProduct = async (productId, dateFrom, dateTo) => {
+  return await axios.get(API_URL + "/totalRevenueProduct", {
+    headers: authHeader(),
+    params: {
+      productId,
+      dateFrom,
+      dateTo,
+    },
+  });
+};
+
 const StatisticService = {
   getToTalUser,
   getToTalProduct,
@@ -58,6 +80,8 @@ const StatisticService = {
   getToTalImport,
   getTotalRevenueYear,
   getTotalRevenue,
+  getRevenueProductYear,
+  getRevenueProduct,
 };
 
 export default StatisticService;

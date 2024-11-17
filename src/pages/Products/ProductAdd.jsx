@@ -492,7 +492,7 @@ export default function AddProduct() {
             </Form.Item>
             <div className="grid grid-cols-2 gap-2">
               {sizeList.map((size, i) => (
-                <Form.Item label={size.label} key={i} className="mb-2">
+                <Form.Item label={size.label} key={i} className="mb-2" hidden>
                   {colors.map((color, j) => {
                     if (color && color.colorName !== "") {
                       return (

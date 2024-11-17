@@ -18,7 +18,30 @@ const Login = () => {
       setLoading(true);
       const data = form.getFieldsValue();
       const res = await authService.login(data);
+
       if (res.data?.roles?.includes("Admin")) {
+        dispatch(authAction.LOGIN(res.data?.roles));
+        notification.success({
+          message: "Đăng nhập thành công.",
+          placement: "top",
+        });
+        navigate("/home");
+      } else if (res.data?.roles?.includes("Inventorier")) {
+        dispatch(authAction.LOGIN(res.data?.roles));
+        notification.success({
+          message: "Đăng nhập thành công.",
+          placement: "top",
+        });
+        navigate("/home");
+
+      } else if (res.data?.roles?.includes("Manage")) {
+        dispatch(authAction.LOGIN(res.data?.roles));
+        notification.success({
+          message: "Đăng nhập thành công.",
+          placement: "top",
+        });
+        navigate("/home");
+      } else if (res.data?.roles?.includes("Staff")) {
         dispatch(authAction.LOGIN(res.data?.roles));
         notification.success({
           message: "Đăng nhập thành công.",

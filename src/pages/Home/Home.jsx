@@ -6,7 +6,7 @@ import {
   FaReceipt,
   FaUserGroup,
 } from "react-icons/fa6";
-import { Card, DatePicker, Select } from "antd";
+import { Card, DatePicker, message, Select } from "antd";
 import React, { useEffect, useState } from "react";
 import StatisticService from "../../services/StatisticService";
 import { formatVND, showError } from "../../services/commonService";
@@ -24,8 +24,12 @@ import {
 } from "recharts";
 import { Link } from "react-router-dom";
 import moment from "moment/moment";
+import authService from "../../services/authService";
+import StatisticProduct from "../Statistic";
 const { RangePicker } = DatePicker;
+
 const Home = () => {
+  const [roles, setRoles] = useState([]);
   const [users, setUser] = useState(null);
   const [products, setProduct] = useState(null);
   const [orders, setOrder] = useState(null);
@@ -63,6 +67,29 @@ const Home = () => {
     setSelectedMonth(date ? date.month() + 1 : null);
   };
 
+  const handleRangeChange = (value) => {
+    if (value && value.length === 2) {
+      const startDate = value[0];
+      const endDate = value[1];
+
+      setDates([startDate, endDate]);
+    }
+  };
+  
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const res = await authService.getRole();
+        setRoles(res || []);
+      } catch (error) {
+        message.error("Lỗi");
+      }
+    };
+    fetchRoles();
+  }, []);
+
+  // console.log(roles.includes("Admin"));
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -81,7 +108,6 @@ const Home = () => {
         showError(error);
       }
     };
-
     fetchData();
   }, []);
 
@@ -168,15 +194,6 @@ const Home = () => {
     fetchData();
   }, [selectedYear, selectedMonth, currentYear]);
 
-  const handleRangeChange = (value) => {
-    if (value && value.length === 2) {
-      const startDate = value[0];
-      const endDate = value[1];
-
-      setDates([startDate, endDate]);
-    }
-  };
-
   useEffect(() => {
     const fetchData = async () => {
       if (dates[0] && dates[1]) {
@@ -232,422 +249,437 @@ const Home = () => {
 
   return (
     <>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-5">
-        <Card>
-          <Card.Meta
-            avatar={
-              <>
-                <div className="flex h-16 w-16 items-center justify-center rounded-full border border-blue-100 bg-blue-50">
-                  <FaUserGroup className="h-8 w-8 text-blue-400" />
-                </div>
-              </>
-            }
-            title={<span className="cursor-pointer text-sm">Người dùng</span>}
-            description={
-              <>
-                <p className="text-gray-700 text-2xl">{users}</p>
-                <Link to={"/users"} className="text-orange-600">
-                  View
-                </Link>
-              </>
-            }
-          />
-        </Card>
+      {roles.some((role) => role === "Admin" || role === "Inventorier") ? (
+        <>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-5">
+            <Card>
+              <Card.Meta
+                avatar={
+                  <>
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full border border-blue-100 bg-blue-50">
+                      <FaUserGroup className="h-8 w-8 text-blue-400" />
+                    </div>
+                  </>
+                }
+                title={
+                  <span className="cursor-pointer text-sm">Người dùng</span>
+                }
+                description={
+                  <>
+                    <p className="text-gray-700 text-2xl">{users}</p>
+                    <Link to={"/users"} className="text-orange-600">
+                      View
+                    </Link>
+                  </>
+                }
+              />
+            </Card>
 
-        <Card>
-          <Card.Meta
-            avatar={
-              <>
-                <div className="flex h-16 w-16 items-center justify-center rounded-full border border-yellow-100 bg-yellow-50">
-                  <AiFillProduct className="h-8 w-8 text-yellow-400" />
-                </div>
-              </>
-            }
-            title={<span className="cursor-pointer text-sm">Sản phẩm</span>}
-            description={
-              <>
-                <p className="text-gray-700 text-2xl">{products}</p>
-                <Link to={"/products"} className="text-orange-600">
-                  View
-                </Link>
-              </>
-            }
-          />
-        </Card>
+            <Card>
+              <Card.Meta
+                avatar={
+                  <>
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full border border-yellow-100 bg-yellow-50">
+                      <AiFillProduct className="h-8 w-8 text-yellow-400" />
+                    </div>
+                  </>
+                }
+                title={<span className="cursor-pointer text-sm">Sản phẩm</span>}
+                description={
+                  <>
+                    <p className="text-gray-700 text-2xl">{products}</p>
+                    <Link to={"/products"} className="text-orange-600">
+                      View
+                    </Link>
+                  </>
+                }
+              />
+            </Card>
 
-        <Card>
-          <Card.Meta
-            avatar={
-              <>
-                <div className="flex h-16 w-16 items-center justify-center rounded-full border border-orange-100 bg-orange-50">
-                  <FaReceipt className="h-8 w-8 text-orange-400" />
-                </div>
-              </>
-            }
-            title={<span className="cursor-pointer text-sm">Đơn hàng</span>}
-            description={
-              <>
-                <p className="text-gray-700 text-2xl">{orders}</p>
-                <Link to={"/orders"} className="text-orange-600">
-                  View
-                </Link>
-              </>
-            }
-          />
-        </Card>
+            <Card>
+              <Card.Meta
+                avatar={
+                  <>
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full border border-orange-100 bg-orange-50">
+                      <FaReceipt className="h-8 w-8 text-orange-400" />
+                    </div>
+                  </>
+                }
+                title={<span className="cursor-pointer text-sm">Đơn hàng</span>}
+                description={
+                  <>
+                    <p className="text-gray-700 text-2xl">{orders}</p>
+                    <Link to={"/orders"} className="text-orange-600">
+                      View
+                    </Link>
+                  </>
+                }
+              />
+            </Card>
 
-        <Card>
-          <Card.Meta
-            avatar={
-              <>
-                <div className="flex h-16 w-16 items-center justify-center rounded-full border border-green-100 bg-green-50">
-                  <FaCheck className="h-8 w-8 text-green-400" />
-                </div>
-              </>
-            }
+            <Card>
+              <Card.Meta
+                avatar={
+                  <>
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full border border-green-100 bg-green-50">
+                      <FaCheck className="h-8 w-8 text-green-400" />
+                    </div>
+                  </>
+                }
+                title={
+                  <span className="cursor-pointer text-sm">ĐH hoàn thành</span>
+                }
+                description={
+                  <>
+                    <p className="text-gray-700 text-2xl">{ordersDone}</p>
+                  </>
+                }
+              />
+            </Card>
+
+            <Card>
+              <Card.Meta
+                avatar={
+                  <>
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full border border-pink-100 bg-pink-50">
+                      <FaDownload className="h-8 w-8 text-pink-400" />
+                    </div>
+                  </>
+                }
+                title={
+                  <span className="cursor-pointer text-sm">
+                    Phiếu nhập hàng
+                  </span>
+                }
+                description={
+                  <>
+                    <p className="text-gray-700 text-2xl">{imports}</p>
+                    <Link to={"/imports"} className="text-orange-600">
+                      View
+                    </Link>
+                  </>
+                }
+              />
+            </Card>
+          </div>
+          <Card
+            className="my-4"
             title={
-              <span className="cursor-pointer text-sm">ĐH hoàn thành</span>
+              selectValue === 0
+                ? `Biểu đồ chi phí và doanh thu của ${
+                    selectedMonth != null ? `tháng ${selectedMonth} năm` : "năm"
+                  } ${selectedYear}`
+                : `Biểu đồ chi phí và doanh thu từ ngày ${
+                    dates[0] ? dates[0].format("DD-MM-YYYY") : ""
+                  } đến ngày ${dates[1] ? dates[1].format("DD-MM-YYYY") : ""}`
             }
-            description={
-              <>
-                <p className="text-gray-700 text-2xl">{ordersDone}</p>
-              </>
-            }
-          />
-        </Card>
-
-        <Card>
-          <Card.Meta
-            avatar={
-              <>
-                <div className="flex h-16 w-16 items-center justify-center rounded-full border border-pink-100 bg-pink-50">
-                  <FaDownload className="h-8 w-8 text-pink-400" />
-                </div>
-              </>
-            }
-            title={
-              <span className="cursor-pointer text-sm">Phiếu nhập hàng</span>
-            }
-            description={
-              <>
-                <p className="text-gray-700 text-2xl">{imports}</p>
-                <Link to={"/imports"} className="text-orange-600">
-                  View
-                </Link>
-              </>
-            }
-          />
-        </Card>
-      </div>
-      <Card
-        className="my-4"
-        title={
-          selectValue === 0
-            ? `Biểu đồ chi phí và doanh thu của ${
-                selectedMonth != null ? `tháng ${selectedMonth} năm` : "năm"
-              } ${selectedYear}`
-            : `Biểu đồ chi phí và doanh thu từ ngày ${
-                dates[0] ? dates[0].format("DD-MM-YYYY") : ""
-              } đến ngày ${dates[1] ? dates[1].format("DD-MM-YYYY") : ""}`
-        }
-      >
-        <div className="flex gap-4">
-          <Select
-            value={selectValue}
-            onChange={handleSelectChange}
-            defaultValue={0}
-            allowClear
-            options={[
-              { value: 0, label: "Nhập năm và tháng" },
-              { value: 1, label: "Nhập ngày thống kê" },
-            ]}
-            placeholder="Nhập năm và tháng"
-          />
-          {selectValue === 0 ? (
-            <>
-              <DatePicker onChange={handleYearChange} picker="year" />
-              <DatePicker onChange={handleMonthChange} picker="month" />
-            </>
-          ) : (
-            <RangePicker onChange={handleRangeChange} />
-          )}
-        </div>
-        {selectValue === 0 ? (
-          <div className="flex">
-            <div className="w-9/12">
-              <ResponsiveContainer width="100%" height={500}>
-                <BarChart
-                  data={revenueYear}
-                  margin={{
-                    top: 20,
-                    right: 30,
-                    left: 20,
-                    bottom: 5,
-                  }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis
-                    dataKey="time"
-                    label={{
-                      position: "insideBottom",
-                    }}
-                    tickFormatter={(value) => {
-                      if (selectedMonth == null) {
-                        return `Tháng ${value}`;
-                      } else {
-                        return `Ngày ${value}`;
-                      }
-                    }}
-                  />
-                  <YAxis
-                    width={80}
-                    label={{
-                      angle: -90,
-                      position: "insideLeft",
-                    }}
-                    tickFormatter={(value) => formatVND(value)}
-                  />
-                  <Tooltip formatter={(value) => formatVND(value)} />
-                  <Legend />
-                  <Bar dataKey="sales" fill="#c084fc" name="Doanh thu" />
-                  <Bar dataKey="spending" fill="#fb923c" name="Chi phí" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="w-3/12">
-              <Card>
-                <Card.Meta
-                  avatar={
-                    <>
-                      <div className="flex h-16 w-16 items-center justify-center rounded-full border border-orange-100 bg-orange-50">
-                        <GiReceiveMoney className="h-8 w-8 text-orange-400" />
-                      </div>
-                    </>
-                  }
-                  title={
-                    <span className="cursor-pointer text-base">
-                      Tổng doanh thu
-                    </span>
-                  }
-                  description={
-                    <>
-                      <p className=" text-[#82ca9d] text-xl">
-                        {formatVND(salesYear)}
-                      </p>
-                    </>
-                  }
-                />
-              </Card>
-              <Card className="my-4">
-                <Card.Meta
-                  avatar={
-                    <>
-                      <div className="flex h-16 w-16 items-center justify-center rounded-full border border-purple-100 bg-purple-50">
-                        <GiPayMoney className="h-8 w-8 text-purple-400" />
-                      </div>
-                    </>
-                  }
-                  title={
-                    <span className="cursor-pointer text-base">
-                      Tổng chi phí
-                    </span>
-                  }
-                  description={
-                    <>
-                      <p className="text-purple-400 text-xl ">
-                        {formatVND(spendingYear)}
-                      </p>
-                    </>
-                  }
-                />
-              </Card>
-              {totalYear > 0 ? (
-                <Card className="my-4">
-                  <Card.Meta
-                    avatar={
-                      <>
-                        <div className="flex h-16 w-16 items-center justify-center rounded-full border border-green-100 bg-green-50">
-                          <FaArrowUp className="h-8 w-8 text-green-400" />
-                        </div>
-                      </>
-                    }
-                    title={
-                      <span className="cursor-pointer text-base">
-                        Lợi nhuận
-                      </span>
-                    }
-                    description={
-                      <>
-                        <p className="text-green-600 text-xl ">
-                          {formatVND(totalYear)}
-                        </p>
-                      </>
-                    }
-                  />
-                </Card>
+          >
+            <div className="flex gap-4">
+              <Select
+                value={selectValue}
+                onChange={handleSelectChange}
+                defaultValue={0}
+                allowClear
+                options={[
+                  { value: 0, label: "Nhập năm và tháng" },
+                  { value: 1, label: "Nhập ngày thống kê" },
+                ]}
+                placeholder="Nhập năm và tháng"
+              />
+              {selectValue === 0 ? (
+                <>
+                  <DatePicker onChange={handleYearChange} picker="year" />
+                  <DatePicker onChange={handleMonthChange} picker="month" />
+                </>
               ) : (
-                <Card className="my-4">
-                  <Card.Meta
-                    avatar={
-                      <>
-                        <div className="flex h-16 w-16 items-center justify-center rounded-full border border-red-100 bg-red-50">
-                          <FaArrowDown className="h-8 w-8 text-red-400" />
-                        </div>
-                      </>
-                    }
-                    title={
-                      <span className="cursor-pointer text-base">Tổn Thất</span>
-                    }
-                    description={
-                      <>
-                        <p className="text-red-600 text-xl">
-                          {formatVND(totalYear)}
-                        </p>
-                      </>
-                    }
-                  />
-                </Card>
+                <RangePicker onChange={handleRangeChange} />
               )}
             </div>
-          </div>
-        ) : (
-          <>
-            <div className="flex">
-              <div className="w-9/12">
-                <ResponsiveContainer width="100%" height={500}>
-                  <BarChart
-                    data={revenue}
-                    margin={{
-                      top: 20,
-                      right: 30,
-                      left: 20,
-                      bottom: 5,
-                    }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis
-                      dataKey="time"
-                      label={{
-                        position: "insideBottom",
+            {selectValue === 0 ? (
+              <div className="flex">
+                <div className="w-9/12">
+                  <ResponsiveContainer width="100%" height={500}>
+                    <BarChart
+                      data={revenueYear}
+                      margin={{
+                        top: 20,
+                        right: 30,
+                        left: 20,
+                        bottom: 5,
                       }}
-                      tickFormatter={(value) => value}
-                    />
-                    <YAxis
-                      width={80}
-                      label={{
-                        angle: -90,
-                        position: "insideLeft",
-                      }}
-                      tickFormatter={(value) => formatVND(value)}
-                    />
-                    <Tooltip formatter={(value) => formatVND(value)} />
-                    <Legend />
-                    <Bar dataKey="sales" fill="#c084fc" name="Doanh thu" />
-                    <Bar dataKey="spending" fill="#fb923c" name="Chi phí" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="w-3/12">
-                <Card>
-                  <Card.Meta
-                    avatar={
-                      <>
-                        <div className="flex h-16 w-16 items-center justify-center rounded-full border border-orange-100 bg-orange-50">
-                          <GiReceiveMoney className="h-8 w-8 text-orange-400" />
-                        </div>
-                      </>
-                    }
-                    title={
-                      <span className="cursor-pointer text-base">
-                        Tổng doanh thu
-                      </span>
-                    }
-                    description={
-                      <>
-                        <p className="text-xl text-[#82ca9d]">
-                          {formatVND(salesData)}
-                        </p>
-                      </>
-                    }
-                  />
-                </Card>
-                <Card className="my-4">
-                  <Card.Meta
-                    avatar={
-                      <>
-                        <div className="flex h-16 w-16 items-center justify-center rounded-full border border-purple-100 bg-purple-50">
-                          <GiPayMoney className="h-8 w-8 text-purple-400" />
-                        </div>
-                      </>
-                    }
-                    title={
-                      <span className="cursor-pointer text-base">
-                        Tổng chi phí
-                      </span>
-                    }
-                    description={
-                      <>
-                        <p className="text-purple-400 text-xl ">
-                          {formatVND(spendingData)}
-                        </p>
-                      </>
-                    }
-                  />
-                </Card>
-                {totalData > 0 ? (
-                  <Card className="my-4">
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis
+                        dataKey="time"
+                        label={{
+                          position: "insideBottom",
+                        }}
+                        tickFormatter={(value) => {
+                          if (selectedMonth == null) {
+                            return `Tháng ${value}`;
+                          } else {
+                            return `Ngày ${value}`;
+                          }
+                        }}
+                      />
+                      <YAxis
+                        width={80}
+                        label={{
+                          angle: -90,
+                          position: "insideLeft",
+                        }}
+                        tickFormatter={(value) => formatVND(value)}
+                      />
+                      <Tooltip formatter={(value) => formatVND(value)} />
+                      <Legend />
+                      <Bar dataKey="sales" fill="#c084fc" name="Doanh thu" />
+                      <Bar dataKey="spending" fill="#fb923c" name="Chi phí" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="w-3/12">
+                  <Card>
                     <Card.Meta
                       avatar={
                         <>
-                          <div className="flex h-16 w-16 items-center justify-center rounded-full border border-green-100 bg-green-50">
-                            <FaArrowUp className="h-8 w-8 text-green-400" />
+                          <div className="flex h-16 w-16 items-center justify-center rounded-full border border-orange-100 bg-orange-50">
+                            <GiReceiveMoney className="h-8 w-8 text-orange-400" />
                           </div>
                         </>
                       }
                       title={
                         <span className="cursor-pointer text-base">
-                          Lợi nhuận
+                          Tổng doanh thu
                         </span>
                       }
                       description={
                         <>
-                          <p className="text-green-600 text-xl ">
-                            {formatVND(totalData)}
+                          <p className=" text-[#82ca9d] text-xl">
+                            {formatVND(salesYear)}
                           </p>
                         </>
                       }
                     />
                   </Card>
-                ) : (
                   <Card className="my-4">
                     <Card.Meta
                       avatar={
                         <>
-                          <div className="flex h-16 w-16 items-center justify-center rounded-full border border-red-100 bg-red-50">
-                            <FaArrowDown className="h-8 w-8 text-red-400" />
+                          <div className="flex h-16 w-16 items-center justify-center rounded-full border border-purple-100 bg-purple-50">
+                            <GiPayMoney className="h-8 w-8 text-purple-400" />
                           </div>
                         </>
                       }
                       title={
                         <span className="cursor-pointer text-base">
-                          Tổn Thất
+                          Tổng chi phí
                         </span>
                       }
                       description={
                         <>
-                          <p className="text-red-600 text-xl">
-                            {formatVND(totalData)}
+                          <p className="text-purple-400 text-xl ">
+                            {formatVND(spendingYear)}
                           </p>
                         </>
                       }
                     />
                   </Card>
-                )}
+                  {totalYear > 0 ? (
+                    <Card className="my-4">
+                      <Card.Meta
+                        avatar={
+                          <>
+                            <div className="flex h-16 w-16 items-center justify-center rounded-full border border-green-100 bg-green-50">
+                              <FaArrowUp className="h-8 w-8 text-green-400" />
+                            </div>
+                          </>
+                        }
+                        title={
+                          <span className="cursor-pointer text-base">
+                            Lợi nhuận
+                          </span>
+                        }
+                        description={
+                          <>
+                            <p className="text-green-600 text-xl ">
+                              {formatVND(totalYear)}
+                            </p>
+                          </>
+                        }
+                      />
+                    </Card>
+                  ) : (
+                    <Card className="my-4">
+                      <Card.Meta
+                        avatar={
+                          <>
+                            <div className="flex h-16 w-16 items-center justify-center rounded-full border border-red-100 bg-red-50">
+                              <FaArrowDown className="h-8 w-8 text-red-400" />
+                            </div>
+                          </>
+                        }
+                        title={
+                          <span className="cursor-pointer text-base">
+                            Tổn Thất
+                          </span>
+                        }
+                        description={
+                          <>
+                            <p className="text-red-600 text-xl">
+                              {formatVND(totalYear)}
+                            </p>
+                          </>
+                        }
+                      />
+                    </Card>
+                  )}
+                </div>
               </div>
-            </div>
-          </>
-        )}
-      </Card>
+            ) : (
+              <>
+                <div className="flex">
+                  <div className="w-9/12">
+                    <ResponsiveContainer width="100%" height={500}>
+                      <BarChart
+                        data={revenue}
+                        margin={{
+                          top: 20,
+                          right: 30,
+                          left: 20,
+                          bottom: 5,
+                        }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis
+                          dataKey="time"
+                          label={{
+                            position: "insideBottom",
+                          }}
+                          tickFormatter={(value) => value}
+                        />
+                        <YAxis
+                          width={80}
+                          label={{
+                            angle: -90,
+                            position: "insideLeft",
+                          }}
+                          tickFormatter={(value) => formatVND(value)}
+                        />
+                        <Tooltip formatter={(value) => formatVND(value)} />
+                        <Legend />
+                        <Bar dataKey="sales" fill="#c084fc" name="Doanh thu" />
+                        <Bar dataKey="spending" fill="#fb923c" name="Chi phí" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="w-3/12">
+                    <Card>
+                      <Card.Meta
+                        avatar={
+                          <>
+                            <div className="flex h-16 w-16 items-center justify-center rounded-full border border-orange-100 bg-orange-50">
+                              <GiReceiveMoney className="h-8 w-8 text-orange-400" />
+                            </div>
+                          </>
+                        }
+                        title={
+                          <span className="cursor-pointer text-base">
+                            Tổng doanh thu
+                          </span>
+                        }
+                        description={
+                          <>
+                            <p className="text-xl text-[#82ca9d]">
+                              {formatVND(salesData)}
+                            </p>
+                          </>
+                        }
+                      />
+                    </Card>
+                    <Card className="my-4">
+                      <Card.Meta
+                        avatar={
+                          <>
+                            <div className="flex h-16 w-16 items-center justify-center rounded-full border border-purple-100 bg-purple-50">
+                              <GiPayMoney className="h-8 w-8 text-purple-400" />
+                            </div>
+                          </>
+                        }
+                        title={
+                          <span className="cursor-pointer text-base">
+                            Tổng chi phí
+                          </span>
+                        }
+                        description={
+                          <>
+                            <p className="text-purple-400 text-xl ">
+                              {formatVND(spendingData)}
+                            </p>
+                          </>
+                        }
+                      />
+                    </Card>
+                    {totalData > 0 ? (
+                      <Card className="my-4">
+                        <Card.Meta
+                          avatar={
+                            <>
+                              <div className="flex h-16 w-16 items-center justify-center rounded-full border border-green-100 bg-green-50">
+                                <FaArrowUp className="h-8 w-8 text-green-400" />
+                              </div>
+                            </>
+                          }
+                          title={
+                            <span className="cursor-pointer text-base">
+                              Lợi nhuận
+                            </span>
+                          }
+                          description={
+                            <>
+                              <p className="text-green-600 text-xl ">
+                                {formatVND(totalData)}
+                              </p>
+                            </>
+                          }
+                        />
+                      </Card>
+                    ) : (
+                      <Card className="my-4">
+                        <Card.Meta
+                          avatar={
+                            <>
+                              <div className="flex h-16 w-16 items-center justify-center rounded-full border border-red-100 bg-red-50">
+                                <FaArrowDown className="h-8 w-8 text-red-400" />
+                              </div>
+                            </>
+                          }
+                          title={
+                            <span className="cursor-pointer text-base">
+                              Tổn Thất
+                            </span>
+                          }
+                          description={
+                            <>
+                              <p className="text-red-600 text-xl">
+                                {formatVND(totalData)}
+                              </p>
+                            </>
+                          }
+                        />
+                      </Card>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
+          </Card>
+          <StatisticProduct />
+        </>
+      ) : (
+        <>
+          <div>{roles}</div>
+        </>
+      )}
     </>
   );
 };

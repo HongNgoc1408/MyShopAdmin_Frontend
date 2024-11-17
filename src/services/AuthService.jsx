@@ -33,12 +33,18 @@ const logout = () => {
 const refreshToken = async (data) =>
   await axios.post(API_URL + "/refresh-token", data);
 
+const getRole = () => {
+  const user = getCurrentUser();
+  return user.roles;
+};
+
 const authService = {
   login,
   getCurrentUser,
   setUserToken,
   logout,
   refreshToken,
+  getRole,
 };
 
 export default authService;

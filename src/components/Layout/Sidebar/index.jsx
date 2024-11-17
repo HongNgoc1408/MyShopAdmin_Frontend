@@ -1,16 +1,22 @@
-// import Sider from 'antd/es/layout/Sider';
 import React, { useEffect, useLayoutEffect, useState } from "react";
 
-import { Menu } from "antd";
+import { Menu, message } from "antd";
 import Sider from "antd/es/layout/Sider";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { navigateItems } from "../../../routes";
+import {
+  navigateInventorier,
+  navigateItems,
+  navigateManage,
+  navigateStaff,
+} from "../../../routes";
+import authService from "../../../services/authService";
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
   const [navItems, setNaviItems] = useState(navigateItems);
   const location = useLocation();
+  const [roles, setRoles] = useState([]);
 
   const regex = location.pathname.match(/^\/[^/]+/)?.at(0) ?? "/";
   const [navSelected, setNavSelected] = useState(regex);
@@ -18,13 +24,34 @@ const Sidebar = () => {
   const handleMenuClick = ({ key }) => navigate(key);
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await authService.getRole();
+        setRoles(res || []);
+      } catch (error) {
+        message.error("Lỗi");
+      }
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   useLayoutEffect(() => {
-    setNaviItems(navigateItems);
+    if (roles.includes("Admin")) {
+      setNaviItems(navigateItems);
+    } else if (roles.includes("Inventorier")) {
+      setNaviItems(navigateInventorier);
+    } else if (roles.includes("Manage")) {
+      setNaviItems(navigateManage);
+    } else if (roles.includes("Staff")) {
+      setNaviItems(navigateStaff);
+    }
+
     setNavSelected(regex);
-  }, [regex]);
+  }, [regex, roles]);
 
   return (
     <>

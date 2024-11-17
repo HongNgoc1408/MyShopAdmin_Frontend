@@ -23,8 +23,6 @@ import {
   EditTwoTone,
   HomeTwoTone,
   PlusOutlined,
-  SearchOutlined,
-  UploadOutlined,
 } from "@ant-design/icons";
 import { CiEraser } from "react-icons/ci";
 import BreadcrumbLink from "../../components/BreadcrumbLink";
@@ -60,8 +58,8 @@ const Brands = () => {
     brand.name.toLowerCase().includes(searchText.toLowerCase())
   );
 
-  const handleSearch = (e) => {
-    setSearchText(e.target.value);
+  const handleSearch = (value) => {
+    setSearchText(value);
   };
 
   const columns = (onUpdate) => [
@@ -86,6 +84,7 @@ const Brands = () => {
               <EditTwoTone />
             </Button>
           </Tooltip>
+
           <Popconfirm
             title={`Xác nhận xóa ${record.name}`}
             onConfirm={() => handleDelete(record.id)}
@@ -122,6 +121,26 @@ const Brands = () => {
   const handleFileChange = ({ fileList: newFileList }) =>
     setFileList(newFileList);
 
+  const onUpdate = (brand) => {
+    form.setFieldsValue({
+      ...brand,
+      image: [
+        {
+          name: brand.imageUrl,
+          url: brand.imageUrl,
+        },
+      ],
+    });
+    setFileList([
+      {
+        name: brand.imageUrl,
+        url: toImageSrc(brand.imageUrl),
+      },
+    ]);
+    setUpdateID(brand.id);
+    setIsUpdate(true);
+  };
+
   const handleAdd = async () => {
     try {
       const values = await form.validateFields();
@@ -147,26 +166,6 @@ const Brands = () => {
         setLoadingAdd(false);
       }
     } catch (error) {}
-  };
-
-  const onUpdate = (brand) => {
-    form.setFieldsValue({
-      ...brand,
-      image: [
-        {
-          name: brand.imageUrl,
-          url: brand.imageUrl,
-        },
-      ],
-    });
-    setFileList([
-      {
-        name: brand.imageUrl,
-        url: toImageSrc(brand.imageUrl),
-      },
-    ]);
-    setUpdateID(brand.id);
-    setIsUpdate(true);
   };
 
   const handleUpdate = async () => {
@@ -219,129 +218,144 @@ const Brands = () => {
   };
 
   return (
-    <div className="space-y-4">
-      <BreadcrumbLink breadcrumb={breadcrumb} />
-      <div className="w-full flex justify-between items-center">
-        <Input.Search
-          className="w-1/2"
-          placeholder="Tìm kiếm tên thương hiệu"
-          value={searchText}
-          onSearch={handleSearch}
-          onChange={(e) => setSearchText(e.target.value)}
-          size="large"
-          allowClear
-        />
-        {/* <div>
-          <Button size="large" type="primary" onClick={() => handleOpenModal()}>
-            <PlusOutlined /> Thêm thương hiệu
-          </Button>
-        </div> */}
-      </div>
-      <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
-        <div className="h-fit md:col-span-2 bg-white rounded-lg drop-shadow">
-          <Table
-            pagination={{
-              current: currentPage,
-              pageSize: pageSize,
-              total: totalItems,
-              onChange: (page, pageSize) => {
-                setCurrentPage(page);
-                setPageSize(pageSize);
-              },
-            }}
-            loading={isLoading}
-            columns={columns(onUpdate)}
-            // dataSource={brands}
-            dataSource={filteredBrands}
-            rowKey={(record) => record.id}
-            className="overflow-x-auto"
+    <>
+      <div className="space-y-4">
+        <BreadcrumbLink breadcrumb={breadcrumb} />
+        <div className="w-full flex justify-between items-center">
+          <Input.Search
+            className="w-1/2"
+            placeholder="Tìm kiếm tên thương hiệu"
+            value={searchText}
+            onSearch={handleSearch}
+            onChange={(e) => handleSearch(e.target.value)}
+            // onChange={(e) => setSearchText(e.target.value)}
+            size="large"
+            allowClear
           />
+          {/* <div>
+            <Button type="primary" onClick={() => showModal()}>
+              <PlusOutlined /> Thêm thương hiệu
+            </Button>
+          </div> */}
         </div>
-        <div className="h-fit bg-white rounded-lg drop-shadow">
-          <div
-            style={{
-              backgroundColor: "#1d4ed8",
-              height: "54.8px",
-              fontSize: "14px",
-              fontWeight: 600,
-            }}
-            className="rounded-t-xl p-4 text-white TableTitle text-xl text-center mb-5"
-          >
-            Thương hiệu
+        <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
+          <div className="h-fit md:col-span-2 bg-white rounded-lg drop-shadow">
+            <Table
+              pagination={{
+                current: currentPage,
+                pageSize: pageSize,
+                total: totalItems,
+                onChange: (page, pageSize) => {
+                  setCurrentPage(page);
+                  setPageSize(pageSize);
+                },
+              }}
+              loading={isLoading}
+              columns={columns(onUpdate)}
+              // dataSource={brands}
+              dataSource={filteredBrands}
+              rowKey={(record) => record.id}
+              className="overflow-x-auto"
+            />
           </div>
-          <Form form={form} className="px-4 grid grid-cols-3 gap-2">
-            <label htmlFor="name">Tên thương hiệu:</label>
-            <Form.Item
-              name="name"
-              className="col-span-2"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng nhập tên thương hiệu.",
-                },
-              ]}
+          <div className="h-fit bg-white rounded-lg drop-shadow">
+            <div
+              style={{
+                backgroundColor: "#1d4ed8",
+                height: "54.8px",
+                fontSize: "14px",
+                fontWeight: 600,
+              }}
+              className="rounded-t-xl p-4 text-white TableTitle text-xl text-center mb-5"
             >
-              <Input size="large" />
-            </Form.Item>
-            <label>Hình ảnh:</label>
-            <Form.Item
-              name="imageUrl"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng chọn ảnh.",
-                },
-              ]}
-              getValueFromEvent={(e) => e.fileList}
-            >
-              <Upload
-                name="file"
-                beforeUpload={() => false}
-                listType="picture-circle"
-                fileList={filelist}
-                accept="image/png, image/gif, image/jpeg, image/svg"
-                maxCount={1}
-                onChange={handleFileChange}
-              >
-                {filelist.length >= 1 ? null : (
-                  <button type="button">
-                    <UploadOutlined />
-                    <div>Chọn ảnh</div>
-                  </button>
-                )}
-              </Upload>
-            </Form.Item>
-
-            <div className="col-span-3 grid grid-cols-1 lg:grid-cols-5 gap-2 pb-4">
-              <Button
-                type="primary"
-                className="lg:col-span-2"
-                size="large"
-                htmlType="submit"
-                onClick={handleAdd}
-                disabled={isUpdate}
-              >
-                {loadingAdd ? <Spin /> : "Thêm"}
-              </Button>
-              <Button
-                type="primary"
-                className="lg:col-span-2"
-                size="large"
-                onClick={handleUpdate}
-                disabled={!isUpdate}
-              >
-                {loadingUpdate ? <Spin /> : "Cập nhật"}
-              </Button>
-              <Tooltip title="Làm mới">
-                <Button size="large" className="" onClick={handleClear}>
-                  <CiEraser className="text-2xl flex-shrink-0" />
-                </Button>
-              </Tooltip>
+              Thương hiệu
             </div>
-          </Form>
+            <Form form={form} className="px-4 grid grid-cols-3 gap-2">
+              <label htmlFor="name">Tên thương hiệu:</label>
+              <Form.Item
+                name="name"
+                className="col-span-2"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập tên thương hiệu.",
+                  },
+                ]}
+              >
+                <Input size="large" />
+              </Form.Item>
+              <label>Hình ảnh:</label>
+              <Form.Item
+                name="imageUrl"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng chọn ảnh.",
+                  },
+                ]}
+                getValueFromEvent={(e) => e.fileList}
+              >
+                <Upload
+                  name="file"
+                  beforeUpload={() => false}
+                  listType="picture-card"
+                  fileList={filelist}
+                  // accept="image/png, image/gif, image/jpeg, image/svg"
+                  maxCount={1}
+                  onChange={handleFileChange}
+                >
+                  {filelist.length >= 1 ? null : (
+                    <button
+                      style={{
+                        border: 0,
+                        background: "none",
+                      }}
+                      type="button"
+                    >
+                      <PlusOutlined />
+                      <div
+                        style={{
+                          marginTop: 8,
+                        }}
+                      >
+                        Upload
+                      </div>
+                    </button>
+                  )}
+                </Upload>
+              </Form.Item>
+
+              <div className="col-span-3 grid grid-cols-1 lg:grid-cols-5 gap-2 pb-4">
+                <Button
+                  type="primary"
+                  className="lg:col-span-2"
+                  size="large"
+                  htmlType="submit"
+                  onClick={handleAdd}
+                  disabled={isUpdate}
+                >
+                  {loadingAdd ? <Spin /> : "Thêm"}
+                </Button>
+                <Button
+                  type="primary"
+                  className="lg:col-span-2"
+                  size="large"
+                  onClick={handleUpdate}
+                  disabled={!isUpdate}
+                >
+                  {loadingUpdate ? <Spin /> : "Cập nhật"}
+                </Button>
+                <Tooltip title="Làm mới">
+                  <Button size="large" className="" onClick={handleClear}>
+                    <CiEraser className="text-2xl flex-shrink-0" />
+                  </Button>
+                </Tooltip>
+              </div>
+            </Form>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

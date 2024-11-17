@@ -42,7 +42,7 @@ export const navigateItems = [
   {
     key: "product",
     icon: <AiFillProduct />,
-    label: "Phiếu nhập",
+    label: "Sản phẩm",
     children: [
       { key: "/brands", icon: <FaBagShopping />, label: "Thương hiệu" },
       { key: "/categories", icon: <TbCategoryPlus />, label: "Danh mục" },
@@ -62,6 +62,51 @@ export const navigateItems = [
     ],
   },
 ];
+
+export const navigateInventorier = [
+  { key: "/home", icon: <PieChartOutlined />, label: "Thống kê" },
+  {
+    key: "product",
+    icon: <AiFillProduct />,
+    label: "Sản phẩm",
+    children: [
+      { key: "/brands", icon: <FaBagShopping />, label: "Thương hiệu" },
+      { key: "/categories", icon: <TbCategoryPlus />, label: "Danh mục" },
+      { key: "/sizes", icon: <FaTape />, label: "Kích thước" },
+      { key: "/products", icon: <AiFillProduct />, label: "Sản phẩm" },
+      { key: "/reviews", icon: <StarOutlined />, label: "Đánh giá" },
+    ],
+  },
+  {
+    key: "import",
+    icon: <CiSaveDown1 />,
+    label: "Phiếu nhập",
+    children: [
+      { key: "/imports", icon: <CiSaveDown1 />, label: "Phiếu nhập hàng" },
+      { key: "/loges", icon: <CiSaveDown2 />, label: "Lịch sử" },
+    ],
+  },
+];
+export const navigateManage = [
+  { key: "/home", icon: <PieChartOutlined />, label: "Thống kê" },
+  {
+    key: "role",
+    icon: <UserOutlined />,
+    label: "Quyền",
+    children: [{ key: "/users", icon: <UserOutlined />, label: "Người dùng" }],
+  },
+  {
+    key: "product",
+    icon: <AiFillProduct />,
+    label: "Sản phẩm",
+    children: [{ key: "/reviews", icon: <StarOutlined />, label: "Đánh giá" }],
+  },
+];
+export const navigateStaff = [
+  { key: "/home", icon: <PieChartOutlined />, label: "Thống kê" },
+  { key: "/orders", icon: <CiReceipt />, label: "Đơn đặt hàng" },
+];
+
 export const publicRoutes = [{ path: "/", component: Login, Layout: null }];
 
 export const privateRoutes = [
@@ -80,6 +125,31 @@ export const privateRoutes = [
   { path: "/add-imports", component: ImportAdd },
   { path: "/loges", component: Loges },
   { path: "/reviews", component: Review },
+];
+
+export const inventorierRoutes = [
+  { path: "/home", component: Home },
+  { path: "/brands", component: Brands },
+  { path: "/categories", component: Category },
+  { path: "/sizes", component: Sizes },
+  { path: "/products", component: Products },
+  { path: "/imports", component: Imports },
+  { path: "/loges", component: Loges },
+  { path: "/add-imports", component: ImportAdd },
+  { path: "/add-products", component: ProductAdd },
+  { path: "/product-detail/:id", component: ProductDetail },
+];
+
+export const manageRoutes = [
+  { path: "/home", component: Home },
+  { path: "/users", component: Users },
+  { path: "/reviews", component: Review },
+];
+
+export const staffRoutes = [
+  { path: "/home", component: Home },
+  { path: "/orders", component: Orders },
+  { path: "/order-detail/:id", component: OrderDetail },
 ];
 
 export const generatePublicRoutes = (isAuthenticated) => {
@@ -101,6 +171,7 @@ export const generatePublicRoutes = (isAuthenticated) => {
         />
       );
     }
+
     return (
       <Route
         key={index}
@@ -118,6 +189,84 @@ export const generatePublicRoutes = (isAuthenticated) => {
 export const generatePrivateRoutes = (isAuthenticated) => {
   if (isAuthenticated) {
     return privateRoutes.map((route, index) => {
+      const Page = route.component;
+      let Layout = DefaultLayout;
+
+      if (route.Layout) {
+        Layout = route.Layout;
+      } else if (route.Layout === null) {
+        Layout = Fragment;
+      }
+      return (
+        <Route
+          key={index}
+          path={route.path}
+          element={
+            <Layout>
+              <Page />
+            </Layout>
+          }
+        />
+      );
+    });
+  }
+};
+
+export const generateInventorierRoutes = (isAuthenticated) => {
+  if (isAuthenticated) {
+    return inventorierRoutes.map((route, index) => {
+      const Page = route.component;
+      let Layout = DefaultLayout;
+
+      if (route.Layout) {
+        Layout = route.Layout;
+      } else if (route.Layout === null) {
+        Layout = Fragment;
+      }
+      return (
+        <Route
+          key={index}
+          path={route.path}
+          element={
+            <Layout>
+              <Page />
+            </Layout>
+          }
+        />
+      );
+    });
+  }
+};
+
+export const generateManageRoutes = (isAuthenticated) => {
+  if (isAuthenticated) {
+    return manageRoutes.map((route, index) => {
+      const Page = route.component;
+      let Layout = DefaultLayout;
+
+      if (route.Layout) {
+        Layout = route.Layout;
+      } else if (route.Layout === null) {
+        Layout = Fragment;
+      }
+      return (
+        <Route
+          key={index}
+          path={route.path}
+          element={
+            <Layout>
+              <Page />
+            </Layout>
+          }
+        />
+      );
+    });
+  }
+};
+
+export const generateStaffRoutes = (isAuthenticated) => {
+  if (isAuthenticated) {
+    return staffRoutes.map((route, index) => {
       const Page = route.component;
       let Layout = DefaultLayout;
 

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  App,
   Button,
   Flex,
   Form,
@@ -18,7 +17,6 @@ import { showError } from "../../services/commonService";
 import BreadcrumbLink from "../../components/BreadcrumbLink";
 
 const Category = () => {
-  const { notification } = App.useApp();
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState([]);
   const [loadingAdd, setLoadingAdd] = useState(false);
@@ -32,6 +30,15 @@ const Category = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [totalItems, setTotalItems] = useState(0);
+  // const [searchText, setSearchText] = useState("");
+
+  // const filteredCategorys = data.filter((category) =>
+  //   category.name.toLowerCase().includes(searchText.toLowerCase())
+  // );
+
+  // const handleSearch = (e) => {
+  //   setSearchText(e.target.value);
+  // };
 
   const breadcrumb = [
     {
@@ -163,6 +170,17 @@ const Category = () => {
   return (
     <div className="space-y-4">
       <BreadcrumbLink breadcrumb={breadcrumb} />
+      {/* <div className="w-full flex justify-between items-center">
+        <Input.Search
+          className="w-1/2"
+          placeholder="Tìm kiếm tên thương hiệu"
+          value={searchText}
+          onSearch={handleSearch}
+          onChange={(e) => setSearchText(e.target.value)}
+          size="large"
+          allowClear
+        />
+      </div> */}
       <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
         <div className="h-fit md:col-span-2 bg-white rounded-lg drop-shadow">
           <Table
@@ -178,6 +196,7 @@ const Category = () => {
             loading={isLoading}
             columns={columns(onUpdate, handleDelete)}
             dataSource={data}
+            // dataSource={filteredCategorys}
             rowKey={(record) => record.id}
             className="overflow-x-auto"
           />

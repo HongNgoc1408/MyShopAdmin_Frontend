@@ -75,7 +75,9 @@ const User = () => {
           search,
           "User"
         );
-        console.log(res);
+
+        // console.log(res);
+        
         setData(res.data?.items);
         setTotalItems(res.data?.totalItems);
       } catch (error) {

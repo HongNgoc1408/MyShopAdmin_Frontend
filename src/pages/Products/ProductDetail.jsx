@@ -88,7 +88,7 @@ const ProductDetail = () => {
         setProductAttributes(pAttr);
 
         const { data } = await ProductService.getById(id);
-        
+
         // console.log("getById", data);
 
         form.setFieldsValue(data);
@@ -585,7 +585,7 @@ const ProductDetail = () => {
               />
             </Form.Item>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              <Button
+              {/* <Button
                 disabled={
                   isEmptyObject(productAttributes) || !update || updateLoading
                 }
@@ -595,7 +595,7 @@ const ProductDetail = () => {
                 size="large"
               >
                 {updateLoading ? <Spin /> : "Update"}
-              </Button>
+              </Button> */}
 
               <ConfigProvider
                 theme={{

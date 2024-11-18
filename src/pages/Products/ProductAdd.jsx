@@ -188,6 +188,8 @@ export default function AddProduct() {
         ...values,
         enable: values.enable ?? true,
         description: values.description ?? "",
+        guideSize: values.guideSize ?? "",
+        care: values.care ?? "",
         discount: values.discount ?? 0,
       };
       delete data.images;
@@ -328,6 +330,24 @@ export default function AddProduct() {
                 rows={6}
                 count={{ show: true, max: 500 }}
                 placeholder="Áo đẹp..."
+                maxLength={500}
+              />
+            </Form.Item>
+            <Form.Item label="Hướng dẫn chọn size" name="guideSize">
+              <TextArea
+                id="guideSize"
+                autoSize={{ minRows: 6 }}
+                count={{ show: true, max: 500 }}
+                placeholder="Hướng dẫn chọn size ..."
+                maxLength={500}
+              />
+            </Form.Item>
+            <Form.Item label="Hướng dẫn bảo quản và sử dụng" name="care">
+              <TextArea
+                id="care"
+                autoSize={{ minRows: 6 }}
+                count={{ show: true, max: 500 }}
+                placeholder="Không sử dụng ..."
                 maxLength={500}
               />
             </Form.Item>

@@ -47,7 +47,7 @@ const ImportAdd = () => {
     try {
       const colors = await ProductService.getColorById(productId);
       setColorNames(colors.data);
-      setSizeNames([]); // Reset kích cỡ khi chọn sản phẩm mới
+      setSizeNames([]);
     } catch (error) {
       showError(error);
     }

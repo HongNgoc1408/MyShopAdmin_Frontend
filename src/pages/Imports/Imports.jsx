@@ -61,12 +61,7 @@ const Imports = () => {
       dataIndex: "creator",
       render: (value) => <div className="truncate w-24 md:w-48">{value}</div>,
     },
-    {
-      title: "Ngày nhập hàng",
-      dataIndex: "entryDate",
-      sorter: (a, b) => new Date(a.entryDate) - new Date(b.entryDate),
-      render: (value) => formatDateTime(value),
-    },
+
     {
       title: "Ghi chú",
       dataIndex: "note",
@@ -76,6 +71,18 @@ const Imports = () => {
       dataIndex: "total",
       sorter: (a, b) => a.total - b.total,
       render: (value) => formatVND(value),
+    },
+    {
+      title: "Ngày nhập hàng",
+      dataIndex: "entryDate",
+      sorter: (a, b) => new Date(a.entryDate) - new Date(b.entryDate),
+      render: (value) => formatDateTime(value),
+    },
+    {
+      title: "Ngày tạo",
+      dataIndex: "createdAt",
+      sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
+      render: (value) => formatDateTime(value),
     },
     {
       title: "Thực hiện",
@@ -119,8 +126,9 @@ const Imports = () => {
   const openImportDetail = async (id) => {
     try {
       const res = await ImportService.getDetail(id);
+      console.log(res);
       const item = data.find((item) => item.id === id);
-      // console.log(item);
+      console.log(item);
       setDetail(item);
       setImportDetails(res.data);
       form.setFieldsValue({
@@ -184,7 +192,7 @@ const Imports = () => {
       );
       setData(updatedData);
 
-      notification.success({ message: "Thành công.", placement: "top"});
+      notification.success({ message: "Thành công.", placement: "top" });
 
       setIsModalOpen(false);
     } catch (error) {
@@ -237,7 +245,7 @@ const Imports = () => {
                     </Form.Item>
 
                     <Form.Item label="Tổng giá trị" name="total">
-                      <Input value={formatVND(detail.total)} disabled />
+                      <Input value={formatVND(detail.total)} readOnly />
                     </Form.Item>
                     <Form.Item label="Ghi chú" name="note">
                       <TextArea
@@ -267,7 +275,7 @@ const Imports = () => {
                       name={`items[${index}].productName`}
                       initialValue={item.productName}
                     >
-                      <Input value={item.productName} disabled />
+                      <Input value={item.productName} readOnly />
                     </Form.Item>
                     <div className="flex gap-5">
                       <Form.Item
@@ -275,14 +283,14 @@ const Imports = () => {
                         name={`items[${index}].colorName`}
                         initialValue={item.colorName}
                       >
-                        <Input value={item.colorName} disabled />
+                        <Input value={item.colorName} readOnly />
                       </Form.Item>
                       <Form.Item
                         label="Kích cỡ"
                         name={`items[${index}].sizeName`}
                         initialValue={item.sizeName}
                       >
-                        <Input value={item.sizeName} disabled />
+                        <Input value={item.sizeName} readOnly />
                       </Form.Item>
                     </div>
                     <div className="flex gap-5">

@@ -52,12 +52,7 @@ const Loges = () => {
       dataIndex: "creator",
       render: (value) => <div className="truncate w-24 md:w-48">{value}</div>,
     },
-    {
-      title: "Ngày nhập hàng",
-      dataIndex: "entryDate",
-      sorter: (a, b) => new Date(a.entryDate) - new Date(b.entryDate),
-      render: (value) => formatDateTime(value),
-    },
+
     {
       title: "Ghi chú",
       dataIndex: "note",
@@ -67,6 +62,12 @@ const Loges = () => {
       dataIndex: "total",
       sorter: (a, b) => a.total - b.total,
       render: (value) => formatVND(value),
+    },
+    {
+      title: "Ngày nhập hàng",
+      dataIndex: "entryDate",
+      sorter: (a, b) => new Date(a.entryDate) - new Date(b.entryDate),
+      render: (value) => formatDateTime(value),
     },
     {
       title: "Thực hiện",
@@ -93,7 +94,7 @@ const Loges = () => {
           search
         );
 
-        // console.log("fetchData", res.data?.items);
+        // console.log("fetchData1", res.data?.items);
 
         setData(res.data?.items);
         setTotalItems(res.data?.totalItems);

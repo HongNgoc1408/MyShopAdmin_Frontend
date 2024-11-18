@@ -1,18 +1,104 @@
-import { Avatar, Badge, Flex, Popconfirm, Typography } from "antd";
-import React, { useEffect, useState } from "react";
+import {
+  Avatar,
+  Badge,
+  Button,
+  Card,
+  Dropdown,
+  Flex,
+  Form,
+  Input,
+  Menu,
+  Modal,
+  notification,
+  Popconfirm,
+  Typography,
+  Upload,
+} from "antd";
+import React, { useContext, useEffect, useState } from "react";
 import {
   MessageOutlined,
   NotificationOutlined,
+  UploadOutlined,
 } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../../App";
+import { Link, useNavigate } from "react-router-dom";
+import { AvatarContext, useAuth } from "../../../App";
 import authAction from "../../../services/AuthAction";
 import authService from "../../../services/authService";
+import { showError, toImageLink } from "../../../services/commonService";
+import UserService from "../../../services/UserService";
 
 const Header = () => {
   const { state, dispatch } = useAuth();
+  const { avatar } = useContext(AvatarContext);
   const [username, setUsername] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
   const navigate = useNavigate();
+  const [form] = Form.useForm();
+  const [data, setData] = useState([]);
+  const { setAvatar } = useContext(AvatarContext);
+  const [avt, setAvt] = useState([]);
+  const [fileList, setFileList] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await UserService.getProfile();
+        const avatar = await UserService.getAvatar();
+
+        // console.log("1", data.data);
+        // console.log("2", address.data);
+        // console.log("3", avatar.data.imageURL);
+
+        setData(data.data);
+        setAvt(avatar.data.imageURL);
+      } catch (error) {
+        showError(error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const handleFileChange = ({ fileList: newFileList }) =>
+    setFileList(newFileList);
+
+  const handleUpdateClick = () => {
+    setIsAvatarModalOpen(true); // Mở modal cập nhật ảnh
+    setFileList([]);
+  };
+
+  const handleAvatarModalCancel = () => {
+    setIsAvatarModalOpen(false); // Đóng modal cập nhật ảnh
+    setFileList([]);
+  };
+
+  const handleAvatarUpdate = async () => {
+    if (fileList.length === 0) {
+      notification.error({
+        message: "Vui lòng chọn ảnh.",
+        placement: "top",
+      });
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("avatar", fileList[0].originFileObj);
+
+    try {
+      const res = await UserService.updateAvatar(formData);
+
+      notification.success({
+        message: "Cập nhật ảnh đại diện thành công.",
+        placement: "top",
+      });
+
+      setAvt(res.data.imageURL);
+      setAvatar(res.data.imageURL);
+      setIsAvatarModalOpen(false);
+    } catch (error) {
+      showError(error);
+    }
+  };
 
   useEffect(() => {
     const user = authService.getCurrentUser();
@@ -25,8 +111,102 @@ const Header = () => {
     navigate("/");
   };
 
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  const menu = (
+    <Menu>
+      <Menu.Item key="1">
+        <div onClick={showModal} className="cursor-pointer">
+          Thông tin
+        </div>
+      </Menu.Item>
+      <Menu.Item key="2">
+        <Popconfirm
+          title="Bạn có chắc muốn đăng xuất?"
+          onConfirm={handleLogout}
+        >
+          Đăng xuất
+        </Popconfirm>
+      </Menu.Item>
+    </Menu>
+  );
+
   return (
     <>
+      <Modal
+        title="Xác nhận đăng xuất"
+        open={isModalOpen}
+        onOk={handleLogout}
+        onCancel={handleCancel}
+        okText="Cập nhật"
+        cancelText="Hủy"
+      >
+        <Card title="Thông tin cá nhân">
+          <Form layout="vertical" form={form}>
+            <div className="flex items-center justify-center">
+              <Avatar src={toImageLink(avt)} size={175} fontWeight={800} />
+            </div>
+
+            <Form.Item label="Email">
+              <Input value={data.email} readOnly />
+            </Form.Item>
+            <Form.Item label="Họ và tên">
+              <Input defaultValue={data.fullName} value={data.fullName} />
+            </Form.Item>
+            <Form.Item label="Số điện thoại">
+              <Input defaultValue={data.phoneNumber} value={data.phoneNumber} />
+            </Form.Item>
+            <Form.Item>
+              <Button type="primary" onClick={handleUpdateClick}>
+                Cập nhật
+              </Button>
+
+              <Modal
+                width={200}
+                centered
+                title="Cập nhật ảnh"
+                open={isAvatarModalOpen}
+                onCancel={handleAvatarModalCancel}
+                onOk={handleAvatarUpdate}
+              >
+                <Form.Item
+                  className="mx-auto"
+                  name="imageUrl"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng chọn ảnh.",
+                    },
+                  ]}
+                >
+                  <Upload
+                    name="file"
+                    beforeUpload={() => false}
+                    listType="picture-circle"
+                    fileList={fileList}
+                    accept="image/png, image/gif, image/jpeg, image/svg"
+                    maxCount={1}
+                    onChange={handleFileChange}
+                    showUploadList={{ showPreviewIcon: false }}
+                  >
+                    {fileList.length >= 1 ? null : (
+                      <button type="button">
+                        <UploadOutlined />
+                        <div>Chọn ảnh</div>
+                      </button>
+                    )}
+                  </Upload>
+                </Form.Item>
+              </Modal>
+            </Form.Item>
+          </Form>
+        </Card>
+      </Modal>
       <Flex className="bg-white p-3 text-center justify-between sticky top-0 z-30">
         {state.isAuthenticated && (
           <Typography.Title level={4} type="secondary">
@@ -34,21 +214,30 @@ const Header = () => {
           </Typography.Title>
         )}
         <Flex className=" items-center space-x-3  text-blue-600">
-          <Badge count={1}>
-            <MessageOutlined className="p-2 border-2 rounded-md text-lg hover:bg-gray-300" />
-          </Badge>
+          <Link to={"https://dashboard.kommunicate.io/conversations"}>
+            <Badge>
+              <MessageOutlined className="p-2 border-2 rounded-md text-lg hover:bg-gray-300" />
+            </Badge>
+          </Link>
+
           <Badge dot>
             <NotificationOutlined className="p-2 border-2 rounded-md text-lg  hover:bg-gray-300" />
           </Badge>
-          <Popconfirm
-            title="Bạn có chắc muốn đăng xuất?"
-            onConfirm={handleLogout}
-          >
-            <Avatar
-              src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
-              className="h-10 w-10 hover:ring-4 user cursor-pointer relative ring-orange-600/30 rounded-full bg-cover bg-center"
-            />
-          </Popconfirm>
+
+          <Dropdown overlay={menu} placement="bottomRight">
+            <Link to={"/"} className="flex text-base p-2 cursor-pointer">
+              {avatar ? (
+                <Avatar
+                  className="h-10 w-10 hover:ring-4 user cursor-pointer relative ring-orange-600/30 rounded-full bg-cover bg-center"
+                  src={toImageLink(avatar)}
+                  size={30}
+                  fontWeight={800}
+                />
+              ) : (
+                <Avatar src="avatar.png" size={30} fontWeight={800} />
+              )}
+            </Link>
+          </Dropdown>
         </Flex>
       </Flex>
     </>

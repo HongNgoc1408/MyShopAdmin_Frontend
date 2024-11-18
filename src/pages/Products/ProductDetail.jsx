@@ -223,6 +223,8 @@ const ProductDetail = () => {
         ...values,
         enable: values.enable ?? true,
         description: values.description ?? "",
+        guideSize: values.guideSize ?? "",
+        care: values.care ?? "",
         discount: values.discount ?? 0,
       };
       delete data.imageUrls;
@@ -366,6 +368,25 @@ const ProductDetail = () => {
                 autoSize={{ minRows: 6 }}
                 count={{ show: true, max: 500 }}
                 placeholder="Áo đẹp..."
+                maxLength={500}
+              />
+            </Form.Item>
+
+            <Form.Item label="Hướng dẫn chọn size" name="guideSize">
+              <TextArea
+                id="guideSize"
+                autoSize={{ minRows: 6 }}
+                count={{ show: true, max: 500 }}
+                placeholder="Hướng dẫn chọn size ..."
+                maxLength={500}
+              />
+            </Form.Item>
+            <Form.Item label="Hướng dẫn bảo quản và sử dụng" name="care">
+              <TextArea
+                id="care"
+                autoSize={{ minRows: 6 }}
+                count={{ show: true, max: 500 }}
+                placeholder="Không sử dụng ..."
                 maxLength={500}
               />
             </Form.Item>
@@ -539,7 +560,7 @@ const ProductDetail = () => {
                           <div className="w-24 truncate border rounded-md px-2 py-1 text-center">
                             {color?.colorName}
                           </div>
-                          <InputNumber
+                          {/* <InputNumber
                             required
                             min={0}
                             className="w-full"
@@ -562,7 +583,7 @@ const ProductDetail = () => {
                               setUpdate(true);
                             }}
                             placeholder="Số lượng kho..."
-                          />
+                          /> */}
                         </Flex>
                       );
                     }
@@ -585,7 +606,7 @@ const ProductDetail = () => {
               />
             </Form.Item>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              {/* <Button
+              <Button
                 disabled={
                   isEmptyObject(productAttributes) || !update || updateLoading
                 }
@@ -595,7 +616,7 @@ const ProductDetail = () => {
                 size="large"
               >
                 {updateLoading ? <Spin /> : "Update"}
-              </Button> */}
+              </Button>
 
               <ConfigProvider
                 theme={{

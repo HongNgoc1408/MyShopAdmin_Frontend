@@ -144,7 +144,7 @@ const Users = () => {
         password: values.password,
         fullName: values.fullName,
         phoneNumber: values.phoneNumber,
-        roles: ["Users"],
+        roles: ["User"],
       };
 
       const response = await UserService.update(id, user);
@@ -175,9 +175,9 @@ const Users = () => {
           currentPage,
           currentPageSize,
           search,
-          role
+          "User"
         );
-
+        console.log(res.data);
         setData(res.data?.items);
         setTotalItems(res.data?.totalItems);
       } catch (error) {

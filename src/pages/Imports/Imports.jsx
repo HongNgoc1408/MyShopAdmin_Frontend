@@ -23,7 +23,15 @@ import BreadcrumbLink from "../../components/BreadcrumbLink";
 import ImportService from "../../services/ImportService";
 import TextArea from "antd/es/input/TextArea";
 import dayjs from "dayjs";
-
+const breadcrumb = [
+  {
+    path: "/",
+    title: <HomeTwoTone />,
+  },
+  {
+    title: "Phiếu nhập hàng",
+  },
+];
 const Imports = () => {
   const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
@@ -38,16 +46,6 @@ const Imports = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpenUpdate, setIsOpenUpdate] = useState(false);
   const [total, setTotal] = useState(0);
-
-  const breadcrumb = [
-    {
-      path: "/",
-      title: <HomeTwoTone />,
-    },
-    {
-      title: "Phiếu nhập hàng",
-    },
-  ];
 
   const columns = (openStockDetail) => [
     {
@@ -126,9 +124,9 @@ const Imports = () => {
   const openImportDetail = async (id) => {
     try {
       const res = await ImportService.getDetail(id);
-      console.log(res);
+      console.log("res.data", res.data);
       const item = data.find((item) => item.id === id);
-      console.log(item);
+      console.log("item", item);
       setDetail(item);
       setImportDetails(res.data);
       form.setFieldsValue({

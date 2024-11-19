@@ -114,7 +114,7 @@ const StatisticProduct = () => {
           month
         );
 
-        console.log("r", r.data);
+        // console.log("r", r.data);
 
         setSalesYearProduct(r.data.sales.total);
         setSpendingYearProduct(r.data.spending.total);

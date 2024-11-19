@@ -69,6 +69,7 @@ const ImportAdd = () => {
       total: values.total,
       importProducts: values.items.map((item) => ({
         productId: item.productName,
+        productName: item.productName,
         quantity: item.quantity || 0,
         price: item.price || 0,
         colorId: item.colorName,
@@ -195,6 +196,7 @@ const ImportAdd = () => {
                             ))}
                           </Select>
                         </Form.Item>
+
                         <div className="flex gap-5">
                           <Form.Item
                             label="Màu sắc"

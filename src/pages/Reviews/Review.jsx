@@ -4,7 +4,6 @@ import {
   Flex,
   Image,
   message,
-  notification,
   Pagination,
   Popconfirm,
   Rate,

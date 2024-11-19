@@ -66,7 +66,7 @@ const Sidebar = () => {
       >
         <div>
           <Link to="/home">
-            <img src="/logo.png" alt="logo" className="w-52 mx-auto" />
+            <img src="logo.png" alt="logo" className="w-52 mx-auto" />
           </Link>
         </div>
         <Menu

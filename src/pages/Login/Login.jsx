@@ -33,7 +33,6 @@ const Login = () => {
           placement: "top",
         });
         navigate("/home");
-
       } else if (res.data?.roles?.includes("Manage")) {
         dispatch(authAction.LOGIN(res.data?.roles));
         notification.success({
@@ -66,7 +65,7 @@ const Login = () => {
       <div className="w-11/12 md:w-3/5 lg:w-2/5 space-y-4 px-10 py-14 bg-white shadow-lg rounded-lg overflow-hidden">
         <>
           <h2 className="text-3xl font-bold text-center mb-6 text-indigo-600">
-            <img src="/logo.png" alt="logo" className="w-80 mx-auto" />
+            <img src="logo.png" alt="logo" className="w-80 mx-auto" />
           </h2>
           <Form form={form} disabled={loading} onFinish={handleSubmit}>
             <Form.Item

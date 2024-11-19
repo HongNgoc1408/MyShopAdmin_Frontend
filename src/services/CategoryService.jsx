@@ -5,6 +5,9 @@ const API_URL = process.env.REACT_APP_API_URL + "/api/category";
 
 const getAll = async () => await axios.get(API_URL, { headers: authHeader() });
 
+const getDetail = async (id) =>
+  await axios.get(API_URL + `/${id}`, { headers: authHeader() });
+
 const add = async (data) =>
   await axios.post(API_URL + "/create", data, { headers: authHeader() });
 
@@ -16,6 +19,7 @@ const remove = async (id) =>
 
 const CategoryService = {
   getAll,
+  getDetail,
   add,
   update,
   remove,

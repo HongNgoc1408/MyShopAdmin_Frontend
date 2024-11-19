@@ -268,11 +268,10 @@ const Roles = () => {
             <Select
               mode="multiple"
               options={[
-                { label: "Admin", value: "Admin" },
-                { label: "Staff", value: "Staff" },
-                { label: "Inventorier", value: "Inventorier" },
-                { label: "Manage", value: "Manage" },
-                { label: "User", value: "User" },
+                { label: "Quản trị viên", value: "Admin" },
+                { label: "Nhân viên kho", value: "Inventorier" },
+                { label: "Nhân viên", value: "Staff" },
+                { label: "Khách hàng", value: "User" },
               ]}
             />
           </Form.Item>
@@ -308,23 +307,19 @@ const Roles = () => {
               options={[
                 {
                   value: "Admin",
-                  label: "Admin",
+                  label: "Quản trị viên",
                 },
                 {
                   value: "Inventorier",
-                  label: "Inventorier",
+                  label: "Nhân viên kho",
                 },
                 {
                   value: "Staff",
-                  label: "Staff",
-                },
-                {
-                  value: "Manage",
-                  label: "Manage",
+                  label: "Nhân viên",
                 },
                 {
                   value: "User",
-                  label: "User",
+                  label: "Khách hàng",
                 },
               ]}
             />

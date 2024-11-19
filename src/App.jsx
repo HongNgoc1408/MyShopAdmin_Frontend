@@ -31,7 +31,6 @@ function App() {
       const fetchFavorites = async () => {
         try {
           const avatar = await UserService.getAvatar();
-
           setAvatar(avatar.data.imageURL);
         } catch (error) {
           console.error("Error", error);
@@ -41,6 +40,7 @@ function App() {
       fetchFavorites();
     }
   }, [state.isAuthenticated]);
+  
   return (
     <div>
       <AuthContext.Provider value={{ state, dispatch }}>

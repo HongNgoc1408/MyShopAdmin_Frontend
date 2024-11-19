@@ -29,14 +29,13 @@ import UserService from "../../../services/UserService";
 
 const Header = () => {
   const { state, dispatch } = useAuth();
-  const { avatar } = useContext(AvatarContext);
   const [username, setUsername] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [data, setData] = useState([]);
-  const { setAvatar } = useContext(AvatarContext);
+  const { avatar, setAvatar } = useContext(AvatarContext);
   const [avt, setAvt] = useState([]);
   const [fileList, setFileList] = useState([]);
 
@@ -44,14 +43,14 @@ const Header = () => {
     const fetchData = async () => {
       try {
         const data = await UserService.getProfile();
-        const avatar = await UserService.getAvatar();
+        // const avatar = await UserService.getAvatar();
 
         // console.log("1", data.data);
         // console.log("2", address.data);
         // console.log("3", avatar.data.imageURL);
 
         setData(data.data);
-        setAvt(avatar.data.imageURL);
+        // setAvt(avatar.data.imageURL);
       } catch (error) {
         showError(error);
       }
@@ -118,30 +117,34 @@ const Header = () => {
     setIsModalOpen(false);
   };
 
-  const menu = (
-    <Menu>
-      <Menu.Item key="1">
+  const items = [
+    {
+      key: "1",
+      label: (
         <div onClick={showModal} className="cursor-pointer">
           Thông tin
         </div>
-      </Menu.Item>
-      <Menu.Item key="2">
+      ),
+    },
+    {
+      key: "2",
+      label: (
         <Popconfirm
           title="Bạn có chắc muốn đăng xuất?"
           onConfirm={handleLogout}
         >
           Đăng xuất
         </Popconfirm>
-      </Menu.Item>
-    </Menu>
-  );
-
+      ),
+    },
+  ];
+  
   return (
     <>
       <Modal
-        title="Xác nhận đăng xuất"
+        title="Xác nhận cập nhật"
         open={isModalOpen}
-        onOk={handleLogout}
+        onOk={handleUpdateClick}
         onCancel={handleCancel}
         okText="Cập nhật"
         cancelText="Hủy"
@@ -149,7 +152,7 @@ const Header = () => {
         <Card title="Thông tin cá nhân">
           <Form layout="vertical" form={form}>
             <div className="flex items-center justify-center">
-              <Avatar src={toImageLink(avt)} size={175} fontWeight={800} />
+              <Avatar src={toImageLink(avatar)} size={175} fontWeight={800} />
             </div>
 
             <Form.Item label="Email">
@@ -224,7 +227,7 @@ const Header = () => {
             <NotificationOutlined className="p-2 border-2 rounded-md text-lg  hover:bg-gray-300" />
           </Badge>
 
-          <Dropdown overlay={menu} placement="bottomRight">
+          <Dropdown menu={{ items }} placement="bottomRight">
             <Link to={"/"} className="flex text-base p-2 cursor-pointer">
               {avatar ? (
                 <Avatar

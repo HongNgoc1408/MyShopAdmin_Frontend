@@ -30,8 +30,8 @@ const logout = () => {
   Cookies.remove("access_token_admin");
 };
 
-const refreshToken = async (data) =>
-  await axios.post(API_URL + "/refresh-token", data);
+// const refreshToken = async (data) =>
+//   await axios.post(API_URL + "/refresh-token", data);
 
 const getRole = () => {
   const user = getCurrentUser();
@@ -43,7 +43,7 @@ const authService = {
   getCurrentUser,
   setUserToken,
   logout,
-  refreshToken,
+  // refreshToken,
   getRole,
 };
 

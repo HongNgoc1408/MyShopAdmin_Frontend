@@ -17,7 +17,9 @@ export const showError = (error) => {
   });
 };
 
-export const toImageSrc = (url) => API_URL + "/" + url;
+export const toImageSrc = (url) => {
+  return API_URL + "/" + url;
+};
 
 export const getBase64 = (file) =>
   new Promise((resolve, reject) => {

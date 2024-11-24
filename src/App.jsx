@@ -9,7 +9,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./App.css";
 import {
   generateInventorierRoutes,
-  generateManageRoutes,
+  generateManagerRoutes,
   generatePrivateRoutes,
   generatePublicRoutes,
   generateStaffRoutes,
@@ -40,7 +40,7 @@ function App() {
       fetchFavorites();
     }
   }, [state.isAuthenticated]);
-  
+
   return (
     <div>
       <AuthContext.Provider value={{ state, dispatch }}>
@@ -52,8 +52,8 @@ function App() {
                 generatePrivateRoutes(state.isAuthenticated)}
               {state.roles?.includes("Inventorier") &&
                 generateInventorierRoutes(state.isAuthenticated)}
-              {state.roles?.includes("Manage") &&
-                generateManageRoutes(state.isAuthenticated)}
+              {state.roles?.includes("Manager") &&
+                generateManagerRoutes(state.isAuthenticated)}
               {state.roles?.includes("Staff") &&
                 generateStaffRoutes(state.isAuthenticated)}
               <Route path="*" element={<NotFound />} />

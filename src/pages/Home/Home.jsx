@@ -75,7 +75,7 @@ const Home = () => {
       setDates([startDate, endDate]);
     }
   };
-  
+
   useEffect(() => {
     const fetchRoles = async () => {
       try {
@@ -249,7 +249,7 @@ const Home = () => {
 
   return (
     <>
-      {roles.some((role) => role === "Admin" || role === "Inventorier") ? (
+      {roles.some((role) => role === "Admin" || role === "Manager") ? (
         <>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-5">
             <Card>

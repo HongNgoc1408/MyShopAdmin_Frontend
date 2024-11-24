@@ -12,6 +12,7 @@ import {
   Select,
   Table,
   Tabs,
+  Tag,
 } from "antd";
 import {
   formatDateTime,
@@ -131,6 +132,7 @@ const Orders = () => {
   const handleUpdate = async (id, data) => {
     try {
       await OrderService.updateStatus(id, { orderStatus: data });
+
       notification.success({
         message: "Cập nhật trạng thái thành công",
         placement: "top",
@@ -142,12 +144,33 @@ const Orders = () => {
 
   const columns = [
     {
-      title: "ID",
+      title: "Mã đơn",
       dataIndex: "id",
       sorter: (a, b) => a.id - b.id,
-      render: (value) => <span className="font-semibold">{value}</span>,
+      render: (value) => (
+        <p style={{ width: 10 }} className="font-semibold">
+          {value}
+        </p>
+      ),
     },
-
+    {
+      title: "Mã vận đơn",
+      dataIndex: "shippingCode",
+      sorter: (a, b) => a.shippingCode - b.shippingCode,
+      render: (value) => <span>{value}</span>,
+    },
+    // {
+    //   title: "Người nhận",
+    //   dataIndex: "receiver",
+    //   sorter: (a, b) => a.receiver - b.receiver,
+    //   render: (value) => <p style={{ width: 100 }}>{value}</p>,
+    // },
+    // {
+    //   title: "Địa chỉ nhận",
+    //   dataIndex: "deliveryAddress",
+    //   sorter: (a, b) => a.deliveryAddress - b.deliveryAddress,
+    //   render: (value) => <p style={{ width: 200 }}>{value}</p>,
+    // },
     {
       title: "Ngày đặt hàng",
       dataIndex: "orderDate",
@@ -157,13 +180,21 @@ const Orders = () => {
       title: "Ngày dự kiến",
       dataIndex: "expected_delivery_time",
       render: (value) =>
-        formatDateTime(value) === "null" ? "" : formatDateTime(value),
+        value === "0001-01-01T00:00:00" ? (
+          <Tag color="red">Chưa có</Tag>
+        ) : (
+          formatDateTime(value)
+        ),
     },
     {
       title: "Ngày nhận hàng",
       dataIndex: "receivedDate",
       render: (value) =>
-        formatDateTime(value) === "null" ? "" : formatDateTime(value),
+        value === "0001-01-01T00:00:00" ? (
+          <Tag color="red">Chưa nhận</Tag>
+        ) : (
+          formatDateTime(value)
+        ),
     },
     {
       title: "Phí vận chuyển",
@@ -190,22 +221,29 @@ const Orders = () => {
       title: "Trạng thái đánh giá",
       dataIndex: "reviewed",
       align: "center",
+      render: (value) =>
+        value ? (
+          <Tag color="blue">Đã đánh giá</Tag>
+        ) : (
+          <Tag color="red">Chưa đánh giá</Tag>
+        ),
     },
-
     {
-      title: "Trạng thái thanh toán",
+      title: "Trạng thái đơn hàng",
       dataIndex: "orderStatus",
       key: "orderStatus",
       render: (value, record) => (
         <>
           <Select
-            style={{ width: 200 }}
-            defaultValue={value}
+            style={{ width: 150 }}
+            defaultValue={value === 2 ? "Đang vận chuyển" : value}
             onChange={(newValue) => handleUpdate(record.id, newValue)}
-            options={statusOrders.map((item) => ({
-              value: item.value,
-              label: item.label,
-            }))}
+            options={statusOrders
+              .filter((item) => item.value !== 2)
+              .map((item) => ({
+                value: item.value,
+                label: item.label,
+              }))}
           />
         </>
       ),
@@ -215,7 +253,12 @@ const Orders = () => {
       align: "center",
       render: (_, record) => (
         <Flex justify="center" align="center" className="space-x-1">
-          <Button onClick={() => showModal(record.id)}>Vận chuyển</Button>
+          <Button
+            className={`${record.orderStatus === 1 ? "" : "hidden"} `}
+            onClick={() => showModal(record.id)}
+          >
+            Vận chuyển
+          </Button>
           <Modal
             title="Thông tin đơn hàng vận chuyển"
             open={isModalOpen}
@@ -361,10 +404,9 @@ const Orders = () => {
     { key: 6, label: "Tất cả" },
     { key: 0, label: "Đang xử lý" },
     { key: 1, label: "Đã duyệt" },
-    { key: 2, label: "Đang chờ lấy hàng" },
-    { key: 3, label: "Đang vận chuyển" },
-    { key: 4, label: "Đã nhận" },
-    { key: 5, label: "Đã hủy" },
+    { key: 2, label: "Đang vận chuyển" },
+    { key: 3, label: "Đã nhận" },
+    { key: 4, label: "Đã hủy" },
   ];
 
   const filteredOrders = Array.isArray(data)
@@ -409,14 +451,14 @@ const Orders = () => {
             allowClear
             size="large"
             options={[
+              { value: "", label: "Tất cả" },
               { value: "VNPay", label: "VNPay" },
               { value: "COD", label: "COD" },
             ]}
             placeholder="Chọn"
           />
-          <Tabs defaultActiveKey="6" items={items} onChange={onChange} />
         </div>
-
+        <Tabs defaultActiveKey="6" items={items} onChange={onChange} />
         <Table
           pagination={false}
           showSorterTooltip={false}

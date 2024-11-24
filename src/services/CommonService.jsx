@@ -84,8 +84,7 @@ export const paymentMethod = [
 export const statusOrders = [
   { value: 0, label: "Đang xử lý" },
   { value: 1, label: "Đã duyệt" },
-  { value: 2, label: "Đang chờ lấy hàng" },
-  { value: 3, label: "Đang vận chuyển" },
-  { value: 4, label: "Đã nhận" },
-  { value: 5, label: "Đã hủy" },
+  { value: 2, label: "Đang vận chuyển" },
+  { value: 3, label: "Đã nhận" },
+  { value: 4, label: "Đã hủy" },
 ];

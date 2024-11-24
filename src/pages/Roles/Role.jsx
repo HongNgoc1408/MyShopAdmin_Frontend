@@ -22,7 +22,7 @@ const breadcrumb = [
     title: <HomeTwoTone />,
   },
   {
-    title: "Quyền người dùng",
+    title: "Nhân viên",
   },
 ];
 
@@ -114,7 +114,7 @@ const Roles = () => {
   const handleAdd = async (values) => {
     setLoading(true);
     try {
-      console.log("user", values);
+      // console.log("user", values);
       // const user = await form.getFieldsValue();
       const user = {
         email: values.email,
@@ -266,10 +266,12 @@ const Roles = () => {
             rules={[{ required: true, message: "Vui lòng chọn quyền" }]}
           >
             <Select
+              placement="topLeft"
               mode="multiple"
               options={[
                 { label: "Quản trị viên", value: "Admin" },
                 { label: "Nhân viên kho", value: "Inventorier" },
+
                 { label: "Nhân viên", value: "Staff" },
                 { label: "Khách hàng", value: "User" },
               ]}
@@ -311,7 +313,11 @@ const Roles = () => {
                 },
                 {
                   value: "Inventorier",
-                  label: "Nhân viên kho",
+                  label: "Quản lý kho",
+                },
+                {
+                  value: "Manager",
+                  label: "Quản lý",
                 },
                 {
                   value: "Staff",

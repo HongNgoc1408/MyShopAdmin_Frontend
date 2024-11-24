@@ -33,7 +33,7 @@ const Login = () => {
           placement: "top",
         });
         navigate("/home");
-      } else if (res.data?.roles?.includes("Manage")) {
+      } else if (res.data?.roles?.includes("Manager")) {
         dispatch(authAction.LOGIN(res.data?.roles));
         notification.success({
           message: "Đăng nhập thành công.",

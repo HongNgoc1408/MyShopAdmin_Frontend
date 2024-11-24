@@ -36,6 +36,9 @@ const OrderDetail = () => {
     const fetchOrder = async () => {
       try {
         const res = await OrderService.getDetail(id);
+
+        console.log(res.data);
+
         setOrders(res.data);
       } catch (error) {
         console.error("Error:", error);
@@ -95,6 +98,13 @@ const OrderDetail = () => {
         <>
           <div className="flex space-x-5">
             <div className="w-full">
+              <Form.Item
+                label="Username"
+                name="username"
+                
+              >
+                <Input />
+              </Form.Item>
               <Input
                 className="my-2"
                 placeholder={formatDateTime(orders.orderDate)}

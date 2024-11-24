@@ -7,7 +7,6 @@ import {
   Flex,
   Form,
   Input,
-  Menu,
   Modal,
   notification,
   Popconfirm,
@@ -26,7 +25,6 @@ import authAction from "../../../services/AuthAction";
 import authService from "../../../services/authService";
 import { showError, toImageLink } from "../../../services/commonService";
 import UserService from "../../../services/UserService";
-
 const Header = () => {
   const { state, dispatch } = useAuth();
   const [username, setUsername] = useState("");
@@ -36,21 +34,15 @@ const Header = () => {
   const [form] = Form.useForm();
   const [data, setData] = useState([]);
   const { avatar, setAvatar } = useContext(AvatarContext);
-  const [avt, setAvt] = useState([]);
+  // const [avt, setAvt] = useState([]);
   const [fileList, setFileList] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await UserService.getProfile();
-        // const avatar = await UserService.getAvatar();
-
-        // console.log("1", data.data);
-        // console.log("2", address.data);
-        // console.log("3", avatar.data.imageURL);
 
         setData(data.data);
-        // setAvt(avatar.data.imageURL);
       } catch (error) {
         showError(error);
       }
@@ -62,12 +54,12 @@ const Header = () => {
     setFileList(newFileList);
 
   const handleUpdateClick = () => {
-    setIsAvatarModalOpen(true); // Mở modal cập nhật ảnh
+    setIsAvatarModalOpen(true);
     setFileList([]);
   };
 
   const handleAvatarModalCancel = () => {
-    setIsAvatarModalOpen(false); // Đóng modal cập nhật ảnh
+    setIsAvatarModalOpen(false);
     setFileList([]);
   };
 
@@ -91,7 +83,7 @@ const Header = () => {
         placement: "top",
       });
 
-      setAvt(res.data.imageURL);
+      // setAvt(res.data.imageURL);
       setAvatar(res.data.imageURL);
       setIsAvatarModalOpen(false);
     } catch (error) {
@@ -138,11 +130,11 @@ const Header = () => {
       ),
     },
   ];
-  
+
   return (
     <>
       <Modal
-        title="Xác nhận cập nhật"
+        title="Cập nhật thông tin"
         open={isModalOpen}
         onOk={handleUpdateClick}
         onCancel={handleCancel}
@@ -229,10 +221,9 @@ const Header = () => {
 
           <Dropdown menu={{ items }} placement="bottomRight">
             <Link to={"/"} className="flex text-base p-2 cursor-pointer">
-              {avatar ? (
+              {avatar !== null ? (
                 <Avatar
-                  className="h-10 w-10 hover:ring-4 user cursor-pointer relative ring-orange-600/30 rounded-full bg-cover bg-center"
-                  src={toImageLink(avatar)}
+                  src={toImageLink(avatar) || "avatar.png"}
                   size={30}
                   fontWeight={800}
                 />

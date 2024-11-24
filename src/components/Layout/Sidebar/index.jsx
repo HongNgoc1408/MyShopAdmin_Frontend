@@ -6,7 +6,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   navigateInventorier,
   navigateItems,
-  navigateManage,
+  navigateManager,
   navigateStaff,
 } from "../../../routes";
 import authService from "../../../services/authService";
@@ -44,8 +44,8 @@ const Sidebar = () => {
       setNaviItems(navigateItems);
     } else if (roles.includes("Inventorier")) {
       setNaviItems(navigateInventorier);
-    } else if (roles.includes("Manage")) {
-      setNaviItems(navigateManage);
+    } else if (roles.includes("Manager")) {
+      setNaviItems(navigateManager);
     } else if (roles.includes("Staff")) {
       setNaviItems(navigateStaff);
     }

@@ -15,7 +15,15 @@ import { DeleteTwoTone, EditTwoTone, HomeTwoTone } from "@ant-design/icons";
 import { CiEraser } from "react-icons/ci";
 import { showError } from "../../services/commonService";
 import BreadcrumbLink from "../../components/BreadcrumbLink";
-
+const breadcrumb = [
+  {
+    path: "/",
+    title: <HomeTwoTone />,
+  },
+  {
+    title: "Danh mục",
+  },
+];
 const Category = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState([]);
@@ -30,33 +38,17 @@ const Category = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [totalItems, setTotalItems] = useState(0);
-  // const [searchText, setSearchText] = useState("");
+  const [searchText, setSearchText] = useState("");
 
-  // const filteredCategorys = data.filter((category) =>
-  //   category.name.toLowerCase().includes(searchText.toLowerCase())
-  // );
+  const filteredCategorys = data.filter((data) =>
+    data.name.toLowerCase().includes(searchText.toLowerCase())
+  );
 
-  // const handleSearch = (e) => {
-  //   setSearchText(e.target.value);
-  // };
-
-  const breadcrumb = [
-    {
-      path: "/",
-      title: <HomeTwoTone />,
-    },
-    {
-      title: "Danh mục",
-    },
-  ];
+  const handleSearch = (value) => {
+    setSearchText(value);
+  };
 
   const columns = (onUpdate, handleDelete) => [
-    // {
-    //   title: "ID",
-    //   dataIndex: "id",
-    //   align: "center",
-    //   sorter: (a, b) => a.id - b.id,
-    // },
     {
       title: "Tên danh mục",
       dataIndex: "name",
@@ -170,21 +162,28 @@ const Category = () => {
   return (
     <div className="space-y-4">
       <BreadcrumbLink breadcrumb={breadcrumb} />
-      {/* <div className="w-full flex justify-between items-center">
+      <div className="w-full flex justify-between items-center">
         <Input.Search
           className="w-1/2"
           placeholder="Tìm kiếm tên thương hiệu"
           value={searchText}
           onSearch={handleSearch}
-          onChange={(e) => setSearchText(e.target.value)}
+          onChange={(e) => handleSearch(e.target.value)}
+          // onChange={(e) => setSearchText(e.target.value)}
           size="large"
           allowClear
         />
-      </div> */}
+        {/* <div>
+            <Button type="primary" onClick={() => showModal()}>
+              <PlusOutlined /> Thêm thương hiệu
+            </Button>
+          </div> */}
+      </div>
       <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
         <div className="h-fit md:col-span-2 bg-white rounded-lg drop-shadow">
           <Table
             pagination={{
+              showSizeChanger: true,
               current: currentPage,
               pageSize: pageSize,
               total: totalItems,
@@ -195,8 +194,8 @@ const Category = () => {
             }}
             loading={isLoading}
             columns={columns(onUpdate, handleDelete)}
-            dataSource={data}
-            // dataSource={filteredCategorys}
+            // dataSource={data}
+            dataSource={filteredCategorys}
             rowKey={(record) => record.id}
             className="overflow-x-auto"
           />

@@ -238,7 +238,7 @@ const StatisticProduct = () => {
     };
 
     fetchData();
-  }, [datesProduct]);
+  }, [datesProduct, selectedProductId]);
   return (
     <>
       <Card

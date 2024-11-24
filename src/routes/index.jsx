@@ -33,10 +33,10 @@ export const navigateItems = [
   {
     key: "role",
     icon: <UserOutlined />,
-    label: "Quyền",
+    label: "Người dùng",
     children: [
-      { key: "/users", icon: <UserOutlined />, label: "Người dùng" },
-      { key: "/roles", icon: <TeamOutlined />, label: "Chức vụ" },
+      { key: "/users", icon: <UserOutlined />, label: "Khách hàng" },
+      { key: "/roles", icon: <TeamOutlined />, label: "Nhân viên" },
     ],
   },
   {
@@ -65,46 +65,24 @@ export const navigateItems = [
 
 export const navigateInventorier = [
   { key: "/home", icon: <PieChartOutlined />, label: "Thống kê" },
-  {
-    key: "product",
-    icon: <AiFillProduct />,
-    label: "Sản phẩm",
-    children: [
-      { key: "/brands", icon: <FaBagShopping />, label: "Thương hiệu" },
-      { key: "/categories", icon: <TbCategoryPlus />, label: "Danh mục" },
-      { key: "/sizes", icon: <FaTape />, label: "Kích thước" },
-      { key: "/products", icon: <AiFillProduct />, label: "Sản phẩm" },
-      { key: "/reviews", icon: <StarOutlined />, label: "Đánh giá" },
-    ],
-  },
-  {
-    key: "import",
-    icon: <CiSaveDown1 />,
-    label: "Phiếu nhập",
-    children: [
-      { key: "/imports", icon: <CiSaveDown1 />, label: "Phiếu nhập hàng" },
-      { key: "/loges", icon: <CiSaveDown2 />, label: "Lịch sử" },
-    ],
-  },
+  { key: "/brands", icon: <FaBagShopping />, label: "Thương hiệu" },
+  { key: "/categories", icon: <TbCategoryPlus />, label: "Danh mục" },
+  { key: "/sizes", icon: <FaTape />, label: "Kích thước" },
+  { key: "/products", icon: <AiFillProduct />, label: "Sản phẩm" },
+  { key: "/imports", icon: <CiSaveDown1 />, label: "Phiếu nhập hàng" },
+  { key: "/loges", icon: <CiSaveDown2 />, label: "Lịch sử" },
 ];
-export const navigateManage = [
+
+export const navigateManager = [
   { key: "/home", icon: <PieChartOutlined />, label: "Thống kê" },
-  {
-    key: "role",
-    icon: <UserOutlined />,
-    label: "Quyền",
-    children: [{ key: "/users", icon: <UserOutlined />, label: "Người dùng" }],
-  },
-  {
-    key: "product",
-    icon: <AiFillProduct />,
-    label: "Sản phẩm",
-    children: [{ key: "/reviews", icon: <StarOutlined />, label: "Đánh giá" }],
-  },
+  { key: "/users", icon: <UserOutlined />, label: "Khách hàng" },
+  { key: "/orders", icon: <CiReceipt />, label: "Đơn đặt hàng" },
 ];
+
 export const navigateStaff = [
   { key: "/home", icon: <PieChartOutlined />, label: "Thống kê" },
   { key: "/orders", icon: <CiReceipt />, label: "Đơn đặt hàng" },
+  { key: "/reviews", icon: <StarOutlined />, label: "Đánh giá" },
 ];
 
 export const publicRoutes = [{ path: "/", component: Login, Layout: null }];
@@ -133,23 +111,25 @@ export const inventorierRoutes = [
   { path: "/categories", component: Category },
   { path: "/sizes", component: Sizes },
   { path: "/products", component: Products },
-  { path: "/imports", component: Imports },
-  { path: "/loges", component: Loges },
-  { path: "/add-imports", component: ImportAdd },
   { path: "/add-products", component: ProductAdd },
   { path: "/product-detail/:id", component: ProductDetail },
+  { path: "/imports", component: Imports },
+  { path: "/add-imports", component: ImportAdd },
+  { path: "/loges", component: Loges },
 ];
 
-export const manageRoutes = [
+export const managerRoutes = [
   { path: "/home", component: Home },
   { path: "/users", component: Users },
-  { path: "/reviews", component: Review },
+  { path: "/orders", component: Orders },
+  { path: "/order-detail/:id", component: OrderDetail },
 ];
 
 export const staffRoutes = [
   { path: "/home", component: Home },
   { path: "/orders", component: Orders },
   { path: "/order-detail/:id", component: OrderDetail },
+  { path: "/reviews", component: Review },
 ];
 
 export const generatePublicRoutes = (isAuthenticated) => {
@@ -238,9 +218,9 @@ export const generateInventorierRoutes = (isAuthenticated) => {
   }
 };
 
-export const generateManageRoutes = (isAuthenticated) => {
+export const generateManagerRoutes = (isAuthenticated) => {
   if (isAuthenticated) {
-    return manageRoutes.map((route, index) => {
+    return managerRoutes.map((route, index) => {
       const Page = route.component;
       let Layout = DefaultLayout;
 

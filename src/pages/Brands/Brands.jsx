@@ -242,6 +242,7 @@ const Brands = () => {
           <div className="h-fit md:col-span-2 bg-white rounded-lg drop-shadow">
             <Table
               pagination={{
+                showSizeChanger: true,
                 current: currentPage,
                 pageSize: pageSize,
                 total: totalItems,

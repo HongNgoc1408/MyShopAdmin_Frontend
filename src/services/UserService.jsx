@@ -29,6 +29,10 @@ const updateAvatar = async (data) =>
 const getProfile = async () =>
   await axios.get(API_URL + "/profile", { headers: authHeader() });
 
+const updateProfile = async (data) => {
+  await axios.put(API_URL + "/profile", data, { headers: authHeader() });
+};
+
 const getAvatar = async () =>
   await axios.get(API_URL + "/avatar", { headers: authHeader() });
 
@@ -39,6 +43,7 @@ const UserService = {
   getUser,
   updateAvatar,
   getProfile,
+  updateProfile,
   getAvatar,
 };
 

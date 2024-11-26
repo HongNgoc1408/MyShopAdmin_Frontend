@@ -24,15 +24,19 @@ const breadcrumb = [
 const ImportAdd = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+
   const [colorNames, setColorNames] = useState([]);
   const [sizeNames, setSizeNames] = useState([]);
   const [productOptions, setProductOptions] = useState([]);
+  const [colorAndSizeData, setColorAndSizeData] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
         const productResponse = await ProductService.getName();
+
+        // console.log(productResponse);
         setProductOptions(productResponse.data);
       } catch (error) {
         showError(error);
@@ -43,12 +47,36 @@ const ImportAdd = () => {
     fetchData();
   }, []);
 
+  // const handleProductChange = async (productId) => {
+  //   try {
+  //     const colors = await ProductService.getColorById(productId);
+
+  //     console.log("color", colors.data);
+
+  //     setColorNames(colors.data);
+
+  //     setSizeNames([]);
+  //   } catch (error) {
+  //     showError(error);
+  //   }
+  // };
   const handleProductChange = async (productId) => {
     try {
       const colors = await ProductService.getColorById(productId);
-      setColorNames(colors.data);
-      setSizeNames([]);
+      // console.log("Danh sách màu:", colors.data);
+      setColorNames(colors.data); // Lưu danh sách màu vào state
+
+      if (colors.data.length > 0) {
+        // Lấy size của màu đầu tiên
+        const firstColorId = colors.data[0].id;
+        const sizes = await ProductService.getSizeById(firstColorId);
+        // console.log("Danh sách size:", sizes.data);
+        setSizeNames(sizes.data); // Lưu danh sách size vào state
+      }
+
+      form.setFieldsValue({ productName: productId });
     } catch (error) {
+      console.error("Lỗi khi lấy màu hoặc size:", error);
       showError(error);
     }
   };
@@ -56,29 +84,135 @@ const ImportAdd = () => {
   const handleColorChange = async (colorId) => {
     try {
       const sizes = await ProductService.getSizeById(colorId);
-      setSizeNames(sizes.data);
+
+      if (sizes.data) {
+        console.log("Danh sách size:", sizes.data);
+        setSizeNames(sizes.data); // Lưu kích cỡ vào state
+      } else {
+        console.warn("Phản hồi không chứa dữ liệu kích cỡ!");
+        setSizeNames([]); // Đặt giá trị trống nếu không có dữ liệu
+      }
     } catch (error) {
+      console.error("Lỗi khi lấy kích cỡ:", error);
       showError(error);
     }
   };
+  const [colorWithSizes, setColorWithSizes] = useState([]); // Chứa danh sách màu kèm kích cỡ
+
+  useEffect(() => {
+    const fetchSizes = async () => {
+      try {
+        const updatedColors = await Promise.all(
+          colorNames.map(async (color) => {
+            const response = await ProductService.getSizeById(color.id); // Gọi API lấy kích cỡ
+            return { ...color, sizes: response.data || [] }; // Kết hợp kích cỡ với màu
+          })
+        );
+        setColorWithSizes(updatedColors); // Lưu danh sách màu kèm kích cỡ
+      } catch (error) {
+        console.error("Lỗi khi lấy kích cỡ:", error);
+        showError(error);
+      }
+    };
+
+    if (colorNames.length > 0) {
+      fetchSizes();
+    }
+  }, [colorNames]);
+
+  // useEffect(() => {
+  //   const fetchAllData = async () => {
+  //     try {
+  //       const colors = await ProductService.getColorById();
+  //       const colorSizeData = await Promise.all(
+  //         colors.data.map(async (color) => {
+  //           const sizes = await ProductService.getSizeById(color.id);
+  //           return {
+  //             colorId: color.id,
+  //             colorName: color.name,
+  //             sizes: sizes.data,
+  //           };
+  //         })
+  //       );
+  //       setColorAndSizeData(colorSizeData);
+  //     } catch (error) {
+  //       showError(error);
+  //     }
+  //   };
+
+  //   fetchAllData();
+  // }, []);
+
+  // const handleColorChange = async (colorId) => {
+  //   try {
+  //     const sizes = await ProductService.getSizeById(colorId);
+
+  //     console.log("size", sizes.data);
+
+  //     setSizeNames(sizes.data);
+  //   } catch (error) {
+  //     showError(error);
+  //   }
+  // };
+
+  // const handleAdd = async (values) => {
+  //   const importData = {
+  //     entryDate: values.entryDate ? values.entryDate.format("YYYY-MM-DD") : "",
+  //     note: values.note || "",
+  //     total: values.total,
+  //     importProducts: values.items.map((item) => ({
+  //       productId: item.productName,
+  //       productName: item.productName,
+  //       quantity: item.quantity || 0,
+  //       price: item.price || 0,
+  //       colorId: item.colorName,
+  //       sizeId: item.sizeName,
+  //     })),
+  //   };
+
+  //   try {
+  //       console.log(importData);
+  //     await ImportService.add(importData);
+  //     form.resetFields();
+  //     notification.success({ message: "Thành công.", placement: "top" });
+  //   } catch (error) {
+  //     showError(error);
+  //   }
+  // };
+
+  // const onValuesChange = (_, allValues) => {
+  //   const total = (allValues.items || []).reduce((sum, item) => {
+  //     const itemTotal =
+  //       item?.quantity && item?.price ? item.quantity * item.price : 0;
+  //     return sum + itemTotal;
+  //   }, 0);
+  //   form.setFieldsValue({ total });
+  // };
 
   const handleAdd = async (values) => {
+    const importProducts = colorWithSizes.flatMap((color) =>
+      color.sizes
+        .filter((size) => size.quantity > 0)
+        .map((size) => ({
+          productId: form.getFieldValue("productName"),
+          colorId: color.id,
+          sizeId: size.id,
+          quantity: size.quantity,
+          price: size.price,
+        }))
+    );
+
     const importData = {
       entryDate: values.entryDate ? values.entryDate.format("YYYY-MM-DD") : "",
       note: values.note || "",
-      total: values.total,
-      importProducts: values.items.map((item) => ({
-        productId: item.productName,
-        productName: item.productName,
-        quantity: item.quantity || 0,
-        price: item.price || 0,
-        colorId: item.colorName,
-        sizeId: item.sizeName,
-      })),
+      total: importProducts.reduce(
+        (sum, item) => sum + item.quantity * item.price,
+        0
+      ),
+      importProducts,
     };
 
     try {
-      //   console.log(importData);
       await ImportService.add(importData);
       form.resetFields();
       notification.success({ message: "Thành công.", placement: "top" });
@@ -89,10 +223,21 @@ const ImportAdd = () => {
 
   const onValuesChange = (_, allValues) => {
     const total = (allValues.items || []).reduce((sum, item) => {
-      const itemTotal =
-        item?.quantity && item?.price ? item.quantity * item.price : 0;
+      const itemTotal = Object.keys(item.colors || {}).reduce(
+        (colorSum, colorId) => {
+          const sizeTotal = Object.keys(
+            item.colors[colorId]?.sizes || {}
+          ).reduce((sizeSum, sizeId) => {
+            const sizeData = item.colors[colorId]?.sizes[sizeId] || {};
+            return sizeSum + (sizeData.quantity || 0) * (sizeData.price || 0);
+          }, 0);
+          return colorSum + sizeTotal;
+        },
+        0
+      );
       return sum + itemTotal;
     }, 0);
+
     form.setFieldsValue({ total });
   };
 
@@ -153,7 +298,7 @@ const ImportAdd = () => {
               </Form.Item>
             </div>
             <div className="w-1/2">
-              <Form.List name="items">
+              {/* <Form.List name="items">
                 {(fields, { add, remove }) => (
                   <div
                     style={{
@@ -286,6 +431,140 @@ const ImportAdd = () => {
                               placeholder="Nhập giá"
                             />
                           </Form.Item>
+                        </div>
+                      </Card>
+                    ))}
+                    <div className="flex justify-between space-x-3">
+                      <Button
+                        size="large"
+                        type="dashed"
+                        onClick={() => add()}
+                        block
+                      >
+                        + Thêm phiếu nhập
+                      </Button>
+                      <Button
+                        type="primary"
+                        danger
+                        size="large"
+                        htmlType="submit"
+                      >
+                        Lưu
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </Form.List> */}
+              <Form.List name="items">
+                {(fields, { add, remove }) => (
+                  <div
+                    style={{
+                      display: "flex",
+                      rowGap: 16,
+                      flexDirection: "column",
+                    }}
+                  >
+                    {fields.map((field) => (
+                      <Card
+                        key={field.key}
+                        size="small"
+                        title={`Nhập sản phẩm ${field.name + 1}`}
+                        className="bg-gray-50 drop-shadow-md"
+                        extra={
+                          <CloseOutlined onClick={() => remove(field.name)} />
+                        }
+                      >
+                        <Form.Item
+                          label="Tên sản phẩm"
+                          name={[field.name, "productName"]}
+                          rules={[
+                            {
+                              required: true,
+                              message: "Tên sản phẩm không để trống",
+                            },
+                          ]}
+                        >
+                          <Select
+                            showSearch
+                            optionFilterProp="label"
+                            placeholder="Chọn sản phẩm"
+                            onChange={(value) => handleProductChange(value)}
+                          >
+                            {productOptions.map((product) => (
+                              <Select.Option
+                                key={product.id}
+                                value={product.id}
+                                label={product.name} //
+                              >
+                                {product.name}
+                              </Select.Option>
+                            ))}
+                          </Select>
+                        </Form.Item>
+
+                        <div>
+                          {/* Danh sách màu và kích cỡ */}
+                          {colorWithSizes.map((color, colorIndex) => (
+                            <div key={color.id} className="mb-5">
+                              {/* Tên màu */}
+                              <h3 className="font-bold">{color.name}</h3>
+
+                              {/* Danh sách kích cỡ */}
+                              {color.sizes.length > 0 ? (
+                                color.sizes.map((size, sizeIndex) => (
+                                  <div
+                                    key={size.id}
+                                    className="flex gap-5 items-center"
+                                  >
+                                    {/* Kích cỡ */}
+                                    <div className="w-1/3 font-bold">
+                                      <p>Kích cỡ: {size.name}</p>
+                                    </div>
+
+                                    {/* Số lượng */}
+                                    <div className="w-1/3">
+                                      <Input
+                                        type="number"
+                                        min={0}
+                                        placeholder="Số lượng"
+                                        onChange={(e) => {
+                                          const updatedColors = [
+                                            ...colorWithSizes,
+                                          ];
+                                          updatedColors[colorIndex].sizes[
+                                            sizeIndex
+                                          ].quantity =
+                                            parseInt(e.target.value, 10) || 0;
+                                          setColorWithSizes(updatedColors);
+                                        }}
+                                      />
+                                    </div>
+
+                                    {/* Giá */}
+                                    <div className="w-1/3">
+                                      <Input
+                                        type="number"
+                                        min={0}
+                                        placeholder="Giá"
+                                        onChange={(e) => {
+                                          const updatedColors = [
+                                            ...colorWithSizes,
+                                          ];
+                                          updatedColors[colorIndex].sizes[
+                                            sizeIndex
+                                          ].price =
+                                            parseFloat(e.target.value) || 0;
+                                          setColorWithSizes(updatedColors);
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
+                                ))
+                              ) : (
+                                <p>Không có kích cỡ khả dụng cho màu này.</p>
+                              )}
+                            </div>
+                          ))}
                         </div>
                       </Card>
                     ))}

@@ -162,16 +162,16 @@ const ProductDetail = () => {
     setSizeListValue(newL);
   };
 
-  // const handleSetSizeValue = (obj, index) => {
-  //   const newList = [...sizeListValue];
-  //   const sizeInStocks = newList[index].sizeInStocks.find(
-  //     (e) => e.sizeId === obj.sizeId
-  //   );
+  const handleSetSizeValue = (obj, index) => {
+    const newList = [...sizeListValue];
+    const sizeInStocks = newList[index].sizeInStocks.find(
+      (e) => e.sizeId === obj.sizeId
+    );
 
-  //   if (sizeInStocks) sizeInStocks.inStock = obj.inStock;
+    if (sizeInStocks) sizeInStocks.inStock = obj.inStock;
 
-  //   setSizeListValue(newList);
-  // };
+    setSizeListValue(newList);
+  };
 
   const onChangeColor = (value, index) => {
     if (sizeList.length > 0) {
@@ -563,8 +563,9 @@ const ProductDetail = () => {
                           <div className="w-24 truncate border rounded-md px-2 py-1 text-center">
                             {color?.colorName}
                           </div>
-                          {/* <InputNumber
-                            required
+                          <InputNumber
+                            readOnly
+                            // required
                             min={0}
                             className="w-full"
                             value={
@@ -586,7 +587,7 @@ const ProductDetail = () => {
                               setUpdate(true);
                             }}
                             placeholder="Số lượng kho..."
-                          /> */}
+                          />
                         </Flex>
                       );
                     }

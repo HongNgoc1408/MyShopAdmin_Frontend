@@ -2,11 +2,11 @@ import {
   Avatar,
   Badge,
   Button,
-  Card,
   Dropdown,
   Flex,
   Form,
   Input,
+  message,
   Modal,
   notification,
   Popconfirm,
@@ -30,6 +30,7 @@ const Header = () => {
   const [username, setUsername] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [data, setData] = useState([]);
@@ -38,22 +39,24 @@ const Header = () => {
   const [fileList, setFileList] = useState([]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await UserService.getProfile();
-
-        setData(data.data);
-      } catch (error) {
-        showError(error);
-      }
-    };
-    fetchData();
-  }, []);
+    if (state.isAuthenticated) {
+      const fetchData = async () => {
+        try {
+          const response = await UserService.getProfile();
+          // console.log(response?.data);
+          setData(response?.data);
+        } catch (error) {
+          showError(error);
+        }
+      };
+      fetchData();
+    }
+  }, [state.isAuthenticated]);
 
   const handleFileChange = ({ fileList: newFileList }) =>
     setFileList(newFileList);
 
-  const handleUpdateClick = () => {
+  const handleUpdateClick = async () => {
     setIsAvatarModalOpen(true);
     setFileList([]);
   };
@@ -61,6 +64,10 @@ const Header = () => {
   const handleAvatarModalCancel = () => {
     setIsAvatarModalOpen(false);
     setFileList([]);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
   };
 
   const handleAvatarUpdate = async () => {
@@ -83,11 +90,23 @@ const Header = () => {
         placement: "top",
       });
 
-      // setAvt(res.data.imageURL);
       setAvatar(res.data.imageURL);
       setIsAvatarModalOpen(false);
     } catch (error) {
       showError(error);
+    }
+  };
+
+  const handleUpdateProfile = async () => {
+    setLoading(true);
+    try {
+      const values = await form.validateFields();
+      await UserService.updateProfile(values);
+      message.success("Cập nhật thông tin cá nhân thành công.");
+    } catch (error) {
+      showError(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -104,9 +123,6 @@ const Header = () => {
 
   const showModal = () => {
     setIsModalOpen(true);
-  };
-  const handleCancel = () => {
-    setIsModalOpen(false);
   };
 
   const items = [
@@ -134,33 +150,75 @@ const Header = () => {
   return (
     <>
       <Modal
+        centered
         title="Cập nhật thông tin"
         open={isModalOpen}
-        onOk={handleUpdateClick}
+        // onOk={handleUpdateProfile}
         onCancel={handleCancel}
-        okText="Cập nhật"
-        cancelText="Hủy"
+        footer={false}
+        // okText="Cập nhật"
+        // cancelText="Hủy"
+        loading={loading}
       >
-        <Card title="Thông tin cá nhân">
-          <Form layout="vertical" form={form}>
-            <div className="flex items-center justify-center">
-              <Avatar src={toImageLink(avatar)} size={175} fontWeight={800} />
-            </div>
+        <Form
+          layout="vertical"
+          form={form}
+          onFinish={handleUpdateProfile}
+          initialValues={{
+            fullName: data?.fullName,
+            phoneNumber: data?.phoneNumber,
+          }}
+        >
+          <div className="flex items-center justify-center">
+            <Avatar
+              src={toImageLink(avatar) || "avatar.png"}
+              size={175}
+              fontWeight={800}
+            />
+          </div>
 
-            <Form.Item label="Email">
-              <Input value={data.email} readOnly />
-            </Form.Item>
-            <Form.Item label="Họ và tên">
-              <Input defaultValue={data.fullName} value={data.fullName} />
-            </Form.Item>
-            <Form.Item label="Số điện thoại">
-              <Input defaultValue={data.phoneNumber} value={data.phoneNumber} />
+          <Form.Item label="Email">
+            <Input value={data.email} readOnly />
+          </Form.Item>
+          <Form.Item
+            label="Họ và tên"
+            name="fullName"
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng nhập họ và tên",
+              },
+            ]}
+          >
+            <Input placeholder="Nhập họ và tên" />
+          </Form.Item>
+
+          <Form.Item
+            label="Số điện thoại"
+            name="phoneNumber"
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng nhập số điện thoại",
+              },
+              {
+                pattern: /^[0-9]{10}$/,
+                message: "Số điện thoại không hợp lệ.",
+              },
+            ]}
+          >
+            <Input placeholder="Nhập số điện thoại" />
+          </Form.Item>
+          <div className="flex space-x-2">
+            <Form.Item>
+              <Button type="primary" onClick={handleUpdateProfile}>
+                Cập nhật thông tin
+              </Button>
             </Form.Item>
             <Form.Item>
               <Button type="primary" onClick={handleUpdateClick}>
-                Cập nhật
+                Cập nhật ảnh
               </Button>
-
               <Modal
                 width={200}
                 centered
@@ -199,9 +257,10 @@ const Header = () => {
                 </Form.Item>
               </Modal>
             </Form.Item>
-          </Form>
-        </Card>
+          </div>
+        </Form>
       </Modal>
+
       <Flex className="bg-white p-3 text-center justify-between sticky top-0 z-30">
         {state.isAuthenticated && (
           <Typography.Title level={4} type="secondary">

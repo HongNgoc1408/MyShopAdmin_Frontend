@@ -6,6 +6,7 @@ import {
   formatDateTime,
   formatVND,
   showError,
+  statusOrder,
   toImageLink,
 } from "../../services/commonService";
 import OrderService from "../../services/OrderService";
@@ -37,7 +38,7 @@ const OrderDetail = () => {
       try {
         const res = await OrderService.getDetail(id);
 
-        console.log(res.data);
+        // console.log(res.data);
 
         setOrders(res.data);
       } catch (error) {
@@ -52,12 +53,12 @@ const OrderDetail = () => {
   }, [id, form]);
 
   const columns = [
-    {
-      title: "productId",
-      dataIndex: "productId",
-      key: "productId",
-      render: (value) => <span className="font-semibold">{value}</span>,
-    },
+    // {
+    //   title: "productId",
+    //   dataIndex: "productId",
+    //   key: "productId",
+    //   render: (value) => <span className="font-semibold">{value}</span>,
+    // },
     {
       key: "imageUrl",
       title: "imageUrl",
@@ -89,6 +90,13 @@ const OrderDetail = () => {
     { key: "quantity", title: "quantity", dataIndex: "quantity" },
   ];
 
+  const getStatusOrder = (status) => {
+    const stt = statusOrder.find((item) => item.value === status);
+    return stt ? stt.label : "Phương thức không xác định";
+  };
+
+  // const orderStatus = orders.orderStatus || "";
+
   return (
     <div className="space-y-4">
       <BreadcrumbLink breadcrumb={breadcrumb(id)} />
@@ -96,62 +104,51 @@ const OrderDetail = () => {
         <Spin tip="Loading..." />
       ) : (
         <>
-          <div className="flex space-x-5">
-            <div className="w-full">
-              <Form.Item
-                label="Username"
-                name="username"
-                
-              >
-                <Input />
-              </Form.Item>
-              <Input
-                className="my-2"
-                placeholder={formatDateTime(orders.orderDate)}
-                defaultValue={formatDateTime(orders.orderDate)}
-              />
-              <Input
-                className="my-2"
-                placeholder={orders.orderStatus}
-                defaultValue={orders.orderStatus}
-              />
-              <Input
-                className="my-2"
-                placeholder={orders.paymentMethod}
-                defaultValue={orders.paymentMethod}
-              />
+          <Form
+            form={form}
+            layout="vertical"
+            initialValues={{
+              ...orders,
+              orderDate: formatDateTime(orders.orderDate),
+              orderStatus: getStatusOrder(orders.orderStatus),
+            }}
+          >
+            <div className="flex space-x-2">
+              <div className="w-full">
+                <Form.Item label="Ngày đặt" name="orderDate">
+                  <Input readOnly value={formatDateTime(orders?.orderDate)} />
+                </Form.Item>
+                <Form.Item label="Trạng thái đơn hàng" name="orderStatus">
+                  <Input readOnly value={orders.orderStatus} />
+                </Form.Item>
+                <Form.Item label="Phương thức thanh toán" name="paymentMethod">
+                  <Input readOnly value={orders.paymentMethod} />
+                </Form.Item>
+              </div>
+              <div className="w-full">
+                <Form.Item label="Tổng tiền" name="total">
+                  <Input readOnly value={formatVND(orders.total)} />
+                </Form.Item>
+                <Form.Item label="Tiền vận chuyển" name="shippingCost">
+                  <Input readOnly value={formatVND(orders.shippingCost)} />
+                </Form.Item>
+                <Form.Item label="Tiền đã thanh toán" name="amountPaid">
+                  <Input readOnly value={formatVND(orders.amountPaid)} />
+                </Form.Item>
+              </div>
+              <div className="w-full">
+                <Form.Item label="Thông tin khách hàng" name="email">
+                  <Input readOnly value={orders.email} />
+                </Form.Item>
+                <Form.Item label="Thông tin khách hàng" name="receiver">
+                  <Input readOnly value={orders.receiver} />
+                </Form.Item>
+                <Form.Item label="Địa chỉ khách hàng" name="deliveryAddress">
+                  <TextArea rows={3} readOnly value={orders.deliveryAddress} />
+                </Form.Item>
+              </div>
             </div>
-            <div className="w-full">
-              <Input
-                className="my-2"
-                placeholder={formatVND(orders.total)}
-                defaultValue={formatVND(orders.total)}
-              />
-              <Input
-                className="my-2"
-                placeholder={formatVND(orders.shippingCost)}
-                defaultValue={formatVND(orders.shippingCost)}
-              />
-              <Input
-                className="my-2"
-                placeholder={formatVND(orders.amountPaid)}
-                defaultValue={formatVND(orders.amountPaid)}
-              />
-            </div>
-            <div className="w-full">
-              <Input
-                className="my-2"
-                placeholder={orders.receiver}
-                defaultValue={orders.receiver}
-              />
-              <TextArea
-                rows={3}
-                className="my-2"
-                placeholder={orders.deliveryAddress}
-                defaultValue={orders.deliveryAddress}
-              />
-            </div>
-          </div>
+          </Form>
           <Table
             dataSource={orders.productOrderDetails}
             columns={columns}

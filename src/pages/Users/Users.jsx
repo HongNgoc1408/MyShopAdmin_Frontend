@@ -291,27 +291,7 @@ const Users = () => {
               onChange={(e) => e.target.value === "" && setSearch("")}
               placeholder="Nhập từ khóa cần tìm"
             />
-            {/* <Select
-            
-              size="large"
-              showSearch
-              className="w-1/3"
-              placeholder="Search to Select"
-              optionFilterProp="label"
-              defaultValue="User"
-              filterSort={(optionA, optionB) =>
-                (optionA?.label ?? "")
-                  .toLowerCase()
-                  .localeCompare((optionB?.label ?? "").toLowerCase())
-              }
-              onChange={(value) => setRole(value)}
-              options={[
-                {
-                  value: "User",
-                  label: "Khách hàng",
-                },
-              ]}
-            /> */}
+
             <div>
               <Button
                 size="large"

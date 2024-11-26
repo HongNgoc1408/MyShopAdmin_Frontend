@@ -162,16 +162,16 @@ const ProductDetail = () => {
     setSizeListValue(newL);
   };
 
-  const handleSetSizeValue = (obj, index) => {
-    const newList = [...sizeListValue];
-    const sizeInStocks = newList[index].sizeInStocks.find(
-      (e) => e.sizeId === obj.sizeId
-    );
+  // const handleSetSizeValue = (obj, index) => {
+  //   const newList = [...sizeListValue];
+  //   const sizeInStocks = newList[index].sizeInStocks.find(
+  //     (e) => e.sizeId === obj.sizeId
+  //   );
 
-    if (sizeInStocks) sizeInStocks.inStock = obj.inStock;
+  //   if (sizeInStocks) sizeInStocks.inStock = obj.inStock;
 
-    setSizeListValue(newList);
-  };
+  //   setSizeListValue(newList);
+  // };
 
   const onChangeColor = (value, index) => {
     if (sizeList.length > 0) {
@@ -245,10 +245,10 @@ const ProductDetail = () => {
             `colorSizes[${index}].sizeInStocks[${sizeIndex}].sizeId`,
             size.sizeId
           );
-          formData.append(
-            `colorSizes[${index}].sizeInStocks[${sizeIndex}].inStock`,
-            size.inStock
-          );
+          // formData.append(
+          //   `colorSizes[${index}].sizeInStocks[${sizeIndex}].inStock`,
+          //   size.inStock
+          // );
         });
       });
       delete data.colors;
@@ -308,6 +308,7 @@ const ProductDetail = () => {
                 ]}
               >
                 <Select
+                  showSearch
                   loading={loading}
                   className="w-full"
                   size="large"
@@ -322,6 +323,7 @@ const ProductDetail = () => {
                 rules={[{ required: true, message: "Vui lòng chọn danh mục" }]}
               >
                 <Select
+                  showSearch
                   loading={loading}
                   className="w-full"
                   size="large"
@@ -535,6 +537,7 @@ const ProductDetail = () => {
               <Select
                 className="w-full"
                 size="large"
+                showSearch
                 optionFilterProp="label"
                 placeholder="Thêm size"
                 onChange={handleSelectSize}

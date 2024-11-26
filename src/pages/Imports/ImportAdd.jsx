@@ -183,6 +183,8 @@ const ImportAdd = () => {
                           ]}
                         >
                           <Select
+                            showSearch
+                            optionFilterProp="label"
                             placeholder="Chọn sản phẩm"
                             onChange={(value) => handleProductChange(value)}
                           >
@@ -190,6 +192,7 @@ const ImportAdd = () => {
                               <Select.Option
                                 key={product.id}
                                 value={product.id}
+                                label={product.name} //
                               >
                                 {product.name}
                               </Select.Option>
@@ -210,11 +213,17 @@ const ImportAdd = () => {
                             className="w-1/2"
                           >
                             <Select
+                              showSearch
+                              optionFilterProp="label"
                               placeholder="Chọn màu sắc"
                               onChange={(value) => handleColorChange(value)}
                             >
                               {colorNames.map((color) => (
-                                <Select.Option key={color.id} value={color.id}>
+                                <Select.Option
+                                  key={color.id}
+                                  value={color.id}
+                                  label={color.name}
+                                >
                                   {color.name}
                                 </Select.Option>
                               ))}
@@ -231,7 +240,11 @@ const ImportAdd = () => {
                             ]}
                             className="w-1/2"
                           >
-                            <Select placeholder="Chọn kích cỡ">
+                            <Select
+                              showSearch
+                              optionFilterProp="label"
+                              placeholder="Chọn kích cỡ"
+                            >
                               {sizeNames.map((size) => (
                                 <Select.Option key={size.id} value={size.id}>
                                   {size.name}

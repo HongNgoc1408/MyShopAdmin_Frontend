@@ -270,10 +270,11 @@ export default function AddProduct() {
                 ]}
               >
                 <Select
+                  showSearch
+                  optionFilterProp="label"
                   loading={loading}
                   className="w-full"
                   size="large"
-                  optionFilterProp="label"
                   placeholder="Chọn"
                   options={productAttributes.brands}
                 />
@@ -287,6 +288,7 @@ export default function AddProduct() {
                   loading={loading}
                   className="w-full"
                   size="large"
+                  showSearch
                   optionFilterProp="label"
                   placeholder="Chọn"
                   options={productAttributes.categories}
@@ -360,7 +362,7 @@ export default function AddProduct() {
               getValueFromEvent={(e) => e.fileList}
             >
               <Upload
-                maxCount={4}
+                maxCount={5}
                 beforeUpload={() => false}
                 listType="picture-card"
                 fileList={fileList}
@@ -369,7 +371,7 @@ export default function AddProduct() {
                 onPreview={handlePreview}
                 onChange={handleChangeFile}
               >
-                {fileList.length >= 4 ? null : (
+                {fileList.length >= 5 ? null : (
                   <button type="button">
                     <PlusOutlined />
                     <div>Tải lên</div>
@@ -496,6 +498,7 @@ export default function AddProduct() {
               <Select
                 className="w-full"
                 size="large"
+                showSearch
                 optionFilterProp="label"
                 placeholder="Thêm size"
                 onChange={handleSelectSize}

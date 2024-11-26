@@ -266,6 +266,8 @@ const Roles = () => {
             rules={[{ required: true, message: "Vui lòng chọn quyền" }]}
           >
             <Select
+              showSearch
+              optionFilterProp="label"
               placement="topLeft"
               mode="multiple"
               options={[

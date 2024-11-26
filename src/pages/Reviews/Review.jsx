@@ -215,6 +215,8 @@ const Reviews = () => {
       <div className="p-4 drop-shadow rounded-lg bg-white space-y-2">
         <div className="w-full flex justify-between items-center gap-4">
           <Select
+            showSearch
+            optionFilterProp="label"
             className="w-1/2 capitalize"
             value={selectedProductId}
             onChange={handleChangeId}

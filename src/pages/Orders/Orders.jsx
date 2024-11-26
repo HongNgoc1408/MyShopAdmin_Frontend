@@ -61,7 +61,7 @@ const Orders = () => {
       if (selectedOrderId) {
         const value = await form.validateFields();
         const res = await OrderService.shipping(selectedOrderId, value);
-        // console.log(res);
+
         setData(res.data);
         window.location.reload();
         notification.success({
@@ -147,11 +147,7 @@ const Orders = () => {
       title: "Mã đơn",
       dataIndex: "id",
       sorter: (a, b) => a.id - b.id,
-      render: (value) => (
-        <p style={{ width: 10 }} className="font-semibold">
-          {value}
-        </p>
-      ),
+      render: (value) => <p className="font-semibold">{value}</p>,
     },
     {
       title: "Mã vận đơn",
@@ -235,6 +231,8 @@ const Orders = () => {
       render: (value, record) => (
         <>
           <Select
+            showSearch
+            optionFilterProp="label"
             style={{ width: 150 }}
             defaultValue={value === 2 ? "Đang vận chuyển" : value}
             onChange={(newValue) => handleUpdate(record.id, newValue)}

@@ -259,6 +259,8 @@ const StatisticProduct = () => {
       >
         <div className="flex gap-4">
           <Select
+            showSearch
+            optionFilterProp="label"
             className="w-1/2 capitalize"
             value={selectedProductId}
             onChange={handleChangeId}

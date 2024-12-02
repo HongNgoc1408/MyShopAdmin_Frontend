@@ -6,6 +6,7 @@ import {
   notification,
   Select,
   Form,
+  InputNumber,
 } from "antd";
 import React, { useEffect, useState } from "react";
 import BreadcrumbLink from "../../components/BreadcrumbLink";
@@ -106,11 +107,12 @@ const ImportAdd = () => {
           layout="vertical"
           onFinish={handleAdd}
           initialValues={{
+            note: "Không có",
             items: [
               {
                 productName: undefined,
                 quantity: 1,
-                price: 0,
+                price: 1000,
                 colorName: undefined,
                 sizeName: undefined,
               },
@@ -118,8 +120,8 @@ const ImportAdd = () => {
           }}
         >
           <div className="flex justify-between space-x-4">
-            <div className="w-1/2">
-              <div className="flex gap-5">
+            <div className="w-full">
+              <div className="flex space-x-4">
                 <Form.Item
                   label="Ngày nhập"
                   name="entryDate"
@@ -129,7 +131,7 @@ const ImportAdd = () => {
                       message: "Ngày nhập hàng không được để trống",
                     },
                   ]}
-                  className="w-full"
+                  className="w-1/6"
                 >
                   <DatePicker
                     placeholder="Ngày lập phiếu"
@@ -138,165 +140,207 @@ const ImportAdd = () => {
                     }
                   />
                 </Form.Item>
-                <Form.Item label="Tổng giá trị" name="total" className="w-full">
-                  <Input disabled />
+                <Form.Item label="Tổng giá trị" name="total" className="w-2/6">
+                  <InputNumber
+                    style={{ width: "100%" }}
+                    readOnly
+                    formatter={(value) =>
+                      value
+                        ? `${new Intl.NumberFormat("vi-VN").format(value)}`
+                        : ""
+                    }
+                    parser={(value) => (value ? value.replace(/\D/g, "") : "")}
+                  />
+                </Form.Item>
+                <Form.Item label="Ghi chú" name="note" className="w-full">
+                  <TextArea
+                    showCount
+                    maxLength={200}
+                    placeholder="Không có"
+                    style={{ height: 70, resize: "none" }}
+                  />
                 </Form.Item>
               </div>
-
-              <Form.Item label="Ghi chú" name="note">
-                <TextArea
-                  showCount
-                  maxLength={200}
-                  placeholder="...."
-                  style={{ height: 70, resize: "none" }}
-                />
-              </Form.Item>
-            </div>
-            <div className="w-1/2">
-              <Form.List name="items">
-                {(fields, { add, remove }) => (
-                  <div
-                    style={{
-                      display: "flex",
-                      rowGap: 16,
-                      flexDirection: "column",
-                    }}
-                  >
-                    {fields.map((field) => (
-                      <Card
-                        key={field.key}
-                        size="small"
-                        title={`Nhập sản phẩm ${field.name + 1}`}
-                        className="bg-gray-50 drop-shadow-md"
-                        extra={
-                          <CloseOutlined onClick={() => remove(field.name)} />
-                        }
-                      >
-                        <Form.Item
-                          label="Tên sản phẩm"
-                          name={[field.name, "productName"]}
-                          rules={[
-                            {
-                              required: true,
-                              message: "Tên sản phẩm không để trống",
-                            },
-                          ]}
+              <div className="w-full">
+                <Form.List name="items">
+                  {(fields, { add, remove }) => (
+                    <div
+                      style={{
+                        display: "flex",
+                        rowGap: 16,
+                        flexDirection: "column",
+                      }}
+                    >
+                      {fields.map((field) => (
+                        <Card
+                          key={field.key}
+                          size="small"
+                          title={`Nhập sản phẩm ${field.name + 1}`}
+                          className="bg-blue-50 drop-shadow-md"
+                          extra={
+                            <CloseOutlined onClick={() => remove(field.name)} />
+                          }
                         >
-                          <Select
-                            placeholder="Chọn sản phẩm"
-                            onChange={(value) => handleProductChange(value)}
-                          >
-                            {productOptions.map((product) => (
-                              <Select.Option
-                                key={product.id}
-                                value={product.id}
-                              >
-                                {product.name}
-                              </Select.Option>
-                            ))}
-                          </Select>
-                        </Form.Item>
-
-                        <div className="flex gap-5">
-                          <Form.Item
-                            label="Màu sắc"
-                            name={[field.name, "colorName"]}
-                            rules={[
-                              {
-                                required: true,
-                                message: "Màu sắc không để trống",
-                              },
-                            ]}
-                            className="w-1/2"
-                          >
-                            <Select
-                              placeholder="Chọn màu sắc"
-                              onChange={(value) => handleColorChange(value)}
+                          <div className="flex space-x-4">
+                            <Form.Item
+                              label="Tên sản phẩm"
+                              name={[field.name, "productName"]}
+                              rules={[
+                                {
+                                  required: true,
+                                  message: "Tên sản phẩm không để trống",
+                                },
+                              ]}
+                              className="w-1/2"
                             >
-                              {colorNames.map((color) => (
-                                <Select.Option key={color.id} value={color.id}>
-                                  {color.name}
-                                </Select.Option>
-                              ))}
-                            </Select>
-                          </Form.Item>
-                          <Form.Item
-                            label="Kích cỡ"
-                            name={[field.name, "sizeName"]}
-                            rules={[
-                              {
-                                required: true,
-                                message: "Kích cỡ không để trống",
-                              },
-                            ]}
-                            className="w-1/2"
-                          >
-                            <Select placeholder="Chọn kích cỡ">
-                              {sizeNames.map((size) => (
-                                <Select.Option key={size.id} value={size.id}>
-                                  {size.name}
-                                </Select.Option>
-                              ))}
-                            </Select>
-                          </Form.Item>
-                        </div>
+                              <Select
+                                showSearch
+                                optionFilterProp="label"
+                                placeholder="Chọn sản phẩm"
+                                onChange={(value) => handleProductChange(value)}
+                              >
+                                {productOptions
+                                  .sort((a, b) => a.name.localeCompare(b.name))
+                                  .map((product) => (
+                                    <Select.Option
+                                      key={product.id}
+                                      value={product.id}
+                                      label={product.name}
+                                    >
+                                      {product.name}
+                                    </Select.Option>
+                                  ))}
+                              </Select>
+                            </Form.Item>
 
-                        <div className="flex gap-5">
-                          <Form.Item
-                            label="Số lượng"
-                            name={[field.name, "quantity"]}
-                            rules={[
-                              {
-                                required: true,
-                                message: "Số lượng không để trống",
-                              },
-                            ]}
-                            className="w-1/2"
-                          >
-                            <Input
-                              type="number"
-                              min={1}
-                              placeholder="Nhập số lượng"
-                            />
-                          </Form.Item>
-                          <Form.Item
-                            label="Giá"
-                            name={[field.name, "price"]}
-                            rules={[
-                              { required: true, message: "Giá không để trống" },
-                            ]}
-                            className="w-1/2"
-                          >
-                            <Input
-                              type="number"
-                              min={0}
-                              placeholder="Nhập giá"
-                            />
-                          </Form.Item>
-                        </div>
-                      </Card>
-                    ))}
-                    <div className="flex justify-between space-x-3">
-                      <Button
-                        size="large"
-                        type="dashed"
-                        onClick={() => add()}
-                        block
-                      >
-                        + Thêm phiếu nhập
-                      </Button>
-                      <Button
-                        type="primary"
-                        danger
-                        size="large"
-                        htmlType="submit"
-                      >
-                        Lưu
-                      </Button>
+                            <Form.Item
+                              label="Màu sắc"
+                              name={[field.name, "colorName"]}
+                              rules={[
+                                {
+                                  required: true,
+                                  message: "Màu sắc không để trống",
+                                },
+                              ]}
+                              className="w-1/8"
+                            >
+                              <Select
+                                showSearch
+                                optionFilterProp="label"
+                                placeholder="Chọn màu sắc"
+                                onChange={(value) => handleColorChange(value)}
+                                disabled={colorNames.length === 0}
+                              >
+                                {colorNames.map((color) => (
+                                  <Select.Option
+                                    key={color.id}
+                                    value={color.id}
+                                    label={color.name}
+                                  >
+                                    {color.name}
+                                  </Select.Option>
+                                ))}
+                              </Select>
+                            </Form.Item>
+                            <Form.Item
+                              label="Kích cỡ"
+                              name={[field.name, "sizeName"]}
+                              rules={[
+                                {
+                                  required: true,
+                                  message: "Kích cỡ không để trống",
+                                },
+                              ]}
+                              className="w-1/8"
+                            >
+                              <Select
+                                showSearch
+                                optionFilterProp="label"
+                                placeholder="Chọn kích cỡ"
+                                disabled={sizeNames.length === 0}
+                              >
+                                {sizeNames.map((size) => (
+                                  <Select.Option
+                                    key={size.id}
+                                    value={size.id}
+                                    label={size.name}
+                                  >
+                                    {size.name}
+                                  </Select.Option>
+                                ))}
+                              </Select>
+                            </Form.Item>
+
+                            <Form.Item
+                              label="Số lượng"
+                              name={[field.name, "quantity"]}
+                              rules={[
+                                {
+                                  required: true,
+                                  message: "Số lượng không để trống",
+                                },
+                              ]}
+                              className="w-1/8"
+                            >
+                              <Input
+                                type="number"
+                                min={1}
+                                placeholder="Nhập số lượng"
+                              />
+                            </Form.Item>
+                            <Form.Item
+                              label="Giá"
+                              name={[field.name, "price"]}
+                              rules={[
+                                {
+                                  required: true,
+                                  message: "Giá không để trống",
+                                },
+                              ]}
+                              className="w-1/8"
+                            >
+                              <InputNumber
+                                style={{ width: "100%" }}
+                                // type="number"
+                                min={1000}
+                                formatter={(value) =>
+                                  value
+                                    ? `${new Intl.NumberFormat("vi-VN").format(
+                                        value
+                                      )}`
+                                    : ""
+                                }
+                                parser={(value) =>
+                                  value ? value.replace(/\D/g, "") : ""
+                                }
+                                placeholder="Nhập giá"
+                              />
+                            </Form.Item>
+                          </div>
+                        </Card>
+                      ))}
+                      <div className="flex justify-between space-x-3">
+                        <Button
+                          size="large"
+                          type="dashed"
+                          onClick={() => add()}
+                          block
+                        >
+                          + Thêm phiếu nhập
+                        </Button>
+                        <Button
+                          type="primary"
+                          danger
+                          size="large"
+                          htmlType="submit"
+                        >
+                          Lưu
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                )}
-              </Form.List>
+                  )}
+                </Form.List>
+              </div>
             </div>
           </div>
         </Form>

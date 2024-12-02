@@ -133,15 +133,15 @@ const Reviews = () => {
     const fetchData = async () => {
       try {
         search ? setSearchLoading(true) : setIsLoading(true);
-        const res = await ProductService.getAll(
-          currentPage,
-          currentPageSize,
-          search
-        );
-
+        // const res = await ProductService.getAll(
+        //   currentPage,
+        //   currentPageSize,
+        //   search
+        // );
+        const res = await ProductService.getName();
         // console.log(res.data?.items);
-
-        setData(res.data?.items);
+        setData(res.data);
+        // setData(res.data?.items);
         setTotalItems(res.data?.totalItems);
       } catch (error) {
         setSearch("");

@@ -10,6 +10,8 @@ import ProductDetail from "../pages/Products/ProductDetail";
 import Category from "../pages/Categoties";
 import Brands from "../pages/Brands/Brands";
 import {
+  DollarOutlined,
+  PayCircleFilled,
   PieChartOutlined,
   StarOutlined,
   TeamOutlined,
@@ -27,6 +29,7 @@ import { FaBagShopping, FaTape } from "react-icons/fa6";
 import Loges from "../pages/Loges";
 import Review from "../pages/Reviews/Review";
 import Roles from "../pages/Roles/Role";
+import Payments from "../pages/Payments/Payments";
 
 export const navigateItems = [
   { key: "/home", icon: <PieChartOutlined />, label: "Thống kê" },
@@ -51,6 +54,7 @@ export const navigateItems = [
       { key: "/reviews", icon: <StarOutlined />, label: "Đánh giá" },
     ],
   },
+  { key: "/payments", icon: <DollarOutlined />, label: "Thanh toán" },
   { key: "/orders", icon: <CiReceipt />, label: "Đơn đặt hàng" },
   {
     key: "import",
@@ -97,6 +101,7 @@ export const privateRoutes = [
   { path: "/brands", component: Brands },
   { path: "/categories", component: Category },
   { path: "/sizes", component: Sizes },
+  { path: "/payments", component: Payments },
   { path: "/orders", component: Orders },
   { path: "/order-detail/:id", component: OrderDetail },
   { path: "/imports", component: Imports },
@@ -121,6 +126,7 @@ export const inventorierRoutes = [
 export const managerRoutes = [
   { path: "/home", component: Home },
   { path: "/users", component: Users },
+  { path: "/payments", component: Payments },
   { path: "/orders", component: Orders },
   { path: "/order-detail/:id", component: OrderDetail },
 ];

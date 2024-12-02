@@ -22,7 +22,7 @@ const add = async (data) =>
 
 const update = async (id, data) =>
   await axios.put(API_URL + `/update/${id}`, data, {
-    headers: authImageHeader(),
+    headers: authHeader(),
   });
 
 const remove = async (id) =>

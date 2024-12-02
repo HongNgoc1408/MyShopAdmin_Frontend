@@ -74,6 +74,7 @@ const ProductDetail = () => {
     setPreviewImage(file.url || file.preview);
     setPreviewOpen(true);
   };
+
   const handleChangeFile = ({ fileList: newFileList }) =>
     setFileList(newFileList);
 
@@ -103,6 +104,7 @@ const ProductDetail = () => {
           sizeId: item.sizeId,
           label: pAttr.sizes.find((e) => e.id === item.sizeId)?.label,
         }));
+
         setSizeList(sizes);
         setSizeListValue(data.colorSizes);
 
@@ -111,6 +113,9 @@ const ProductDetail = () => {
           colorName: item.colorName,
           image: item.imageUrl,
         }));
+
+        // console.log(colors);
+
         form.setFieldValue("colors", colors);
 
         const colorFiles = data.colorSizes?.map((item) => ({
@@ -156,19 +161,36 @@ const ProductDetail = () => {
           return { ...exist };
         } else return { sizeId: sizeId };
       });
-      return { colorName: color.colorName, sizeInStocks: sizeInStocks };
+
+      console.log("sizeInStocks 123", sizeInStocks);
+
+      return {
+        id: color.id,
+        colorName: color.colorName,
+        sizeInStocks: sizeInStocks,
+      };
     });
+
+    console.log("newL", newL);
 
     setSizeListValue(newL);
   };
 
   const handleSetSizeValue = (obj, index) => {
     const newList = [...sizeListValue];
-    const sizeInStocks = newList[index].sizeInStocks.find(
+    const sizeInStocks = newList[index]?.sizeInStocks?.find(
       (e) => e.sizeId === obj.sizeId
     );
 
-    if (sizeInStocks) sizeInStocks.inStock = obj.inStock;
+    if (sizeInStocks) {
+      sizeInStocks.inStock = obj.inStock;
+    }
+    // else {
+    //   newList[index].sizeInStocks = [
+    //     ...(newList[index].sizeInStocks || []),
+    //     { sizeId: obj.sizeId, inStock: obj.inStock },
+    //   ];
+    // }
 
     setSizeListValue(newList);
   };
@@ -227,33 +249,55 @@ const ProductDetail = () => {
         care: values.care ?? "",
         discount: values.discount ?? 0,
       };
+
       delete data.imageUrls;
       delete data.sizes;
 
       sizeListValue.forEach((color, index) => {
         formData.append(`colorSizes[${index}].colorName`, color.colorName);
+        formData.append(`colorSizes[${index}].id`, color.id);
 
-        colors[index]?.image[0]?.originFileObj
-          ? formData.append(
-              `colorSizes[${index}].image`,
-              colors[index]?.image[0]?.originFileObj
-            )
-          : formData.append(`colorSizes[${index}].id`, color.id);
+        if (colors[index]?.image[0]?.originFileObj) {
+          formData.append(
+            `colorSizes[${index}].image`,
+            colors[index]?.image[0]?.originFileObj
+          );
+          if (!color.id) formData.delete(`colorSizes[${index}].id`);
+        }
+
+        // colors[index]?.image[0]?.originFileObj
+        //   ? formData.append(
+        //       `colorSizes[${index}].image`,
+        //       colors[index]?.image[0]?.originFileObj
+        //     )
+        //   : color.id && formData.append(`colorSizes[${index}].id`, color.id);
 
         color.sizeInStocks.forEach((size, sizeIndex) => {
           formData.append(
             `colorSizes[${index}].sizeInStocks[${sizeIndex}].sizeId`,
             size.sizeId
           );
-          // formData.append(
-          //   `colorSizes[${index}].sizeInStocks[${sizeIndex}].inStock`,
-          //   size.inStock
-          // );
+          if (size.inStock !== undefined) {
+            formData.append(
+              `colorSizes[${index}].sizeInStocks[${sizeIndex}].inStock`,
+              size.inStock
+            );
+          } else {
+            formData.append(
+              `colorSizes[${index}].sizeInStocks[${sizeIndex}].inStock`,
+              0
+            );
+          }
         });
       });
+
       delete data.colors;
 
       Object.keys(data).forEach((key) => formData.append(key, data[key]));
+
+      for (let [key, value] of formData.entries()) {
+        console.log("1", key, value);
+      }
 
       try {
         await ProductService.update(id, formData);
@@ -280,6 +324,9 @@ const ProductDetail = () => {
           onFinish={updateProduct}
           layout="vertical"
           className="grid gap-3 grid-cols-1 md:grid-cols-2"
+          // initialValues={{
+          //   colorSizes[index].sizeInStocks[index].inStock: 0
+          // }}
         >
           <Card loading={loading} className="drop-shadow h-fit">
             <Form.Item
@@ -547,12 +594,14 @@ const ProductDetail = () => {
                 disabled={
                   colors.length <= 0 ||
                   colors.some(
-                    (color) => color === undefined || !color?.colorName
+                    (color) =>
+                      color === undefined || !color?.colorName || updateLoading
                   )
                 }
               />
             </Form.Item>
-            {/* {console.log(sizeListValue)} */}
+            {/* {console.log("sizeListValue", sizeListValue)} */}
+
             <div className="grid grid-cols-2 gap-2">
               {sizeList.map((size, i) => (
                 <Form.Item label={size.label} key={i} className="mb-2">
@@ -564,7 +613,8 @@ const ProductDetail = () => {
                             {color?.colorName}
                           </div>
                           <InputNumber
-                            readOnly
+                            // readOnly
+                            // disabled
                             // required
                             min={0}
                             className="w-full"
@@ -586,7 +636,7 @@ const ProductDetail = () => {
                               );
                               setUpdate(true);
                             }}
-                            placeholder="Số lượng kho..."
+                            placeholder="0"
                           />
                         </Flex>
                       );

@@ -19,8 +19,8 @@ body {
 
 .ant-table-thead .ant-table-cell {
   background-color: #1d4ed8 !important;
-  text-decoration: white!important;
-  color: white!important;
+  text-decoration: white !important;
+  color: white !important;
 }
 
 .account-link:hover {
@@ -30,6 +30,82 @@ body {
 .title {
   @apply text-xl font-semibold capitalize text-black cursor-pointer;
 }
+
+.title {
+  @apply text-2xl font-serif cursor-pointer pb-2 items-center justify-start;
+}
+
+.title-add {
+  @apply text-lg font-serif cursor-pointer pb-2 hover:text-orange-500;
+}
+
+.title-card-product {
+  @apply text-lg text-nowrap capitalize truncate font-semibold cursor-pointer hover:text-orange-500;
+}
+
+.price-card-product {
+  @apply text-lg text-nowrap truncate font-semibold cursor-pointer mr-1;
+}
+
+.dark-button {
+  @apply bg-black text-white  hover:bg-orange-500 px-6 py-2 font-semibold;
+}
+
+.bg-dark-button {
+  @apply relative rounded-md px-6 py-2 flex items-center justify-center overflow-hidden bg-gray-800 text-white shadow-2xl transition-all before:absolute before:h-0 before:w-0 before:rounded-full before:bg-orange-500 before:duration-500 before:ease-out hover:shadow-orange-500 hover:before:h-56 hover:before:w-full;
+}
+
+/* .light-button {
+  @apply px-6 py-2 bg-white text-Black hover:bg-orange-500 hover:text-white font-semibold;
+} */
+
+.default-button {
+  @apply px-6 py-2 bg-orange-500 text-white font-semibold hover:bg-orange-600;
+}
+
+/* .bg-light-button {
+  @apply relative rounded-md px-6 py-2 flex items-center justify-center overflow-hidden bg-white text-Black shadow-2xl transition-all before:absolute before:h-0 before:w-0 before:rounded-full before:bg-orange-500 before:duration-500 before:ease-out hover:shadow-orange-500 hover:before:h-56 hover:before:w-full;
+} */
+
+.slick-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.slick-prev:before,
+.slick-next:before {
+  display: none;
+}
+
+/* .bg-sidebar {
+  background: #3d68ff;
+} */
+
+/* .cta-btn {
+  color: #3d68ff;
+} */
+/* .upgrade-btn {
+  background: #1947ee;
+} */
+/* .upgrade-btn:hover {
+  background: #0038fd;
+} */
+/* .active-nav-link {
+  background: #1947ee;
+} */
+
+/* .nav-item:hover {
+  background: orange;
+} */
+
+/* .account-link:hover {
+  background: #3d68ff;
+} */
+
+/* .title_cols {
+  @apply flex items-center text-white opacity-75 hover:opacity-100 py-4 pl-6 nav-item;
+} */
 
 /* .bg-sidebar {
   background: #1d4ed8;
@@ -59,12 +135,9 @@ body {
   @apply flex items-center text-white opacity-75 hover:opacity-100 py-4 pl-6 nav-item;
 } */
 
-
-
 /* .bg-dark-button {
   @apply bg-black text-white  hover:bg-orange-500 px-6 py-2 font-semibold rounded-md;
 } */
-
 
 /* .bg-light-button {
   @apply px-6 py-2 bg-white text-Black hover:bg-orange-500 rounded-md font-semibold;

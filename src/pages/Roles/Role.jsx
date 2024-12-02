@@ -256,7 +256,13 @@ const Roles = () => {
           <Form.Item
             label="Số điện thoại"
             name="phoneNumber"
-            rules={[{ required: true, message: "Vui lòng nhập số điện thoại" }]}
+            rules={[
+              { required: true, message: "Vui lòng nhập số điện thoại" },
+              {
+                pattern: /^\+?\d{9,15}$/,
+                message: "Số điện thoại không hợp lệ! (VD: +84123456789)",
+              },
+            ]}
           >
             <Input />
           </Form.Item>

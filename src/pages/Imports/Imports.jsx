@@ -46,6 +46,7 @@ const Imports = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpenUpdate, setIsOpenUpdate] = useState(false);
   const [total, setTotal] = useState(0);
+  const [entryDates, setEntryDates] = useState([]);
 
   const columns = (openStockDetail) => [
     {
@@ -107,10 +108,11 @@ const Imports = () => {
           search
         );
 
-        // console.log("fetchData", res.data?.items);
+        console.log("fetchData", res.data?.items);
 
         setData(res.data?.items);
         setTotalItems(res.data?.totalItems);
+        // setEntryDates(res.data?.items.entryDate);
       } catch (error) {
         setSearch("");
       } finally {
@@ -208,7 +210,7 @@ const Imports = () => {
         onOk={() => handleOk(detail.id)}
         onCancel={handleCancel}
         className="p-10"
-        width={900}
+        width={1200}
         centered
         footer={(_, { OkBtn, CancelBtn }) => (
           <>
@@ -225,128 +227,146 @@ const Imports = () => {
       >
         <Card className="drop-shadow h-fit">
           <Form layout="vertical" form={form}>
-            <div className="flex justify-between space-x-4">
-              <div className="w-1/2">
-                {detail ? (
-                  <>
-                    <Form.Item
-                      label="Ngày nhập"
-                      name="entryDate"
-                      getValueProps={(value) => ({
-                        value: value && dayjs(Number(value)),
-                      })}
-                      normalize={(value) =>
-                        value && `${dayjs(value).valueOf()}`
-                      }
-                    >
-                      <DatePicker disabled={!isOpenUpdate} />
-                    </Form.Item>
-
-                    <Form.Item label="Tổng giá trị" name="total">
-                      <Input value={formatVND(detail.total)} readOnly />
-                    </Form.Item>
-                    <Form.Item label="Ghi chú" name="note">
-                      <TextArea
-                        disabled={!isOpenUpdate}
-                        value={data.note}
-                        showCount
-                        maxLength={200}
-                        style={{ height: 70, resize: "none" }}
-                      />
-                    </Form.Item>
-                  </>
-                ) : (
-                  <></>
-                )}
-              </div>
-
-              <div className="w-1/2">
-                {importDetails.map((item, index) => (
-                  <Card
-                    key={index}
-                    size="small"
-                    title={`Nhập sản phẩm ${index + 1}`}
-                    className="bg-gray-50 drop-shadow-md"
+            <div className="flex space-x-4">
+              {detail ? (
+                <>
+                  <Form.Item
+                    label="Ngày nhập"
+                    name="entryDate"
+                    getValueProps={(value) => ({
+                      value: value && dayjs(Number(value)),
+                    })}
+                    normalize={(value) => value && `${dayjs(value).valueOf()}`}
+                    className="w-1/2"
                   >
+                    <DatePicker disabled={!isOpenUpdate} />
+                  </Form.Item>
+
+                  <Form.Item
+                    label="Tổng giá trị"
+                    name="total"
+                    className="w-full"
+                  >
+                    <Input value={formatVND(detail.total)} readOnly />
+                  </Form.Item>
+                  <Form.Item
+                    label="Ghi chú"
+                    name="note"
+                    className="w-full justify-end"
+                  >
+                    <TextArea
+                      disabled={!isOpenUpdate}
+                      value={data.note}
+                      showCount
+                      maxLength={200}
+                      style={{ height: 70, resize: "none" }}
+                    />
+                  </Form.Item>
+                </>
+              ) : (
+                <></>
+              )}
+            </div>
+
+            <div className="w-full  space-y-2">
+              {importDetails.map((item, index) => (
+                <Card
+                  key={index}
+                  size="small"
+                  title={`Nhập sản phẩm ${index + 1}`}
+                  className="bg-blue-50 drop-shadow-md"
+                >
+                  <div className="flex justify-between space-x-4">
                     <Form.Item
                       label="Tên sản phẩm"
                       name={`items[${index}].productName`}
                       initialValue={item.productName}
+                      className="w-1/2"
                     >
                       <Input value={item.productName} readOnly />
                     </Form.Item>
-                    <div className="flex gap-5">
+
+                    <Form.Item
+                      label="Màu sắc"
+                      name={`items[${index}].colorName`}
+                      initialValue={item.colorName}
+                      className=""
+                    >
+                      <Input value={item.colorName} readOnly />
+                    </Form.Item>
+                    <Form.Item
+                      label="Kích cỡ"
+                      name={`items[${index}].sizeName`}
+                      initialValue={item.sizeName}
+                    >
+                      <Input value={item.sizeName} readOnly />
+                    </Form.Item>
+
+                    <>
                       <Form.Item
-                        label="Màu sắc"
-                        name={`items[${index}].colorName`}
-                        initialValue={item.colorName}
+                        label="Số lượng"
+                        name={`items[${index}].quantity`}
+                        initialValue={item.quantity}
                       >
-                        <Input value={item.colorName} readOnly />
+                        <InputNumber
+                          min={1}
+                          value={item.quantity}
+                          onChange={(value) => {
+                            const updatedDetails = [...importDetails];
+                            updatedDetails[index].quantity = value;
+                            setImportDetails(updatedDetails);
+
+                            const newTotal = updatedDetails.reduce(
+                              (acc, item) => acc + item.quantity * item.price,
+                              0
+                            );
+                            form.setFieldValue("total", formatVND(newTotal));
+                            setTotal(newTotal);
+                          }}
+                          disabled={!isOpenUpdate}
+                        />
                       </Form.Item>
+
                       <Form.Item
-                        label="Kích cỡ"
-                        name={`items[${index}].sizeName`}
-                        initialValue={item.sizeName}
+                        label="Giá"
+                        name={`price-${index}`}
+                        initialValue={item.price}
                       >
-                        <Input value={item.sizeName} readOnly />
+                        <InputNumber
+                          className="w-full"
+                          formatter={(value) =>
+                            value
+                              ? `${new Intl.NumberFormat("vi-VN").format(
+                                  value
+                                )}`
+                              : ""
+                          }
+                          parser={(value) =>
+                            value ? value.replace(/\D/g, "") : ""
+                          }
+                          min={1000}
+                          value={item.price}
+                          onChange={(value) => {
+                            const updatedDetails = [...importDetails];
+                            updatedDetails[index].price = value;
+                            setImportDetails(updatedDetails);
+
+                            const newTotal = updatedDetails.reduce(
+                              (acc, item) => acc + item.quantity * item.price,
+                              0
+                            );
+
+                            form.setFieldValue("total", formatVND(newTotal));
+
+                            setTotal(newTotal);
+                          }}
+                          disabled={!isOpenUpdate}
+                        />
                       </Form.Item>
-                    </div>
-                    <div className="flex gap-5">
-                      <>
-                        <Form.Item
-                          label="Số lượng"
-                          name={`items[${index}].quantity`}
-                          initialValue={item.quantity}
-                        >
-                          <InputNumber
-                            min={1}
-                            value={item.quantity}
-                            onChange={(value) => {
-                              const updatedDetails = [...importDetails];
-                              updatedDetails[index].quantity = value;
-                              setImportDetails(updatedDetails);
-
-                              const newTotal = updatedDetails.reduce(
-                                (acc, item) => acc + item.quantity * item.price,
-                                0
-                              );
-                              form.setFieldValue("total", formatVND(newTotal));
-                              setTotal(newTotal);
-                            }}
-                            disabled={!isOpenUpdate}
-                          />
-                        </Form.Item>
-
-                        <Form.Item
-                          label="Giá"
-                          name={`price-${index}`}
-                          initialValue={item.price}
-                        >
-                          <InputNumber
-                            min={1}
-                            value={item.price}
-                            onChange={(value) => {
-                              const updatedDetails = [...importDetails];
-                              updatedDetails[index].price = value;
-                              setImportDetails(updatedDetails);
-
-                              const newTotal = updatedDetails.reduce(
-                                (acc, item) => acc + item.quantity * item.price,
-                                0
-                              );
-
-                              form.setFieldValue("total", formatVND(newTotal));
-
-                              setTotal(newTotal);
-                            }}
-                            disabled={!isOpenUpdate}
-                          />
-                        </Form.Item>
-                      </>
-                    </div>
-                  </Card>
-                ))}
-              </div>
+                    </>
+                  </div>
+                </Card>
+              ))}
             </div>
           </Form>
         </Card>

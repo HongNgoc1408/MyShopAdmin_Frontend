@@ -20,6 +20,7 @@ import BreadcrumbLink from "../../components/BreadcrumbLink";
 import LogesService from "../../services/LogesService";
 
 const Loges = () => {
+  const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
@@ -140,7 +141,7 @@ const Loges = () => {
         onOk={handleOk}
         onCancel={handleCancel}
         footer={null}
-        width={500}
+        width={1000}
         centered
       >
         {logDetails.map((item, index) => (
@@ -149,27 +150,35 @@ const Loges = () => {
             key={item.id}
             size="small"
             title={`Nhập sản phẩm ${index + 1}`}
-            className="bg-gray-50 drop-shadow h-fit mb-4"
+            className="bg-blue-50 drop-shadow h-fit mb-4"
           >
-            <Form.Item label="Tên sản phẩm">
-              <Input className="capitalize" value={item.productName} readOnly />
-            </Form.Item>
-            <div className="flex gap-5">
-              <Form.Item label="Màu sắc">
-                <Input value={item.colorName} readOnly />
-              </Form.Item>
-              <Form.Item label="Kích cỡ">
-                <Input value={item.sizeName} readOnly />
-              </Form.Item>
-            </div>
-            <div className="flex gap-5">
-              <Form.Item label="Số lượng">
-                <InputNumber value={item.quantity} readOnly />
-              </Form.Item>
-              <Form.Item label="Giá">
-                <InputNumber value={item.price} readOnly />
-              </Form.Item>
-            </div>
+            <Form layout="vertical" form={form}>
+              <div className="flex space-x-2">
+                <Form.Item label="Tên sản phẩm" className="w-full">
+                  <Input
+                    className="capitalize"
+                    value={item.productName}
+                    readOnly
+                  />
+                </Form.Item>
+                <Form.Item label="Màu sắc" className="w-1/4">
+                  <Input value={item.colorName} readOnly />
+                </Form.Item>
+                <Form.Item label="Kích cỡ" className="w-1/4">
+                  <Input value={item.sizeName} readOnly />
+                </Form.Item>
+                <Form.Item label="Số lượng" className="w-1/4">
+                  <InputNumber
+                    value={item.quantity}
+                    readOnly
+                    className="w-full"
+                  />
+                </Form.Item>
+                <Form.Item label="Giá" className="w-1/4">
+                  <InputNumber value={item.price} readOnly className="w-full" />
+                </Form.Item>
+              </div>
+            </Form>
           </Card>
         ))}
       </Modal>

@@ -76,16 +76,17 @@ const StatisticProduct = () => {
     const fetchData = async () => {
       try {
         search ? setSearchLoading(true) : setIsLoading(true);
-        const res = await ProductService.getAll(
-          currentPage,
-          currentPageSize,
-          search
-        );
-
-        // console.log(res.data?.items);
-
-        setData(res.data?.items);
-        setTotalItems(res.data?.totalItems);
+        // const res = await ProductService.getAll(
+        //   currentPage,
+        //   currentPageSize,
+        //   search
+        // );
+        const res = await ProductService.getName();
+        // console.log(res.data);
+        // console.log("id", res.data?.items);
+        setData(res.data);
+        // setData(res.data?.items);
+        // setTotalItems(res.data?.totalItems);
       } catch (error) {
         setSearch("");
       } finally {
@@ -269,7 +270,7 @@ const StatisticProduct = () => {
             placeholder="Chọn sản phẩm cần xem đánh giá"
           >
             {data.map((item) => (
-              <Select.Option key={item.id} value={item.id}>
+              <Select.Option key={item.id} value={item.id} label={item.name}>
                 {item.name}
               </Select.Option>
             ))}

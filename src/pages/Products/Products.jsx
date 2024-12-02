@@ -80,18 +80,29 @@ const Products = () => {
     {
       title: "Giảm giá",
       dataIndex: "discount",
+      sorter: (a, b) => a.discount - b.discount,
     },
     {
       title: "Đã bán",
       dataIndex: "sold",
+      sorter: (a, b) => a.sold - b.sold,
     },
     {
       title: "Đánh giá ",
       dataIndex: "rating",
+      filters: [
+        { text: "1 sao", value: 1 },
+        { text: "2 sao", value: 2 },
+        { text: "3 sao", value: 3 },
+        { text: "4 sao", value: 4 },
+        { text: "5 sao", value: 5 },
+      ],
+      onFilter: (value, record) => record.rating.indexOf(value) === 0,
     },
     {
       title: "Lượt đánh giá ",
       dataIndex: "ratingCount",
+      sorter: (a, b) => a.ratingCount - b.ratingCount,
     },
     {
       title: "Thương hiệu",
@@ -157,6 +168,7 @@ const Products = () => {
           currentPageSize,
           search
         );
+        // console.log(res);
 
         var newBrandNames = toTextValue([
           ...new Set(res.data?.items?.map((order) => order.brandName)),
@@ -181,6 +193,7 @@ const Products = () => {
     fetchData();
   }, [currentPage, currentPageSize, search]);
 
+  
   const handleChangeEnable = async (id, value) => {
     try {
       const data = { enable: value };

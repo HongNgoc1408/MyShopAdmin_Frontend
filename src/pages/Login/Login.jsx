@@ -126,7 +126,25 @@ const Login = () => {
                 </div>
               </Form.Item>
             </div>
-
+            <div className="w-full flex items-center justify-between">
+              <div className="w-full flex items-center">
+                <input
+                  type="checkbox"
+                  className="w-4 h-4 mr-2"
+                  checked
+                  readOnly
+                />
+                <p className="text-base">Ghi nhớ mật khẩu</p>
+              </div>
+              <div>
+                <Link
+                  to="/reset-password"
+                  className="text-base font-medium whitespace-nowrap cursor-pointer underline underline-offset-2"
+                >
+                  Quên mật khẩu ?
+                </Link>
+              </div>
+            </div>
             <div className="w-full flex flex-col my-4">
               <button
                 type="submit"

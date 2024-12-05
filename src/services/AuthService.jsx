@@ -38,12 +38,24 @@ const getRole = () => {
   return user.roles;
 };
 
+const codeResetPassword = async (email) =>
+  await axios.post(API_URL + "/send-code-resetpassword", email);
+
+const resetPassword = async (data) =>
+  await axios.post(API_URL + "/reset-password", data);
+
+const confirmCode = async (data) =>
+  await axios.post(API_URL + "/confirm-code", data);
+
 const authService = {
   login,
   getCurrentUser,
   setUserToken,
   logout,
   // refreshToken,
+  confirmCode,
+  resetPassword,
+  codeResetPassword,
   getRole,
 };
 

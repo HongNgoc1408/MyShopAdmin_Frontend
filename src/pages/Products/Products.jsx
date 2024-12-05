@@ -97,7 +97,7 @@ const Products = () => {
         { text: "4 sao", value: 4 },
         { text: "5 sao", value: 5 },
       ],
-      onFilter: (value, record) => record.rating.indexOf(value) === 0,
+      onFilter: (value, record) => record.rating === value,
     },
     {
       title: "Lượt đánh giá ",
@@ -193,7 +193,6 @@ const Products = () => {
     fetchData();
   }, [currentPage, currentPageSize, search]);
 
-  
   const handleChangeEnable = async (id, value) => {
     try {
       const data = { enable: value };

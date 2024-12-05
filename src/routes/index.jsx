@@ -11,7 +11,6 @@ import Category from "../pages/Categoties";
 import Brands from "../pages/Brands/Brands";
 import {
   DollarOutlined,
-  PayCircleFilled,
   PieChartOutlined,
   StarOutlined,
   TeamOutlined,
@@ -30,6 +29,7 @@ import Loges from "../pages/Loges";
 import Review from "../pages/Reviews/Review";
 import Roles from "../pages/Roles/Role";
 import Payments from "../pages/Payments/Payments";
+import ResetPassword from "../pages/ResetPassword/ResetPassword";
 
 export const navigateItems = [
   { key: "/home", icon: <PieChartOutlined />, label: "Thống kê" },
@@ -89,7 +89,10 @@ export const navigateStaff = [
   { key: "/reviews", icon: <StarOutlined />, label: "Đánh giá" },
 ];
 
-export const publicRoutes = [{ path: "/", component: Login, Layout: null }];
+export const publicRoutes = [
+  { path: "/", component: Login, Layout: null },
+  { path: "/reset-password", component: ResetPassword, Layout: null },
+];
 
 export const privateRoutes = [
   { path: "/home", component: Home },

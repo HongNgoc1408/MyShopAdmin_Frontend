@@ -278,8 +278,8 @@ const Roles = () => {
               mode="multiple"
               options={[
                 { label: "Quản trị viên", value: "Admin" },
-                { label: "Nhân viên kho", value: "Inventorier" },
-
+                { label: "Quản lý kho", value: "Inventorier" },
+                { label: "Quản lý", value: "Manager" },
                 { label: "Nhân viên", value: "Staff" },
                 { label: "Khách hàng", value: "User" },
               ]}

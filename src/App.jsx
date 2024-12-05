@@ -17,6 +17,7 @@ import {
 import { initialState, reducer } from "./services/AuthReducer";
 import NotFound from "./pages/NotFound/NotFound";
 import UserService from "./services/UserService";
+import ScrollToTop from "./components/ScrollToStop";
 
 const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
@@ -45,6 +46,7 @@ function App() {
     <div>
       <AuthContext.Provider value={{ state, dispatch }}>
         <AvatarContext.Provider value={{ avatar, setAvatar }}>
+          <ScrollToTop />
           <Router>
             <Routes>
               {generatePublicRoutes(state.isAuthenticated)}

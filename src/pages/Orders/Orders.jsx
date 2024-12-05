@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Button,
   Flex,
@@ -88,6 +88,9 @@ const Orders = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!isModalOpen) {
+        form.resetFields();
+      }
       try {
         search ? setSearchLoading(true) : setIsLoading(true);
         const res = await OrderService.getAll(
@@ -95,11 +98,12 @@ const Orders = () => {
           currentPageSize,
           search
         );
-
+        //
         // console.log(res.data?.items);
 
         setData(res.data?.items);
         setTotalItems(res.data?.totalItems);
+        setCurrentPage(searchParams.get("page") ?? 1);
       } catch (error) {
         setSearch("");
       } finally {
@@ -108,7 +112,7 @@ const Orders = () => {
       }
     };
     fetchData();
-  }, [currentPage, currentPageSize, search]);
+  }, [currentPage, currentPageSize, search, searchParams, isModalOpen, form]);
 
   const handleDelete = async (id) => {
     setLoadingDelete(true);
@@ -133,6 +137,7 @@ const Orders = () => {
     try {
       await OrderService.updateStatus(id, { orderStatus: data });
 
+      setData(form.resetFields());
       notification.success({
         message: "Cập nhật trạng thái thành công",
         placement: "top",
@@ -155,18 +160,18 @@ const Orders = () => {
       sorter: (a, b) => a.shippingCode - b.shippingCode,
       render: (value) => <span>{value}</span>,
     },
-    // {
-    //   title: "Người nhận",
-    //   dataIndex: "receiver",
-    //   sorter: (a, b) => a.receiver - b.receiver,
-    //   render: (value) => <p style={{ width: 100 }}>{value}</p>,
-    // },
-    // {
-    //   title: "Địa chỉ nhận",
-    //   dataIndex: "deliveryAddress",
-    //   sorter: (a, b) => a.deliveryAddress - b.deliveryAddress,
-    //   render: (value) => <p style={{ width: 200 }}>{value}</p>,
-    // },
+    {
+      title: "Người nhận",
+      dataIndex: "receiver",
+      sorter: (a, b) => a.receiver - b.receiver,
+      render: (value) => <p style={{ width: 100 }}>{value}</p>,
+    },
+    {
+      title: "Địa chỉ nhận",
+      dataIndex: "deliveryAddress",
+      sorter: (a, b) => a.deliveryAddress - b.deliveryAddress,
+      render: (value) => <p style={{ width: 200 }}>{value}</p>,
+    },
     {
       title: "Ngày đặt hàng",
       dataIndex: "orderDate",
@@ -228,158 +233,177 @@ const Orders = () => {
       title: "Trạng thái đơn hàng",
       dataIndex: "orderStatus",
       key: "orderStatus",
-      render: (value, record) => (
-        <>
-          <Select
-            showSearch
-            optionFilterProp="label"
-            style={{ width: 150 }}
-            defaultValue={value === 2 ? "Đang vận chuyển" : value}
-            onChange={(newValue) => handleUpdate(record.id, newValue)}
-            options={statusOrders
-              .filter((item) => item.value !== 2)
-              .map((item) => ({
+      render: (value, record) => {
+        // Xác định các tùy chọn hiển thị dựa trên trạng thái đơn hàng
+        let options = [];
+        if (value === 0 || value === 1) {
+          options = statusOrders.filter((item) => [1, 4].includes(item.value));
+        } else if (value === 2) {
+          options = statusOrders.filter((item) => item.value === 3);
+        } else if (value === 1) {
+          options = statusOrders.filter((item) => item.value === 4);
+        } else {
+          options = []; // Không hiển thị nếu đã nhận
+        }
+
+        return (
+          <>
+            <Select
+              showSearch
+              optionFilterProp="label"
+              style={{ width: 150 }}
+              value={
+                value === 2
+                  ? "Đang vận chuyển"
+                  : statusOrders.find((s) => s.value === value)?.label
+              }
+              onChange={(newValue) => handleUpdate(record.id, newValue)}
+              options={options.map((item) => ({
                 value: item.value,
                 label: item.label,
               }))}
-          />
-        </>
-      ),
+              disabled={value === 3 || value === 4} // Vô hiệu hóa khi đã nhận và hủy
+            />
+          </>
+        );
+      },
     },
     {
       title: "Thực hiện",
       align: "center",
       render: (_, record) => (
         <Flex justify="center" align="center" className="space-x-1">
-          <Button
-            className={`${record.orderStatus === 1 ? "" : "hidden"} `}
-            onClick={() => showModal(record.id)}
-          >
-            Vận chuyển
-          </Button>
-          <Modal
-            title="Thông tin đơn hàng vận chuyển"
-            open={isModalOpen}
-            onOk={() => handleOk()}
-            onCancel={handleCancel}
-          >
-            <Form
-              form={form}
-              name="validateOnly"
-              layout="vertical"
-              autoComplete="off"
+          <>
+            <Button
+              className={`${record.orderStatus === 1 ? "" : "hidden"} `}
+              onClick={() => showModal(record.id)}
             >
-              <div className="flex space-x-2">
-                <div className="w-1/2">
-                  <Form.Item
-                    name="weight"
-                    label="Cân nặng"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Vui lòng nhập cân nặng",
-                      },
-                    ]}
-                  >
-                    <InputNumber
-                      formatter={(value) => `${value}gram`}
-                      parser={(value) => value?.replace("gram", "")}
-                      className="w-full"
-                      placeholder="Weight (gram)"
-                    />
-                  </Form.Item>
-                </div>
-                <div className="w-1/2">
-                  <Form.Item
-                    name="length"
-                    label="Chiều dài"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Vui lòng nhập chiều dài",
-                      },
-                    ]}
-                  >
-                    <InputNumber
-                      formatter={(value) => `${value}cm`}
-                      parser={(value) => value?.replace("cm", "")}
-                      className="w-full"
-                      placeholder="Length (cm)"
-                    />
-                  </Form.Item>
-                </div>
-              </div>
-              <div className="flex space-x-2">
-                <div className="w-1/2">
-                  <Form.Item
-                    name="width"
-                    label="Chiều rộng"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Vui lòng nhập chiều rộng",
-                      },
-                    ]}
-                  >
-                    <InputNumber
-                      formatter={(value) => `${value}cm`}
-                      parser={(value) => value?.replace("cm", "")}
-                      className="w-full"
-                      placeholder="Width (cm)"
-                    />
-                  </Form.Item>
-                </div>
-                <div className="w-1/2">
-                  <Form.Item
-                    name="height"
-                    label="Chiều cao"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Vui lòng nhập chiều cao",
-                      },
-                    ]}
-                  >
-                    <InputNumber
-                      formatter={(value) => `${value}cm`}
-                      parser={(value) => value?.replace("cm", "")}
-                      className="w-full"
-                      placeholder="Height (cm)"
-                    />
-                  </Form.Item>
-                </div>
-              </div>
-
-              <Form.Item
-                name="requiredNote"
-                label="Ghi chú"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng chọn ghi chú",
-                  },
-                ]}
+              Vận chuyển
+            </Button>
+            <Modal
+              title="Thông tin đơn hàng vận chuyển"
+              open={isModalOpen}
+              onOk={() => handleOk()}
+              onCancel={handleCancel}
+            >
+              <Form
+                form={form}
+                name="validateOnly"
+                layout="vertical"
+                autoComplete="off"
               >
-                <Select
-                  placeholder="Ghi chú"
-                  options={[
+                <div className="flex space-x-2">
+                  <div className="w-1/2">
+                    <Form.Item
+                      name="weight"
+                      label="Cân nặng"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng nhập cân nặng",
+                        },
+                      ]}
+                    >
+                      <InputNumber
+                        // formatter={(value) => `${value}gram`}
+                        // parser={(value) => value?.replace("gram", "")}
+                        className="w-full"
+                        placeholder="Weight (gram)"
+                      />
+                    </Form.Item>
+                  </div>
+                  <div className="w-1/2">
+                    <Form.Item
+                      name="length"
+                      label="Chiều dài"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng nhập chiều dài",
+                        },
+                      ]}
+                    >
+                      <InputNumber
+                        // formatter={(value) => `${value}cm`}
+                        // parser={(value) => value?.replace("cm", "")}
+                        className="w-full"
+                        placeholder="Length (cm)"
+                      />
+                    </Form.Item>
+                  </div>
+                </div>
+                <div className="flex space-x-2">
+                  <div className="w-1/2">
+                    <Form.Item
+                      name="width"
+                      label="Chiều rộng"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng nhập chiều rộng",
+                        },
+                      ]}
+                    >
+                      <InputNumber
+                        // formatter={(value) => `${value}cm`}
+                        // parser={(value) => value?.replace("cm", "")}
+                        className="w-full"
+                        placeholder="Width (cm)"
+                      />
+                    </Form.Item>
+                  </div>
+                  <div className="w-1/2">
+                    <Form.Item
+                      name="height"
+                      label="Chiều cao"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng nhập chiều cao",
+                        },
+                      ]}
+                    >
+                      <InputNumber
+                        // formatter={(value) => `${value}cm`}
+                        // parser={(value) => value?.replace("cm", "")}
+                        className="w-full"
+                        placeholder="Height (cm)"
+                      />
+                    </Form.Item>
+                  </div>
+                </div>
+
+                <Form.Item
+                  name="requiredNote"
+                  label="Ghi chú"
+                  rules={[
                     {
-                      value: 0,
-                      label: "Cho thử hàng",
-                    },
-                    {
-                      value: 1,
-                      label: "Cho xem hàng không cho thử",
-                    },
-                    {
-                      value: 2,
-                      label: "Không cho xem hàng",
+                      required: true,
+                      message: "Vui lòng chọn ghi chú",
                     },
                   ]}
-                />
-              </Form.Item>
-            </Form>
-          </Modal>
+                >
+                  <Select
+                    placeholder="Ghi chú"
+                    options={[
+                      {
+                        value: 0,
+                        label: "Cho thử hàng",
+                      },
+                      {
+                        value: 1,
+                        label: "Cho xem hàng không cho thử",
+                      },
+                      {
+                        value: 2,
+                        label: "Không cho xem hàng",
+                      },
+                    ]}
+                  />
+                </Form.Item>
+              </Form>
+            </Modal>
+          </>
           <Link to={`/order-detail/${record.id}`}>
             <Button>
               <EyeTwoTone />
@@ -420,6 +444,14 @@ const Orders = () => {
       })
     : [];
 
+  // const filteredOptions = useMemo(() => {
+  //   if (value === 0 || value === 1)
+  //     return statusOrders.filter((item) => [1, 4].includes(item.value));
+  //   if (value === 2) return statusOrders.filter((item) => item.value === 3);
+  //   if (value === 1) return statusOrders.filter((item) => item.value === 4);
+  //   return [];
+  // }, [value]);
+
   const onChange = (key) => {
     setSelectedTab(key);
   };
@@ -428,59 +460,62 @@ const Orders = () => {
   };
 
   return (
-    <div className="space-y-4">
-      <BreadcrumbLink breadcrumb={breadcrumb} />
-      <div className="p-4 drop-shadow rounded-lg bg-white space-y-2">
-        <div className="w-full flex justify-between items-center gap-4">
-          <Input.Search
-            loading={searchLoading}
-            className="w-1/2"
-            size="large"
-            allowClear
-            onSearch={(key) => handleSearch(key)}
-            onChange={(e) => e.target.value === "" && setSearch("")}
-            placeholder="Nhập mã đơn hàng"
+    <>
+      <div className="space-y-4">
+        <BreadcrumbLink breadcrumb={breadcrumb} />
+
+        <div className="p-4 drop-shadow rounded-lg bg-white space-y-2">
+          <div className="w-full flex justify-between items-center gap-4">
+            <Input.Search
+              loading={searchLoading}
+              className="w-1/2"
+              size="large"
+              allowClear
+              onSearch={(key) => handleSearch(key)}
+              onChange={(e) => e.target.value === "" && setSearch("")}
+              placeholder="Nhập mã đơn hàng"
+            />
+            <Select
+              value={paymentMethod}
+              onChange={handlePaymentMethodChange}
+              defaultValue=""
+              style={{ width: 120 }}
+              allowClear
+              size="large"
+              options={[
+                { value: "", label: "Tất cả" },
+                { value: "VNPay", label: "VNPay" },
+                { value: "COD", label: "COD" },
+              ]}
+              placeholder="Chọn"
+            />
+          </div>
+          <Tabs defaultActiveKey="6" items={items} onChange={onChange} />
+          <Table
+            pagination={false}
+            showSorterTooltip={false}
+            loading={isLoading}
+            columns={columns}
+            dataSource={filteredOrders}
+            rowKey={(record) => record.id}
+            className="overflow-x-auto"
           />
-          <Select
-            value={paymentMethod}
-            onChange={handlePaymentMethodChange}
-            defaultValue=""
-            style={{ width: 120 }}
-            allowClear
-            size="large"
-            options={[
-              { value: "", label: "Tất cả" },
-              { value: "VNPay", label: "VNPay" },
-              { value: "COD", label: "COD" },
-            ]}
-            placeholder="Chọn"
+          <Pagination
+            align="end"
+            hideOnSinglePage
+            showSizeChanger
+            defaultCurrent={currentPage}
+            defaultPageSize={currentPageSize}
+            total={totalItems}
+            onChange={(newPage, newPageSize) => {
+              setCurrentPage(newPage);
+              setCurrentPageSize(newPageSize);
+              setSearchParams(`page=${newPage}`);
+            }}
           />
         </div>
-        <Tabs defaultActiveKey="6" items={items} onChange={onChange} />
-        <Table
-          pagination={false}
-          showSorterTooltip={false}
-          loading={isLoading}
-          columns={columns}
-          dataSource={filteredOrders}
-          rowKey={(record) => record.id}
-          className="overflow-x-auto"
-        />
-        <Pagination
-          align="end"
-          hideOnSinglePage
-          showSizeChanger
-          defaultCurrent={currentPage}
-          defaultPageSize={currentPageSize}
-          total={totalItems}
-          onChange={(newPage, newPageSize) => {
-            setCurrentPage(newPage);
-            setCurrentPageSize(newPageSize);
-            setSearchParams(`page=${newPage}`);
-          }}
-        />
       </div>
-    </div>
+    </>
   );
 };
 

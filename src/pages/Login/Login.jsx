@@ -1,13 +1,11 @@
-import { Button, Card, Form, Input, notification, Spin } from "antd";
+import { Form,  notification, Spin } from "antd";
 import React, { useState } from "react";
-import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../App";
 import authService from "../../services/authService";
 import { showError } from "../../services/commonService";
 import authAction from "../../services/AuthAction";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
-import { Footer } from "antd/es/layout/layout";
 
 const Login = () => {
   const [form] = Form.useForm();

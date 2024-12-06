@@ -146,7 +146,6 @@ const Loges = () => {
       >
         {logDetails.map((item, index) => (
           <Card
-            centered
             key={item.id}
             size="small"
             title={`Nhập sản phẩm ${index + 1}`}

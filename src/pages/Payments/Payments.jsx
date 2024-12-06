@@ -147,7 +147,7 @@ const Payments = () => {
   };
 
   const onUpdate = (record) => {
-    console.log(record);
+    // console.log(record);
     form.setFieldsValue(record);
     form.setFieldsValue({ name: record.name, isActive: record.isActive });
     setUpdateID(record.id);
@@ -158,7 +158,7 @@ const Payments = () => {
     setLoadingUpdate(true);
     try {
       const values = await form.getFieldsValue();
-      console.log(updateID, values);
+      // console.log(updateID, values);
       await PaymentService.update(updateID, {
         ...values,
         Id: values.id,
@@ -266,10 +266,12 @@ const Payments = () => {
             >
               <Input />
             </Form.Item>
+
             <Form.Item
               label="Trạng thái phương thức thanh toán"
               name="isActive"
               className="col-span-2"
+              valuePropName="checked"
               rules={[
                 {
                   required: true,
@@ -280,10 +282,8 @@ const Payments = () => {
               <Switch
                 checkedChildren={<CheckOutlined />}
                 unCheckedChildren={<CloseOutlined />}
-                checked={form.getFieldValue("isActive")}
-                onChange={(checked) =>
-                  form.setFieldsValue({ isActive: checked })
-                }
+                defaultChecked
+                className="bg-gray-500"
               />
             </Form.Item>
             <div className="col-span-3 grid grid-cols-1 lg:grid-cols-5 gap-2 pb-4">

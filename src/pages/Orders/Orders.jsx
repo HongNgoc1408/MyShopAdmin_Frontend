@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Flex,
@@ -44,12 +44,12 @@ const Orders = () => {
   const [searchLoading, setSearchLoading] = useState(false);
   const [totalItems, setTotalItems] = useState(0);
   const [currentPage, setCurrentPage] = useState(searchParams.get("page") ?? 1);
-  const [currentPageSize, setCurrentPageSize] = useState(5);
+  const [currentPageSize, setCurrentPageSize] = useState();
   const [search, setSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
-  const [selectedTab, setSelectedTab] = useState(6);
-  const [paymentMethod, setPaymentMethod] = useState("");
+
+  // const [paymentMethod, setPaymentMethod] = useState("");
 
   const showModal = (id) => {
     setSelectedOrderId(id);
@@ -82,9 +82,9 @@ const Orders = () => {
     form.resetFields();
   };
 
-  const handleSearch = (key) => key && key !== search && setSearch(key);
+  const handleSearch = (value) => value && value !== search && setSearch(value);
 
-  // console.log(search);
+  // console.log("1", search);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -98,7 +98,7 @@ const Orders = () => {
           currentPageSize,
           search
         );
-        //
+
         // console.log(res.data?.items);
 
         setData(res.data?.items);
@@ -422,41 +422,24 @@ const Orders = () => {
       ),
     },
   ];
+
   const items = [
-    { key: 6, label: "Tất cả" },
-    { key: 0, label: "Đang xử lý" },
-    { key: 1, label: "Đã duyệt" },
-    { key: 2, label: "Đang vận chuyển" },
-    { key: 3, label: "Đã nhận" },
-    { key: 4, label: "Đã hủy" },
+    { key: 0, value: 0, label: "Đang xử lý" },
+    { key: 1, value: 1, label: "Đã duyệt" },
+    { key: 2, value: 2, label: "Đang vận chuyển" },
+    { key: 3, value: 3, label: "Đã nhận" },
+    { key: 4, value: 4, label: "Đã hủy" },
   ];
 
-  const filteredOrders = Array.isArray(data)
-    ? data.filter((order) => {
-        const matchesStatus =
-          selectedTab === 6 || order.orderStatus === parseInt(selectedTab);
-        const matchesPayment =
-          !paymentMethod || order.paymentMethodName === paymentMethod;
-        const matchesSearch = search
-          ? order.id.toString().includes(search)
-          : true;
-        return matchesStatus && matchesPayment && matchesSearch;
-      })
-    : [];
+  const onChange = async (value) => {
+    const res = await OrderService.getStatus(
+      value,
+      currentPage,
+      currentPageSize,
+      search
+    );
 
-  // const filteredOptions = useMemo(() => {
-  //   if (value === 0 || value === 1)
-  //     return statusOrders.filter((item) => [1, 4].includes(item.value));
-  //   if (value === 2) return statusOrders.filter((item) => item.value === 3);
-  //   if (value === 1) return statusOrders.filter((item) => item.value === 4);
-  //   return [];
-  // }, [value]);
-
-  const onChange = (key) => {
-    setSelectedTab(key);
-  };
-  const handlePaymentMethodChange = (value) => {
-    setPaymentMethod(value);
+    setData(res.data?.items);
   };
 
   return (
@@ -473,21 +456,7 @@ const Orders = () => {
               allowClear
               onSearch={(key) => handleSearch(key)}
               onChange={(e) => e.target.value === "" && setSearch("")}
-              placeholder="Nhập mã đơn hàng"
-            />
-            <Select
-              value={paymentMethod}
-              onChange={handlePaymentMethodChange}
-              defaultValue=""
-              style={{ width: 120 }}
-              allowClear
-              size="large"
-              options={[
-                { value: "", label: "Tất cả" },
-                { value: "VNPay", label: "VNPay" },
-                { value: "COD", label: "COD" },
-              ]}
-              placeholder="Chọn"
+              placeholder="Nhập mã đơn hàng, mã vận đơn, phương thức thanh toán, tên người nhận"
             />
           </div>
           <Tabs defaultActiveKey="6" items={items} onChange={onChange} />
@@ -496,7 +465,8 @@ const Orders = () => {
             showSorterTooltip={false}
             loading={isLoading}
             columns={columns}
-            dataSource={filteredOrders}
+            dataSource={data}
+            // dataSource={filteredOrders}
             rowKey={(record) => record.id}
             className="overflow-x-auto"
           />

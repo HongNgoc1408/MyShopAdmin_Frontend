@@ -7,10 +7,10 @@ import {
   message,
   Modal,
   Pagination,
-  Select,
   Table,
 } from "antd";
 import { EyeTwoTone, HomeTwoTone, PlusOutlined } from "@ant-design/icons";
+import { CiLock } from "react-icons/ci";
 import BreadcrumbLink from "../../components/BreadcrumbLink";
 import { formatDateTime } from "../../services/commonService";
 import UserService from "../../services/UserService";
@@ -68,16 +68,15 @@ const Users = () => {
       sorter: (a, b) => new Date(a.updatedAt) - new Date(b.updatedAt),
       render: (value) => value !== null && formatDateTime(value),
     },
+
     {
       title: "Thực hiện",
       align: "center",
       render: (_, record) => (
         <Flex justify="center" align="center" className="space-x-1">
-          <div>
-            <Button onClick={() => handleOpenModal(record)}>
-              <EyeTwoTone />
-            </Button>
-          </div>
+          <Button onClick={() => handleOpenModal(record)}>
+            <EyeTwoTone />
+          </Button>
         </Flex>
       ),
     },
@@ -89,6 +88,7 @@ const Users = () => {
       if (record) {
         const response = await UserService.getUser(record.id);
         setEditingUser(response.data);
+
         form.setFieldsValue({
           email: response.data.email,
           fullName: response.data.fullName,
@@ -177,7 +177,9 @@ const Users = () => {
           search,
           "User"
         );
-        console.log(res.data);
+
+        // console.log(res.data.items);
+
         setData(res.data?.items);
         setTotalItems(res.data?.totalItems);
       } catch (error) {

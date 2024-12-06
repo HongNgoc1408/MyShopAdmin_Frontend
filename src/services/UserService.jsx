@@ -36,6 +36,11 @@ const updateProfile = async (data) => {
 const getAvatar = async () =>
   await axios.get(API_URL + "/avatar", { headers: authHeader() });
 
+const lockout = async (userId, endDate) =>
+  await axios.put(API_URL + `/lock-out/${userId}`, endDate, {
+    headers: authHeader(),
+  });
+
 const UserService = {
   create,
   update,
@@ -45,6 +50,7 @@ const UserService = {
   getProfile,
   updateProfile,
   getAvatar,
+  lockout,
 };
 
 export default UserService;

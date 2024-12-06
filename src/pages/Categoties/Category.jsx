@@ -36,7 +36,7 @@ const Category = () => {
   const [isUpdate, setIsUpdate] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState();
   const [totalItems, setTotalItems] = useState(0);
   const [searchText, setSearchText] = useState("");
 

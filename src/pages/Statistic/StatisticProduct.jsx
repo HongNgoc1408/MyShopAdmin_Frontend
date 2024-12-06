@@ -14,19 +14,19 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { useSearchParams } from "react-router-dom";
+// import { useSearchParams } from "react-router-dom";
 import ProductService from "../../services/ProductService";
 import moment from "moment";
 const { RangePicker } = DatePicker;
 const StatisticProduct = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [searchLoading, setSearchLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
+  // const [searchLoading, setSearchLoading] = useState(false);
   const [data, setData] = useState([]);
 
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [totalItems, setTotalItems] = useState(0);
-  const [currentPage, setCurrentPage] = useState(searchParams.get("page") ?? 1);
-  const [currentPageSize, setCurrentPageSize] = useState(5);
+  // const [searchParams, setSearchParams] = useSearchParams();
+  // const [totalItems, setTotalItems] = useState(0);
+  // const [currentPage, setCurrentPage] = useState(searchParams.get("page") ?? 1);
+  // const [currentPageSize, setCurrentPageSize] = useState(5);
   const [search, setSearch] = useState("");
 
   const [salesYearProduct, setSalesYearProduct] = useState(null);
@@ -75,7 +75,7 @@ const StatisticProduct = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        search ? setSearchLoading(true) : setIsLoading(true);
+        // search ? setSearchLoading(true) : setIsLoading(true);
         // const res = await ProductService.getAll(
         //   currentPage,
         //   currentPageSize,
@@ -90,12 +90,12 @@ const StatisticProduct = () => {
       } catch (error) {
         setSearch("");
       } finally {
-        setIsLoading(false);
-        setSearchLoading(false);
+        // setIsLoading(false);
+        // setSearchLoading(false);
       }
     };
     fetchData();
-  }, [currentPage, currentPageSize, search]);
+  }, [search]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -266,7 +266,6 @@ const StatisticProduct = () => {
             value={selectedProductId}
             onChange={handleChangeId}
             allowClear
-            size="large"
             placeholder="Chọn sản phẩm cần xem đánh giá"
           >
             {data.map((item) => (

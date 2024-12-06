@@ -72,6 +72,26 @@ const getRevenueProduct = async (productId, dateFrom, dateTo) => {
   });
 };
 
+const getTopProductYear = async (year, month) => {
+  return await axios.get(API_URL + "/topSellingProductsByYear", {
+    headers: authHeader(),
+    params: {
+      year,
+      month,
+    },
+  });
+};
+
+const getTopProduct = async (dateFrom, dateTo) => {
+  return await axios.get(API_URL + "/topSellingProducts", {
+    headers: authHeader(),
+    params: {
+      dateFrom,
+      dateTo,
+    },
+  });
+};
+
 const StatisticService = {
   getToTalUser,
   getToTalProduct,
@@ -82,6 +102,8 @@ const StatisticService = {
   getTotalRevenue,
   getRevenueProductYear,
   getRevenueProduct,
+  getTopProductYear,
+  getTopProduct,
 };
 
 export default StatisticService;

@@ -14,6 +14,7 @@ import {
   Image,
   Input,
   InputNumber,
+  message,
   notification,
   Select,
   Spin,
@@ -83,9 +84,11 @@ const ProductDetail = () => {
       try {
         setLoading(true);
         const pAttr = await ProductService.fetchProductAttributes();
+
         Object.keys(pAttr).forEach(
           (key) => (pAttr[key] = toTextLabel(pAttr[key]))
         );
+
         setProductAttributes(pAttr);
 
         const { data } = await ProductService.getById(id);
@@ -162,7 +165,7 @@ const ProductDetail = () => {
         } else return { sizeId: sizeId };
       });
 
-      console.log("sizeInStocks 123", sizeInStocks);
+      // console.log("sizeInStocks 123", sizeInStocks);
 
       return {
         id: color.id,
@@ -171,7 +174,7 @@ const ProductDetail = () => {
       };
     });
 
-    console.log("newL", newL);
+    // console.log("newL", newL);
 
     setSizeListValue(newL);
   };
@@ -295,9 +298,9 @@ const ProductDetail = () => {
 
       Object.keys(data).forEach((key) => formData.append(key, data[key]));
 
-      for (let [key, value] of formData.entries()) {
-        console.log("1", key, value);
-      }
+      // for (let [key, value] of formData.entries()) {
+      //   console.log("1", key, value);
+      // }
 
       try {
         await ProductService.update(id, formData);
@@ -313,6 +316,7 @@ const ProductDetail = () => {
     }
   };
 
+  // console.log("sizeListValue", sizeListValue);
   return (
     <>
       <div className="space-y-4">
@@ -529,8 +533,16 @@ const ProductDetail = () => {
                           <MinusCircleOutlined
                             className="inline-flex"
                             onClick={() => {
-                              remove(name);
-                              handleRemoveColor(index, key);
+                              if (
+                                sizeListValue?.[key]?.sizeInStocks?.some(
+                                  (size) => size.inStock > 0
+                                )
+                              ) {
+                                message.error("Còn hàng không thể xóa màu");
+                              } else {
+                                remove(name);
+                                handleRemoveColor(index, key);
+                              }
                             }}
                           />
                         </Flex>
@@ -588,7 +600,15 @@ const ProductDetail = () => {
                 optionFilterProp="label"
                 placeholder="Thêm size"
                 onChange={handleSelectSize}
-                options={productAttributes.sizes}
+                options={productAttributes.sizes?.map((size) =>
+                  sizeListValue?.some(
+                    (s) =>
+                      s.sizeInStocks?.find((item) => item.sizeId === size.value)
+                        ?.inStock > 0
+                  )
+                    ? { ...size, disabled: true }
+                    : size
+                )}
                 autoClearSearchValue
                 mode="multiple"
                 disabled={
@@ -613,7 +633,7 @@ const ProductDetail = () => {
                             {color?.colorName}
                           </div>
                           <InputNumber
-                            // readOnly
+                            readOnly
                             // disabled
                             // required
                             min={0}
@@ -669,7 +689,7 @@ const ProductDetail = () => {
                 className="w-full"
                 size="large"
               >
-                {updateLoading ? <Spin /> : "Update"}
+                {updateLoading ? <Spin /> : "Cập nhật"}
               </Button>
 
               <ConfigProvider

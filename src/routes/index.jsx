@@ -30,6 +30,7 @@ import Review from "../pages/Reviews/Review";
 import Roles from "../pages/Roles/Role";
 import Payments from "../pages/Payments/Payments";
 import ResetPassword from "../pages/ResetPassword/ResetPassword";
+import ImportDetail from "../pages/Imports/ImportDetail";
 
 export const navigateItems = [
   { key: "/home", icon: <PieChartOutlined />, label: "Thống kê" },
@@ -108,6 +109,7 @@ export const privateRoutes = [
   { path: "/orders", component: Orders },
   { path: "/order-detail/:id", component: OrderDetail },
   { path: "/imports", component: Imports },
+  { path: "/imports/:id", component: ImportDetail },
   { path: "/add-imports", component: ImportAdd },
   { path: "/loges", component: Loges },
   { path: "/reviews", component: Review },
@@ -122,6 +124,7 @@ export const inventorierRoutes = [
   { path: "/add-products", component: ProductAdd },
   { path: "/product-detail/:id", component: ProductDetail },
   { path: "/imports", component: Imports },
+  { path: "/imports/:id", component: ImportDetail },
   { path: "/add-imports", component: ImportAdd },
   { path: "/loges", component: Loges },
 ];

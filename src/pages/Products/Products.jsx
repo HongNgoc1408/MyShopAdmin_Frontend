@@ -46,7 +46,7 @@ const Products = () => {
   const [searchLoading, setSearchLoading] = useState(false);
   const [totalItems, setTotalItems] = useState(0);
   const [currentPage, setCurrentPage] = useState(searchParams.get("page") ?? 1);
-  const [currentPageSize, setCurrentPageSize] = useState(5);
+  const [currentPageSize, setCurrentPageSize] = useState();
   const [search, setSearch] = useState("");
   const [brandNames, setBrandNames] = useState([]);
   const [categoryNames, setCategoryNames] = useState([]);

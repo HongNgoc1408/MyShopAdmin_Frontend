@@ -1,4 +1,4 @@
-import { Card, DatePicker, Select } from "antd";
+import { Card, DatePicker, message, notification, Select } from "antd";
 import React, { useEffect, useState } from "react";
 import StatisticService from "../../services/StatisticService";
 import { showError } from "../../services/commonService";
@@ -61,19 +61,24 @@ const StatisticTopProduct = () => {
 
         let r = await StatisticService.getTopProductYear(year, month);
 
-        console.log(r.data.product);
-
         if (r.data && r.data.product) {
           const formattedData = r.data.product.map((product) => ({
             name: product.name,
             sold: product.sold,
             sales: product.sales,
           }));
-          console.log("formattedData", formattedData);
+
           setRevenueYearProduct(formattedData);
+        } else {
+          notification.success({
+            message: "Không có sản phẩm thống kê",
+            placement: "top",
+          });
+          setRevenueYearProduct();
         }
       } catch (error) {
         showError(error);
+        setRevenueProduct();
       }
     };
 
@@ -89,16 +94,20 @@ const StatisticTopProduct = () => {
             datesProduct[1].format("YYYY-MM-DD")
           );
 
-          console.log(r);
-
           if (r.data && r.data.product) {
             const formattedData = r.data.product.map((product) => ({
               name: product.name,
               sold: product.sold,
               sales: product.sales,
             }));
-            console.log("Formatted Data:", formattedData);
+
             setRevenueProduct(formattedData);
+          } else {
+            notification.success({
+              message: "Không có sản phẩm thống kê",
+              placement: "top",
+            });
+            setRevenueProduct();
           }
         }
       } catch (error) {
@@ -150,7 +159,7 @@ const StatisticTopProduct = () => {
         </div>
         {selectValueProduct === 0 ? (
           <div className="flex">
-            <div className="w-9/12">
+            <div className="w-full">
               <ResponsiveContainer width="100%" height={500}>
                 <BarChart
                   data={revenueYearProduct}
@@ -180,7 +189,7 @@ const StatisticTopProduct = () => {
           </div>
         ) : (
           <div className="flex">
-            <div className="w-9/12">
+            <div className="w-full">
               <ResponsiveContainer width="100%" height={500}>
                 <BarChart
                   data={revenueProduct}

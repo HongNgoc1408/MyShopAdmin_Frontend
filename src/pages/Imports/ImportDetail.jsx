@@ -15,6 +15,7 @@ import {
 import ImportService from "../../services/ImportService";
 import { HomeTwoTone } from "@ant-design/icons";
 import {
+  formatDateTime,
   formatVND,
   isEmptyObject,
   showError,
@@ -84,15 +85,14 @@ const ImportDetail = () => {
           const item = data.find((item) => item.id === parseInt(id));
 
           setDetail(item);
-          //   console.log(item);
 
-          setImportDetails(res.data);
+          setImportDetails(res.data || []);
 
           form.setFieldsValue({
-            ...item,
             total: formatVND(item?.total),
             entryDate: dayjs(item?.entryDate),
-            items: importDetails.map((item) => ({
+            note: item?.note,
+            items: res.data?.map((item) => ({
               productName: item.productName,
               colorName: item.colorName,
               sizeName: item.sizeName,
@@ -100,13 +100,20 @@ const ImportDetail = () => {
               price: item.price,
             })),
           });
+
+          const totalAmount = res.data.reduce(
+            (acc, item) => acc + item.quantity * item.price,
+            0
+          );
+
+          setTotal(totalAmount);
         } catch (error) {
           console.error(error);
         }
       }
     };
     fetchData();
-  }, [id, data]);
+  }, [id, data, form]);
 
   const handleSubmit = async (id) => {
     const totalAmount = importDetails.reduce(
@@ -115,6 +122,12 @@ const ImportDetail = () => {
     );
 
     setTotal(totalAmount);
+
+    const entryDateValue = form.getFieldValue("entryDate");
+
+    const formattedEntryDate = entryDateValue
+      ? entryDateValue.format("YYYY-MM-DDTHH:mm:ss")
+      : null;
 
     const updateRequest = {
       ImportProducts: importDetails.map((detail) => ({
@@ -126,10 +139,12 @@ const ImportDetail = () => {
       })),
       Note: form.getFieldValue("note"),
       Total: totalAmount,
-      EntryDate: form.getFieldValue("entryDate").format(),
+      EntryDate: formattedEntryDate,
     };
 
     try {
+      // console.log("u", updateRequest);
+
       await ImportService.update(id, updateRequest);
 
       const updatedData = data.map((item) =>
@@ -147,7 +162,7 @@ const ImportDetail = () => {
         ...updateRequest,
         Note: form.getFieldValue("note"),
         Total: totalAmount,
-        EntryDate: form.getFieldValue("entryDate").format(),
+        EntryDate: updateRequest.EntryDate,
       });
 
       setImportDetails(
@@ -184,15 +199,22 @@ const ImportDetail = () => {
                 <Form.Item
                   label="Ngày nhập"
                   name="entryDate"
-                  getValueProps={(value) => ({
-                    value: value && dayjs(Number(value)),
-                  })}
-                  normalize={(value) => value && `${dayjs(value).valueOf()}`}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Ngày nhập hàng không được để trống",
+                    },
+                  ]}
                   className="w-1/2"
                 >
-                  <DatePicker disabled={!isOpenUpdate} />
+                  <DatePicker
+                    placeholder="Ngày lập phiếu"
+                    disabledDate={(current) =>
+                      current && current.valueOf() > Date.now()
+                    }
+                    disabled={!isOpenUpdate}
+                  />
                 </Form.Item>
-
                 <Form.Item label="Tổng giá trị" name="total" className="w-full">
                   {detail ? (
                     <Input value={formatVND(detail.total)} readOnly />
@@ -342,7 +364,10 @@ const ImportDetail = () => {
             htmlType="submit"
             className="w-full"
             size="large"
-            onClick={() => setIsOpenUpdate(true)}
+            onClick={() => {
+              setIsOpenUpdate(true);
+            }}
+            // onClick={() => setIsOpenUpdate(true)}
           >
             Cập nhật
           </Button>

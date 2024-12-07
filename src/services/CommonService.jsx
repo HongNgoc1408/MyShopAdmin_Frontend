@@ -47,6 +47,8 @@ export const formatVND = (value) => {
 
 export const formatDateTime = (date) => new Date(date).toLocaleString("vi-VN");
 
+export const formatDate = (date) => new Date(date).toLocaleDateString("vi-VN");
+
 export const toTextLabel = (data) => {
   return data.map((item) => ({
     ...item,

@@ -1,4 +1,10 @@
-import { FaCheck, FaDownload, FaReceipt, FaUserGroup } from "react-icons/fa6";
+import {
+  FaCheck,
+  FaDownload,
+  FaReceipt,
+  FaUserGroup,
+  FaX,
+} from "react-icons/fa6";
 import { Card, message, Tabs } from "antd";
 import React, { useEffect, useState } from "react";
 import StatisticService from "../../services/StatisticService";
@@ -17,6 +23,7 @@ const Home = () => {
   const [products, setProduct] = useState(null);
   const [orders, setOrder] = useState(null);
   const [ordersDone, setOrderDone] = useState(null);
+  const [ordersCancel, setOrderCancel] = useState(null);
   const [imports, setImport] = useState(null);
 
   useEffect(() => {
@@ -38,12 +45,14 @@ const Home = () => {
         const p = await StatisticService.getToTalProduct();
         const o = await StatisticService.getToTalOrder();
         const oDone = await StatisticService.getToTalOrderDone();
+        const oCancel = await StatisticService.getToTalOrderCanceled();
         const i = await StatisticService.getToTalImport();
 
         setUser(u.data);
         setProduct(p.data);
         setOrder(o.data);
         setOrderDone(oDone.data);
+        setOrderCancel(oCancel.data);
         setImport(i.data);
       } catch (error) {
         showError(error);
@@ -59,7 +68,7 @@ const Home = () => {
     <>
       {roles.some((role) => role === "Admin" || role === "Manager") ? (
         <>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-5">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-6">
             <Card>
               <Card.Meta
                 avatar={
@@ -135,7 +144,7 @@ const Home = () => {
                   </>
                 }
                 title={
-                  <span className="cursor-pointer text-sm">ĐH hoàn thành</span>
+                  <span className="cursor-pointer text-sm">ĐH đã nhận</span>
                 }
                 description={
                   <>
@@ -144,7 +153,25 @@ const Home = () => {
                 }
               />
             </Card>
-
+            <Card>
+              <Card.Meta
+                avatar={
+                  <>
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full border border-green-100 bg-green-50">
+                      <FaX className="h-8 w-8 text-red-400" />
+                    </div>
+                  </>
+                }
+                title={
+                  <span className="cursor-pointer text-sm">ĐH đã hủy</span>
+                }
+                description={
+                  <>
+                    <p className="text-gray-700 text-2xl">{ordersCancel}</p>
+                  </>
+                }
+              />
+            </Card>
             <Card>
               <Card.Meta
                 avatar={
@@ -155,9 +182,7 @@ const Home = () => {
                   </>
                 }
                 title={
-                  <span className="cursor-pointer text-sm">
-                    Phiếu nhập hàng
-                  </span>
+                  <span className="cursor-pointer text-sm">Phiếu nhập</span>
                 }
                 description={
                   <>

@@ -107,7 +107,7 @@ const ImportAdd = () => {
           layout="vertical"
           onFinish={handleAdd}
           initialValues={{
-            note: "Không có",
+            note: "Nhà cung cấp: ABC",
             items: [
               {
                 productName: undefined,

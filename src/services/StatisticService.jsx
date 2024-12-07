@@ -24,6 +24,18 @@ const getToTalOrderDone = async () => {
     headers: authHeader(),
   });
 };
+
+const getToTalOrderCanceled = async () => {
+  return await axios.get(API_URL + "/totalOrderCanceled", {
+    headers: authHeader(),
+  });
+};
+
+const getToTalOrderNew = async () => {
+  return await axios.get(API_URL + "/totalOrderNew", {
+    headers: authHeader(),
+  });
+};
 const getToTalImport = async () => {
   return await axios.get(API_URL + "/totalImport", {
     headers: authHeader(),
@@ -97,6 +109,8 @@ const StatisticService = {
   getToTalProduct,
   getToTalOrder,
   getToTalOrderDone,
+  getToTalOrderCanceled,
+  getToTalOrderNew,
   getToTalImport,
   getTotalRevenueYear,
   getTotalRevenue,

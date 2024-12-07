@@ -11,6 +11,7 @@ import {
   Table,
 } from "antd";
 import {
+  formatDate,
   formatDateTime,
   formatVND,
   showError,
@@ -68,6 +69,12 @@ const Loges = () => {
       title: "Ngày nhập hàng",
       dataIndex: "entryDate",
       sorter: (a, b) => new Date(a.entryDate) - new Date(b.entryDate),
+      render: (value) => formatDate(value),
+    },
+    {
+      title: "Ngày tạo",
+      dataIndex: "createdAt",
+      sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
       render: (value) => formatDateTime(value),
     },
     {
@@ -95,7 +102,7 @@ const Loges = () => {
           search
         );
 
-        // console.log("fetchData1", res.data?.items);
+        console.log("fetchData1", res.data?.items);
 
         setData(res.data?.items);
         setTotalItems(res.data?.totalItems);

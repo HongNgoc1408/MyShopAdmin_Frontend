@@ -287,11 +287,28 @@ const StatisticProduct = () => {
           />
           {selectValueProduct === 0 ? (
             <>
-              <DatePicker onChange={handleYearChange} picker="year" />
-              <DatePicker onChange={handleMonthChange} picker="month" />
+              <DatePicker
+                onChange={handleYearChange}
+                picker="year"
+                disabledDate={(current) =>
+                  current && current.valueOf() > Date.now()
+                }
+              />
+              <DatePicker
+                onChange={handleMonthChange}
+                picker="month"
+                disabledDate={(current) =>
+                  current && current.valueOf() > Date.now()
+                }
+              />
             </>
           ) : (
-            <RangePicker onChange={handleRangeChange} />
+            <RangePicker
+              onChange={handleRangeChange}
+              disabledDate={(current) =>
+                current && current.valueOf() > Date.now()
+              }
+            />
           )}
         </div>
         {selectValueProduct === 0 ? (
@@ -300,12 +317,7 @@ const StatisticProduct = () => {
               <ResponsiveContainer width="100%" height={500}>
                 <BarChart
                   data={revenueYearProduct}
-                  margin={{
-                    top: 20,
-                    right: 30,
-                    left: 20,
-                    bottom: 5,
-                  }}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis

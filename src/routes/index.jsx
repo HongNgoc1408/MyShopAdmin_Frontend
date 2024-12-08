@@ -52,11 +52,10 @@ export const navigateItems = [
       { key: "/categories", icon: <TbCategoryPlus />, label: "Danh mục" },
       { key: "/sizes", icon: <FaTape />, label: "Kích thước" },
       { key: "/products", icon: <AiFillProduct />, label: "Sản phẩm" },
-      { key: "/reviews", icon: <StarOutlined />, label: "Đánh giá" },
     ],
   },
-  { key: "/payments", icon: <DollarOutlined />, label: "Thanh toán" },
-  { key: "/orders", icon: <CiReceipt />, label: "Đơn đặt hàng" },
+  { key: "/reviews", icon: <StarOutlined />, label: "Đánh giá" },
+  { key: "/orders", icon: <CiReceipt />, label: "Đơn hàng" },
   {
     key: "import",
     icon: <CiSaveDown1 />,
@@ -66,6 +65,7 @@ export const navigateItems = [
       { key: "/loges", icon: <CiSaveDown2 />, label: "Lịch sử" },
     ],
   },
+  { key: "/payments", icon: <DollarOutlined />, label: "Thanh toán" },
 ];
 
 export const navigateInventorier = [
@@ -82,6 +82,7 @@ export const navigateManager = [
   { key: "/home", icon: <PieChartOutlined />, label: "Thống kê" },
   { key: "/users", icon: <UserOutlined />, label: "Khách hàng" },
   { key: "/orders", icon: <CiReceipt />, label: "Đơn đặt hàng" },
+  { key: "/payments", icon: <DollarOutlined />, label: "Thanh toán" },
 ];
 
 export const navigateStaff = [

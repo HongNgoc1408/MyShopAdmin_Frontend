@@ -38,7 +38,7 @@ const OrderDetail = () => {
       try {
         const res = await OrderService.getDetail(id);
 
-        // console.log(res.data);
+        console.log(res.data);
 
         setOrders(res.data);
       } catch (error) {
@@ -53,41 +53,38 @@ const OrderDetail = () => {
   }, [id, form]);
 
   const columns = [
-    // {
-    //   title: "productId",
-    //   dataIndex: "productId",
-    //   key: "productId",
-    //   render: (value) => <span className="font-semibold">{value}</span>,
-    // },
+    {
+      title: "Mã sản phẩm",
+      dataIndex: "productId",
+      key: "productId",
+      render: (value) => <span className="font-semibold">{value}</span>,
+    },
     {
       key: "imageUrl",
-      title: "imageUrl",
+      title: "Hình ảnh",
       dataIndex: "imageUrl",
       render: (url) => (
-        <Image style={{ maxWidth: 100, minWidth: 50 }} src={toImageLink(url)} />
+        <Image style={{ maxWidth: 60, minWidth: 50 }} src={toImageLink(url)} />
       ),
     },
     {
       key: "productName",
-      title: "productName",
+      title: "Tên sản phẩm",
       dataIndex: "productName",
-
-      render: (value) => (
-        <div className="truncate capitalize w-24 md:w-48">{value}</div>
-      ),
+      render: (value) => <div className="capitalize">{value}</div>,
       sorter: (a, b) => a.productName.localeCompare(b.productName),
     },
 
-    { key: "colorName", title: "colorName", dataIndex: "colorName" },
-    { key: "sizeName", title: "sizeName", dataIndex: "sizeName" },
-    { key: "originPrice", title: "originPrice", dataIndex: "originPrice" },
+    { key: "colorName", title: "Màu sắc", dataIndex: "colorName" },
+    { key: "sizeName", title: "Kích cỡ", dataIndex: "sizeName" },
+    { key: "originPrice", title: "Giá", dataIndex: "originPrice" },
     {
       key: "price",
-      title: "price",
+      title: "Giá",
       dataIndex: "price",
       sorter: (a, b) => a.price - b.price,
     },
-    { key: "quantity", title: "quantity", dataIndex: "quantity" },
+    { key: "quantity", title: "Số lượng", dataIndex: "quantity" },
   ];
 
   const getStatusOrder = (status) => {
@@ -110,13 +107,26 @@ const OrderDetail = () => {
             initialValues={{
               ...orders,
               orderDate: formatDateTime(orders.orderDate),
+              expected_delivery_time: orders?.expected_delivery_time
+                ? formatDateTime(orders.expected_delivery_time)
+                : "",
               orderStatus: getStatusOrder(orders.orderStatus),
+              total: formatVND(orders.total),
+              shippingCost: formatVND(orders.shippingCost),
+              amountPaid: formatVND(orders.amountPaid),
             }}
           >
             <div className="flex space-x-2">
               <div className="w-full">
                 <Form.Item label="Ngày đặt" name="orderDate">
                   <Input readOnly value={formatDateTime(orders?.orderDate)} />
+                </Form.Item>
+
+                <Form.Item label="Ngày dự kiến" name="expected_delivery_time">
+                  <Input
+                    readOnly
+                    value={formatDateTime(orders?.expected_delivery_time)}
+                  />
                 </Form.Item>
                 <Form.Item label="Trạng thái đơn hàng" name="orderStatus">
                   <Input readOnly value={orders.orderStatus} />
@@ -144,7 +154,7 @@ const OrderDetail = () => {
                   <Input readOnly value={orders.receiver} />
                 </Form.Item>
                 <Form.Item label="Địa chỉ khách hàng" name="deliveryAddress">
-                  <TextArea rows={3} readOnly value={orders.deliveryAddress} />
+                  <TextArea rows={5} readOnly value={orders.deliveryAddress} />
                 </Form.Item>
               </div>
             </div>

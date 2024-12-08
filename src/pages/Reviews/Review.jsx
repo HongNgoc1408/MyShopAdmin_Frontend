@@ -56,11 +56,26 @@ const Reviews = () => {
       title: "STT",
       render: (_, __, index) => (currentPage - 1) * currentPageSize + index + 1,
     },
+    // {
+    //   title: "Hình ảnh",
+    //   dataIndex: "imagesUrls",
+    //   render: (url) => (
+    //     <Image style={{ maxWidth: 100, minWidth: 50 }} src={toImageLink(url)} />
+    //   ),
+    // },
     {
       title: "Hình ảnh",
       dataIndex: "imagesUrls",
-      render: (url) => (
-        <Image style={{ maxWidth: 100, minWidth: 50 }} src={toImageLink(url)} />
+      render: (imagesUrls) => (
+        <Image
+          style={{ maxWidth: 100, minWidth: 50 }}
+          src={
+            imagesUrls && imagesUrls.length > 0
+              ? toImageLink(imagesUrls[0])
+              : "/default-image.jpg"
+          } // Fallback to default image if none
+          alt="Review Image"
+        />
       ),
     },
     {
@@ -165,7 +180,7 @@ const Reviews = () => {
             search
           );
 
-          // console.log(res.data?.items);
+          console.log(res.data?.items);
 
           setReview(res.data?.items);
           setTotalItems(res.data?.totalItems);

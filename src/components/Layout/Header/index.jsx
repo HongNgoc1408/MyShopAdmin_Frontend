@@ -10,6 +10,7 @@ import {
   Modal,
   notification,
   Popconfirm,
+  Tooltip,
   Typography,
   Upload,
 } from "antd";
@@ -20,7 +21,7 @@ import {
   UploadOutlined,
 } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
-import { AvatarContext, useAuth } from "../../../App";
+import { AvatarContext, CountContext, useAuth } from "../../../App";
 import authAction from "../../../services/AuthAction";
 import authService from "../../../services/authService";
 import { showError, toImageLink } from "../../../services/commonService";
@@ -35,7 +36,7 @@ const Header = () => {
   const [form] = Form.useForm();
   const [data, setData] = useState([]);
   const { avatar, setAvatar } = useContext(AvatarContext);
-  // const [avt, setAvt] = useState([]);
+  const { count } = useContext(CountContext);
   const [fileList, setFileList] = useState([]);
 
   useEffect(() => {
@@ -90,7 +91,7 @@ const Header = () => {
         placement: "top",
       });
 
-      setAvatar(res.data.imageURL);
+      setAvatar(res.data?.imageURL);
       setIsAvatarModalOpen(false);
     } catch (error) {
       showError(error);
@@ -274,9 +275,17 @@ const Header = () => {
             </Badge>
           </Link>
 
-          <Badge dot>
+          <Link to={"/orders"}>
+            <Tooltip title={`Đơn hàng mới là ${count}`}>
+              <Badge count={count} offset={[0, 0]} color="red">
+                <NotificationOutlined className="p-2 border-2 rounded-md text-lg  hover:bg-gray-300" />
+              </Badge>
+            </Tooltip>
+          </Link>
+
+          {/* <Badge dot>
             <NotificationOutlined className="p-2 border-2 rounded-md text-lg  hover:bg-gray-300" />
-          </Badge>
+          </Badge> */}
 
           <Dropdown menu={{ items }} placement="bottomRight">
             <Link to={"/"} className="flex text-base p-2 cursor-pointer">

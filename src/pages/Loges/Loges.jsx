@@ -43,10 +43,16 @@ const Loges = () => {
   ];
 
   const columns = (openStockDetail) => [
+    // {
+    //   title: "Mã lịch sử phiếu nhập",
+    //   dataIndex: "id",
+    //   sorter: (a, b) => a.id - b.id,
+    //   render: (value) => <span className="font-semibold">{value}</span>,
+    // },
     {
       title: "Mã phiếu nhập",
       dataIndex: "importId",
-      sorter: (a, b) => a.id - b.id,
+      sorter: (a, b) => a.importId - b.importId,
       render: (value) => <span className="font-semibold">{value}</span>,
     },
     {
@@ -102,7 +108,7 @@ const Loges = () => {
           search
         );
 
-        console.log("fetchData1", res.data?.items);
+        // console.log("fetchData1", res.data?.items);
 
         setData(res.data?.items);
         setTotalItems(res.data?.totalItems);
@@ -120,7 +126,7 @@ const Loges = () => {
     try {
       const res = await LogesService.getDetail(id);
 
-      //   console.log(res.data);
+      // console.log(res.data);
 
       setLogDetails(res.data);
 
@@ -143,7 +149,7 @@ const Loges = () => {
   return (
     <>
       <Modal
-        title="Chi tiết phiếu nhập"
+        title={`Chi tiết phiếu nhập`}
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}

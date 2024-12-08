@@ -24,6 +24,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { DeleteTwoTone, EyeTwoTone, HomeTwoTone } from "@ant-design/icons";
 import BreadcrumbLink from "../../components/BreadcrumbLink";
 import OrderService from "../../services/OrderService";
+import moment from "moment";
 
 const breadcrumb = [
   {
@@ -31,7 +32,7 @@ const breadcrumb = [
     title: <HomeTwoTone />,
   },
   {
-    title: "Đơn dặt hàng",
+    title: "Đơn hàng",
   },
 ];
 
@@ -48,7 +49,7 @@ const Orders = () => {
   const [search, setSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
-
+  const [selectedstatus, setSelectedStatus] = useState();
   // const [paymentMethod, setPaymentMethod] = useState("");
 
   const showModal = (id) => {
@@ -63,7 +64,7 @@ const Orders = () => {
         const res = await OrderService.shipping(selectedOrderId, value);
 
         setData(res.data);
-        window.location.reload();
+        // window.location.reload();
         notification.success({
           message: "Cập nhật thành công.",
           placement: "top",
@@ -104,6 +105,7 @@ const Orders = () => {
         setData(res.data?.items);
         setTotalItems(res.data?.totalItems);
         setCurrentPage(searchParams.get("page") ?? 1);
+        setSelectedStatus(5);
       } catch (error) {
         setSearch("");
       } finally {
@@ -147,23 +149,66 @@ const Orders = () => {
     }
   };
 
+  const onChange = async (value) => {
+    if (value !== 5) {
+      const res = await OrderService.getStatus(
+        value,
+        currentPage,
+        currentPageSize,
+        search
+      );
+
+      setData(res.data?.items);
+      setSelectedStatus(value);
+    } else {
+      const res = await OrderService.getAll(
+        currentPage,
+        currentPageSize,
+        search
+      );
+
+      // console.log(res.data?.items);
+
+      setData(res.data?.items);
+      setTotalItems(res.data?.totalItems);
+      setCurrentPage(searchParams.get("page") ?? 1);
+      setSelectedStatus(value);
+    }
+    setSelectedStatus();
+  };
+
   const columns = [
     {
       title: "Mã đơn",
       dataIndex: "id",
       sorter: (a, b) => a.id - b.id,
-      render: (value) => <p className="font-semibold">{value}</p>,
+      render: (value) => (
+        <Link to={`/order-detail/${value}`} className="font-semibold">
+          {value}
+        </Link>
+      ),
     },
     {
       title: "Mã vận đơn",
       dataIndex: "shippingCode",
-      sorter: (a, b) => a.shippingCode - b.shippingCode,
-      render: (value) => <span>{value}</span>,
+      filters: [
+        { text: "Có mã", value: "hasValue" },
+        { text: "Chưa có", value: "noValue" },
+      ],
+      onFilter: (value, record) =>
+        value === "hasValue"
+          ? record.shippingCode !== null
+          : record.shippingCode === null,
+      render: (value) =>
+        value === null ? (
+          <Tag color="red">Chưa có</Tag>
+        ) : (
+          <Tag color="blue">{value}</Tag>
+        ),
     },
     {
       title: "Người nhận",
       dataIndex: "receiver",
-      sorter: (a, b) => a.receiver - b.receiver,
       render: (value) => <p style={{ width: 100 }}>{value}</p>,
     },
     {
@@ -176,16 +221,31 @@ const Orders = () => {
       title: "Ngày đặt hàng",
       dataIndex: "orderDate",
       render: (value) => formatDateTime(value),
+      sorter: (a, b) => new Date(a.orderDate) - new Date(b.orderDate),
+      filters: [
+        { text: "Hôm nay", value: "today" },
+        { text: "Tháng này", value: "thisMonth" },
+        { text: "Năm nay", value: "thisYear" },
+      ],
+      onFilter: (value, record) => {
+        const orderDate = moment(record.orderDate); // Chuyển đổi sang Moment
+        if (value === "today") {
+          return orderDate.isSame(moment(), "day"); // Cùng ngày
+        }
+        if (value === "thisMonth") {
+          return orderDate.isSame(moment(), "month"); // Cùng tháng
+        }
+        if (value === "thisYear") {
+          return orderDate.isSame(moment(), "year"); // Cùng tuần
+        }
+        return false;
+      },
     },
     {
       title: "Ngày dự kiến",
       dataIndex: "expected_delivery_time",
       render: (value) =>
-        value === "0001-01-01T00:00:00" ? (
-          <Tag color="red">Chưa có</Tag>
-        ) : (
-          formatDateTime(value)
-        ),
+        value === null ? <Tag color="red">Chưa có</Tag> : formatDateTime(value),
     },
     {
       title: "Ngày nhận hàng",
@@ -196,32 +256,70 @@ const Orders = () => {
         ) : (
           formatDateTime(value)
         ),
+
+      sorter: (a, b) => new Date(a.receivedDate) - new Date(b.receivedDate),
+      filters: [
+        { text: "Hôm nay", value: "today" },
+        { text: "Tháng này", value: "thisMonth" },
+        { text: "Năm nay", value: "thisYear" },
+      ],
+      onFilter: (value, record) => {
+        const receivedDate = moment(record.receivedDate);
+        if (value === "today") {
+          return receivedDate.isSame(moment(), "day");
+        }
+        if (value === "thisMonth") {
+          return receivedDate.isSame(moment(), "month");
+        }
+        if (value === "thisYear") {
+          return receivedDate.isSame(moment(), "year");
+        }
+        return false;
+      },
     },
     {
       title: "Phí vận chuyển",
       dataIndex: "shippingCost",
+      sorter: (a, b) => a.shippingCost - b.shippingCost,
       render: (value) => formatVND(value),
     },
     {
       title: "Thành tiền",
       dataIndex: "total",
+      sorter: (a, b) => a.total - b.total,
       render: (value) => formatVND(value),
     },
     {
       title: "Tiền thanh toán",
       dataIndex: "amountPaid",
+      sorter: (a, b) => a.amountPaid - b.amountPaid,
       render: (value) => formatVND(value),
     },
     {
       title: "Phương thức thanh toán",
       dataIndex: "paymentMethodName",
       align: "center",
-      render: (value) => <span>{value}</span>,
+      filters: [
+        { text: "COD", value: "COD" },
+        { text: "VNPay", value: "VNPay" },
+      ],
+      onFilter: (value, record) => record.paymentMethodName === value,
+      render: (value) =>
+        value === "COD" ? (
+          <Tag color="green">{value}</Tag>
+        ) : (
+          <Tag color="green-inverse">{value}</Tag>
+        ),
     },
     {
       title: "Trạng thái đánh giá",
       dataIndex: "reviewed",
       align: "center",
+      filters: [
+        { text: "Đã đánh giá", value: true },
+        { text: "Chưa đánh giá", value: false },
+      ],
+      onFilter: (value, record) => record.reviewed === value,
       render: (value) =>
         value ? (
           <Tag color="blue">Đã đánh giá</Tag>
@@ -234,7 +332,6 @@ const Orders = () => {
       dataIndex: "orderStatus",
       key: "orderStatus",
       render: (value, record) => {
-        // Xác định các tùy chọn hiển thị dựa trên trạng thái đơn hàng
         let options = [];
         if (value === 0 || value === 1) {
           options = statusOrders.filter((item) => [1, 4].includes(item.value));
@@ -243,7 +340,7 @@ const Orders = () => {
         } else if (value === 1) {
           options = statusOrders.filter((item) => item.value === 4);
         } else {
-          options = []; // Không hiển thị nếu đã nhận
+          options = [];
         }
 
         return (
@@ -424,23 +521,13 @@ const Orders = () => {
   ];
 
   const items = [
+    { key: 5, value: 5, label: "Tất cả" },
     { key: 0, value: 0, label: "Đang xử lý" },
     { key: 1, value: 1, label: "Đã duyệt" },
     { key: 2, value: 2, label: "Đang vận chuyển" },
     { key: 3, value: 3, label: "Đã nhận" },
     { key: 4, value: 4, label: "Đã hủy" },
   ];
-
-  const onChange = async (value) => {
-    const res = await OrderService.getStatus(
-      value,
-      currentPage,
-      currentPageSize,
-      search
-    );
-
-    setData(res.data?.items);
-  };
 
   return (
     <>
@@ -459,7 +546,7 @@ const Orders = () => {
               placeholder="Nhập mã đơn hàng, mã vận đơn, phương thức thanh toán, tên người nhận"
             />
           </div>
-          <Tabs defaultActiveKey="6" items={items} onChange={onChange} />
+          <Tabs defaultActiveKey="5" items={items} onChange={onChange} />
           <Table
             pagination={false}
             showSorterTooltip={false}

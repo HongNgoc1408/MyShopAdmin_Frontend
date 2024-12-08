@@ -452,7 +452,7 @@ const ProductDetail = () => {
               getValueFromEvent={(e) => e.fileList}
             >
               <Upload
-                maxCount={4}
+                maxCount={5}
                 beforeUpload={() => false}
                 listType="picture-card"
                 fileList={fileList}
@@ -461,7 +461,7 @@ const ProductDetail = () => {
                 onPreview={handlePreview}
                 onChange={handleChangeFile}
               >
-                {fileList.length >= 4 ? null : (
+                {fileList.length >= 5 ? null : (
                   <button type="button">
                     <PlusOutlined />
                     <div>Tải lên</div>

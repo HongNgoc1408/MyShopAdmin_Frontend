@@ -15,7 +15,6 @@ import {
 import ImportService from "../../services/ImportService";
 import { HomeTwoTone } from "@ant-design/icons";
 import {
-  formatDateTime,
   formatVND,
   isEmptyObject,
   showError,
@@ -45,7 +44,7 @@ const ImportDetail = () => {
   const [isOpenUpdate, setIsOpenUpdate] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
   const [totalItems, setTotalItems] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
@@ -153,6 +152,7 @@ const ImportDetail = () => {
               ...item,
               note: form.getFieldValue("note"),
               total: totalAmount,
+              entryDate: updateRequest.EntryDate,
             }
           : item
       );

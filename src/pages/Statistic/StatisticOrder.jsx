@@ -1,20 +1,23 @@
-import { Card, DatePicker, Select, Tooltip } from "antd";
+import { Card, DatePicker, Select } from "antd";
 import React, { useEffect, useState } from "react";
 import {
-  Bar,
   BarChart,
-  CartesianGrid,
-  Legend,
-  ResponsiveContainer,
+  Bar,
   XAxis,
   YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
 } from "recharts";
+
 import { formatVND, showError } from "../../services/commonService";
 import { GiPayMoney, GiReceiveMoney } from "react-icons/gi";
 import { FaArrowDown, FaArrowUp } from "react-icons/fa6";
 import moment from "moment";
 import StatisticService from "../../services/StatisticService";
 const { RangePicker } = DatePicker;
+
 const StatisticOrder = () => {
   const [salesYear, setSalesYear] = useState(null);
   const [spendingYear, setSpendingYear] = useState(null);
@@ -36,6 +39,7 @@ const StatisticOrder = () => {
   const currentYear = currentDate.getFullYear();
 
   const handleSelectChange = (value) => {
+    // console.log(value);
     setSelectValue(value);
   };
 
@@ -66,11 +70,6 @@ const StatisticOrder = () => {
         setSelectedMonth(month);
 
         let r;
-        // if (month != null) {
-        //   r = await StatisticService.getTotalRevenueYear(year, month);
-        // } else {
-        //   r = await StatisticService.getTotalRevenueYear(year, month);
-        // }
         r = await StatisticService.getTotalRevenueYear(year, month);
 
         setSalesYear(r.data.sales.total);
@@ -192,6 +191,7 @@ const StatisticOrder = () => {
     fetchData();
   }, [dates]);
 
+  // console.log("123", revenueYear);
   return (
     <Card
       className="my-4"
@@ -219,32 +219,42 @@ const StatisticOrder = () => {
         />
         {selectValue === 0 ? (
           <>
-            <DatePicker onChange={handleYearChange} picker="year" />
-            <DatePicker onChange={handleMonthChange} picker="month" />
+            <DatePicker
+              onChange={handleYearChange}
+              picker="year"
+              disabledDate={(current) =>
+                current && current.valueOf() > Date.now()
+              }
+            />
+            <DatePicker
+              onChange={handleMonthChange}
+              picker="month"
+              disabledDate={(current) =>
+                current && current.valueOf() > Date.now()
+              }
+            />
           </>
         ) : (
-          <RangePicker onChange={handleRangeChange} />
+          <RangePicker
+            onChange={handleRangeChange}
+            disabledDate={(current) =>
+              current && current.valueOf() > Date.now()
+            }
+          />
         )}
       </div>
+
       {selectValue === 0 ? (
         <div className="flex">
-          <div className="w-9/12">
+          <div className="w-full">
             <ResponsiveContainer width="100%" height={500}>
               <BarChart
                 data={revenueYear}
-                margin={{
-                  top: 20,
-                  right: 30,
-                  left: 20,
-                  bottom: 5,
-                }}
+                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
                   dataKey="time"
-                  label={{
-                    position: "insideBottom",
-                  }}
                   tickFormatter={(value) => {
                     if (selectedMonth == null) {
                       return `Tháng ${value}`;
@@ -254,19 +264,140 @@ const StatisticOrder = () => {
                   }}
                 />
                 <YAxis
-                  width={80}
-                  label={{
-                    angle: -90,
-                    position: "insideLeft",
-                  }}
+                  width={100}
+                  yAxisId="sales"
+                  orientation="left"
+                  stroke="#8884d8"
                   tickFormatter={(value) => formatVND(value)}
                 />
-                <Tooltip formatter={(value) => formatVND(value)} />
+                <YAxis
+                  width={100}
+                  yAxisId="spending"
+                  orientation="right"
+                  stroke="#fb923c"
+                  tickFormatter={(value) => formatVND(value)}
+                />
+
+                <Tooltip
+                  formatter={(value) => formatVND(value)}
+                  labelFormatter={(label) => {
+                    if (selectedMonth == null) {
+                      return `Tháng ${label}`;
+                    } else {
+                      return `Ngày ${label}`;
+                    }
+                  }}
+                />
                 <Legend />
-                <Bar dataKey="sales" fill="#c084fc" name="Doanh thu" />
-                <Bar dataKey="spending" fill="#fb923c" name="Chi phí" />
+                <Bar
+                  yAxisId="sales"
+                  dataKey="sales"
+                  fill="#8884d8"
+                  name="Doanh thu"
+                />
+                <Bar
+                  yAxisId="spending"
+                  dataKey="spending"
+                  fill="#fb923c"
+                  name="Chi phí"
+                />
               </BarChart>
             </ResponsiveContainer>
+            {/* <div className="flex space-x-10 justify-center justify-items-end text-end">
+              <Card className="my-4">
+                <Card.Meta
+                  avatar={
+                    <>
+                      <div className="flex h-16 w-16 items-center justify-center rounded-full border border-orange-100 bg-orange-50">
+                        <GiReceiveMoney className="h-8 w-8 text-orange-400" />
+                      </div>
+                    </>
+                  }
+                  title={
+                    <span className="cursor-pointer text-base">
+                      Tổng doanh thu
+                    </span>
+                  }
+                  description={
+                    <>
+                      <p className=" text-[#82ca9d] text-xl">
+                        {formatVND(salesYear)}
+                      </p>
+                    </>
+                  }
+                />
+              </Card>
+              <Card className="my-4">
+                <Card.Meta
+                  avatar={
+                    <>
+                      <div className="flex h-16 w-16 items-center justify-center rounded-full border border-purple-100 bg-purple-50">
+                        <GiPayMoney className="h-8 w-8 text-purple-400" />
+                      </div>
+                    </>
+                  }
+                  title={
+                    <span className="cursor-pointer text-base">
+                      Tổng chi phí
+                    </span>
+                  }
+                  description={
+                    <>
+                      <p className="text-purple-400 text-xl ">
+                        {formatVND(spendingYear)}
+                      </p>
+                    </>
+                  }
+                />
+              </Card>
+              {totalYear > 0 ? (
+                <Card className="my-4">
+                  <Card.Meta
+                    avatar={
+                      <>
+                        <div className="flex h-16 w-16 items-center justify-center rounded-full border border-green-100 bg-green-50">
+                          <FaArrowUp className="h-8 w-8 text-green-400" />
+                        </div>
+                      </>
+                    }
+                    title={
+                      <span className="cursor-pointer text-base">
+                        Lợi nhuận
+                      </span>
+                    }
+                    description={
+                      <>
+                        <p className="text-green-600 text-xl ">
+                          {formatVND(totalYear)}
+                        </p>
+                      </>
+                    }
+                  />
+                </Card>
+              ) : (
+                <Card className="my-4">
+                  <Card.Meta
+                    avatar={
+                      <>
+                        <div className="flex h-16 w-16 items-center justify-center rounded-full border border-red-100 bg-red-50">
+                          <FaArrowDown className="h-8 w-8 text-red-400" />
+                        </div>
+                      </>
+                    }
+                    title={
+                      <span className="cursor-pointer text-base">Tổn Thất</span>
+                    }
+                    description={
+                      <>
+                        <p className="text-red-600 text-xl">
+                          {formatVND(totalYear)}
+                        </p>
+                      </>
+                    }
+                  />
+                </Card>
+              )}
+            </div> */}
           </div>
           <div className="w-3/12">
             <Card>
@@ -363,9 +494,11 @@ const StatisticOrder = () => {
       ) : (
         <>
           <div className="flex">
-            <div className="w-9/12">
+            <div className="w-full">
               <ResponsiveContainer width="100%" height={500}>
                 <BarChart
+                  width="100%"
+                  height={500}
                   data={revenue}
                   margin={{
                     top: 20,
@@ -383,19 +516,152 @@ const StatisticOrder = () => {
                     tickFormatter={(value) => value}
                   />
                   <YAxis
-                    width={80}
+                    width={100}
+                    yAxisId="sales"
+                    orientation="left"
+                    stroke="#8884d8"
                     label={{
                       angle: -90,
                       position: "insideLeft",
                     }}
                     tickFormatter={(value) => formatVND(value)}
                   />
-                  <Tooltip formatter={(value) => formatVND(value)} />
+                  <YAxis
+                    width={100}
+                    yAxisId="spending"
+                    orientation="right"
+                    stroke="#fb923c"
+                    label={{
+                      angle: -90,
+                      position: "insideLeft",
+                    }}
+                    tickFormatter={(value) => formatVND(value)}
+                  />
+
+                  <Tooltip
+                    formatter={(value, name) =>
+                      name === "sales"
+                        ? [`${formatVND(value)}`, "Doanh thu"]
+                        : [`${formatVND(value)}`, "Chi phí"]
+                    }
+                    labelFormatter={(label) =>
+                      selectedMonth == null
+                        ? `Tháng ${new Date(label).getMonth() + 1}`
+                        : `Ngày ${new Date(label).getDate()}`
+                    }
+                  />
                   <Legend />
-                  <Bar dataKey="sales" fill="#c084fc" name="Doanh thu" />
-                  <Bar dataKey="spending" fill="#fb923c" name="Chi phí" />
+                  <Bar
+                    yAxisId="sales"
+                    dataKey="sales"
+                    fill="#8884d8"
+                    name="Doanh thu"
+                  />
+                  <Bar
+                    yAxisId="spending"
+                    dataKey="spending"
+                    fill="#fb923c"
+                    name="Chi phí"
+                  />
                 </BarChart>
               </ResponsiveContainer>
+              {/* <div className="flex space-x-10 justify-center justify-items-end text-end">
+                <Card>
+                  <Card.Meta
+                    avatar={
+                      <>
+                        <div className="flex h-16 w-16 items-center justify-center rounded-full border border-orange-100 bg-orange-50">
+                          <GiReceiveMoney className="h-8 w-8 text-orange-400" />
+                        </div>
+                      </>
+                    }
+                    title={
+                      <span className="cursor-pointer text-base">
+                        Tổng doanh thu
+                      </span>
+                    }
+                    description={
+                      <>
+                        <p className="text-xl text-[#82ca9d]">
+                          {formatVND(salesData)}
+                        </p>
+                      </>
+                    }
+                  />
+                </Card>
+                <Card className="my-4">
+                  <Card.Meta
+                    avatar={
+                      <>
+                        <div className="flex h-16 w-16 items-center justify-center rounded-full border border-purple-100 bg-purple-50">
+                          <GiPayMoney className="h-8 w-8 text-purple-400" />
+                        </div>
+                      </>
+                    }
+                    title={
+                      <span className="cursor-pointer text-base">
+                        Tổng chi phí
+                      </span>
+                    }
+                    description={
+                      <>
+                        <p className="text-purple-400 text-xl ">
+                          {formatVND(spendingData)}
+                        </p>
+                      </>
+                    }
+                  />
+                </Card>
+                {totalData > 0 ? (
+                  <Card className="my-4">
+                    <Card.Meta
+                      avatar={
+                        <>
+                          <div className="flex h-16 w-16 items-center justify-center rounded-full border border-green-100 bg-green-50">
+                            <FaArrowUp className="h-8 w-8 text-green-400" />
+                          </div>
+                        </>
+                      }
+                      title={
+                        <span className="cursor-pointer text-base">
+                          Lợi nhuận
+                        </span>
+                      }
+                      description={
+                        <>
+                          <p className="text-green-600 text-xl ">
+                            {formatVND(totalData)}
+                          </p>
+                        </>
+                      }
+                    />
+                  </Card>
+                ) : (
+                  <Card className="my-4">
+                    <Card.Meta
+                      avatar={
+                        <>
+                          <div className="flex h-16 w-16 items-center justify-center rounded-full border border-red-100 bg-red-50">
+                            <FaArrowDown className="h-8 w-8 text-red-400" />
+                          </div>
+                        </>
+                      }
+                      title={
+                        <span className="cursor-pointer text-base">
+                          Tổn Thất
+                        </span>
+                      }
+                      description={
+                        <>
+                          <p className="text-red-600 text-xl">
+                            {formatVND(totalData)}
+                          </p>
+                        </>
+                      }
+                    />
+                  </Card>
+                )}
+              </div> */}
             </div>
             <div className="w-3/12">
               <Card>

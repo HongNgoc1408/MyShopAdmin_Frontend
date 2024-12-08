@@ -1,7 +1,7 @@
-import { Card, DatePicker, message, notification, Select } from "antd";
+import { Card, DatePicker, notification, Select } from "antd";
 import React, { useEffect, useState } from "react";
 import StatisticService from "../../services/StatisticService";
-import { showError } from "../../services/commonService";
+import { formatVND, showError } from "../../services/commonService";
 import {
   Bar,
   BarChart,
@@ -12,7 +12,6 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import dayjs from "dayjs";
 const { RangePicker } = DatePicker;
 
 const StatisticTopProduct = () => {
@@ -150,11 +149,28 @@ const StatisticTopProduct = () => {
           />
           {selectValueProduct === 0 ? (
             <>
-              <DatePicker onChange={handleYearChange} picker="year" />
-              <DatePicker onChange={handleMonthChange} picker="month" />
+              <DatePicker
+                onChange={handleYearChange}
+                picker="year"
+                disabledDate={(current) =>
+                  current && current.valueOf() > Date.now()
+                }
+              />
+              <DatePicker
+                onChange={handleMonthChange}
+                picker="month"
+                disabledDate={(current) =>
+                  current && current.valueOf() > Date.now()
+                }
+              />
             </>
           ) : (
-            <RangePicker onChange={handleRangeChange} />
+            <RangePicker
+              onChange={handleRangeChange}
+              disabledDate={(current) =>
+                current && current.valueOf() > Date.now()
+              }
+            />
           )}
         </div>
         {selectValueProduct === 0 ? (
@@ -165,10 +181,22 @@ const StatisticTopProduct = () => {
                   data={revenueYearProduct}
                   margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" />
+                  <CartesianGrid strokeDasharray="1 1" />
                   <XAxis dataKey="name" />
-                  <YAxis yAxisId="sales" orientation="left" stroke="#8884d8" />
-                  <YAxis yAxisId="sold" orientation="right" stroke="#82ca9d" />
+                  <YAxis
+                    yAxisId="sales"
+                    orientation="left"
+                    stroke="#8884d8"
+                    tickFormatter={(value) => formatVND(value)}
+                  />
+                  <YAxis
+                    yAxisId="sold"
+                    orientation="right"
+                    stroke="#fb923c"
+                    tickFormatter={(value) => {
+                      return `${value} sp`;
+                    }}
+                  />
                   <Tooltip />
                   <Legend />
                   <Bar
@@ -180,7 +208,7 @@ const StatisticTopProduct = () => {
                   <Bar
                     yAxisId="sold"
                     dataKey="sold"
-                    fill="#82ca9d"
+                    fill="#fb923c"
                     name="Số lượng bán"
                   />
                 </BarChart>
@@ -198,7 +226,7 @@ const StatisticTopProduct = () => {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
                   <YAxis yAxisId="sales" orientation="left" stroke="#8884d8" />
-                  <YAxis yAxisId="sold" orientation="right" stroke="#82ca9d" />
+                  <YAxis yAxisId="sold" orientation="right" stroke="#fb923c" />
                   <Tooltip />
                   <Legend />
                   <Bar
@@ -210,7 +238,7 @@ const StatisticTopProduct = () => {
                   <Bar
                     yAxisId="sold"
                     dataKey="sold"
-                    fill="#82ca9d"
+                    fill="#fb923c"
                     name="Số lượng bán"
                   />
                 </BarChart>

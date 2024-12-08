@@ -10,7 +10,6 @@ import {
   Table,
 } from "antd";
 import { EyeTwoTone, HomeTwoTone, PlusOutlined } from "@ant-design/icons";
-import { CiLock } from "react-icons/ci";
 import BreadcrumbLink from "../../components/BreadcrumbLink";
 import { formatDateTime } from "../../services/commonService";
 import UserService from "../../services/UserService";
@@ -36,7 +35,7 @@ const Users = () => {
   const [currentPage, setCurrentPage] = useState(searchParams.get("page") ?? 1);
   const [currentPageSize, setCurrentPageSize] = useState(10);
   const [search, setSearch] = useState("");
-  const [role, setRole] = useState();
+  // const [role, setRole] = useState();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [editingUser, setEditingUser] = useState(null);
@@ -190,7 +189,7 @@ const Users = () => {
       }
     };
     fetchData();
-  }, [currentPage, currentPageSize, search, role]);
+  }, [currentPage, currentPageSize, search]); //, role
 
   return (
     <>
